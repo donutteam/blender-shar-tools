@@ -48,7 +48,7 @@ class BinaryReader:
 
 		return value
 
-	# TODO: readFloat64
+	# TODO: readFloat64 (idk how python handles 64-bit floats)
 
 	def readInt8(self) -> int:
 		self.checkSize(data.data_sizes.INT8)
