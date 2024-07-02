@@ -39,7 +39,7 @@ class Pure3DBinaryReader(classes.BinaryReader.BinaryReader):
 		rawString = self.readString(4)
 
 		if not self.isLittleEndian:
-			rawStringCharacters = rawString.split("")
+			rawStringCharacters = list(rawString)
 
 			rawStringCharacters.reverse()
 
@@ -51,7 +51,7 @@ class Pure3DBinaryReader(classes.BinaryReader.BinaryReader):
 		matrix : list[int] = []
 
 		for i in range(16):
-			matrix.append(self.readSingle())
+			matrix.append(self.readFloat())
 
 		return classes.Matrix.Matrix(
 			{
