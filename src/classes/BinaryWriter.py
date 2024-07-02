@@ -134,7 +134,6 @@ class BinaryWriter:
 	def writeString(self, value : str) -> None:
 		valueBytes = value.encode("utf-8")
 
-		# Note: writeBytes updates the length and position
 		self.writeBytes(valueBytes)
 
 	def _checkSize(self, size : int) -> None:
