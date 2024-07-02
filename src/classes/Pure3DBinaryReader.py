@@ -37,7 +37,7 @@ class Pure3DBinaryReader(classes.BinaryReader.BinaryReader):
 	# TODO: readPure3DMatrix
 
 	def readPure3DString(self) -> str:
-		stringLength = self.readUint8()
+		stringLength = self.readByte()
 
 		string = self.readString(stringLength)
 

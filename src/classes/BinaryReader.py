@@ -12,28 +12,28 @@ import data.dataSizes
 
 class BinaryReader:
 	def __init__(self, data : bytes, isLittleEndian : bool) -> None:
-		self.data = memoryview(data)
+		self._data = memoryview(data)
 
 		self.isLittleEndian = isLittleEndian
 
-		self.byteOrderString = "little" if self.isLittleEndian else "big"
+		self._position = 0
 
-		self.byteOrderSymbol = "<" if self.isLittleEndian else ">"
+		self._byteOrderString = "little" if self.isLittleEndian else "big"
 
-		self.position = 0
+		self._byteOrderSymbol = "<" if self.isLittleEndian else ">"
 
 	def getPosition(self) -> int:
-		return self.position
+		return self._position
 
 	def getLength(self) -> int:
-		return len(self.data)
+		return len(self._data)
 
 	def readBytes(self, size : int) -> bytes:
 		self.checkSize(size)
 
-		valueBytes = self.data[self.position : self.position + size].tobytes()
+		valueBytes = self._data[self._position : self._position + size].tobytes()
 
-		self.position += size
+		self._position += size
 
 		return valueBytes
 
@@ -42,22 +42,22 @@ class BinaryReader:
 
 		valueBytes = self.readBytes(data.dataSizes.FLOAT32)
 
-		value = struct.unpack(self.byteOrderSymbol + "f", valueBytes)[0]
+		value = struct.unpack(self._byteOrderSymbol + "f", valueBytes)[0]
 
-		self.position += data.dataSizes.FLOAT32
+		self._position += data.dataSizes.FLOAT32
 
 		return value
 
 	# TODO: readFloat64 (idk how python handles 64-bit floats)
 
-	def readInt8(self) -> int:
-		self.checkSize(data.dataSizes.INT8)
+	def readSByte(self) -> int:
+		self.checkSize(data.dataSizes.SBYTE)
 
-		valueBytes = self.readBytes(data.dataSizes.INT8)
+		valueBytes = self.readBytes(data.dataSizes.SBYTE)
 
-		value = int.from_bytes(valueBytes, byteorder = self.byteOrderString, signed = True)
+		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = True)
 
-		self.position += data.dataSizes.INT8
+		self._position += data.dataSizes.SBYTE
 
 		return value
 
@@ -66,9 +66,9 @@ class BinaryReader:
 
 		valueBytes = self.readBytes(data.dataSizes.INT16)
 
-		value = int.from_bytes(valueBytes, byteorder = self.byteOrderString, signed = True)
+		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = True)
 
-		self.position += data.dataSizes.INT16
+		self._position += data.dataSizes.INT16
 
 		return value
 
@@ -77,9 +77,9 @@ class BinaryReader:
 
 		valueBytes = self.readBytes(data.dataSizes.INT32)
 
-		value = int.from_bytes(valueBytes, byteorder = self.byteOrderString, signed = True)
+		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = True)
 
-		self.position += data.dataSizes.INT32
+		self._position += data.dataSizes.INT32
 
 		return value
 
@@ -92,14 +92,14 @@ class BinaryReader:
 
 		return value
 
-	def readUint8(self) -> int:
-		self.checkSize(data.dataSizes.UINT8)
+	def readByte(self) -> int:
+		self.checkSize(data.dataSizes.BYTE)
 
-		valueBytes = self.readBytes(data.dataSizes.UINT8)
+		valueBytes = self.readBytes(data.dataSizes.BYTE)
 
-		value = int.from_bytes(valueBytes, byteorder = self.byteOrderString, signed = False)
+		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = False)
 
-		self.position += data.dataSizes.UINT8
+		self._position += data.dataSizes.BYTE
 
 		return value
 
@@ -108,9 +108,9 @@ class BinaryReader:
 
 		valueBytes = self.readBytes(data.dataSizes.UINT16)
 
-		value = int.from_bytes(valueBytes, byteorder = self.byteOrderString, signed = False)
+		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = False)
 
-		self.position += data.dataSizes.UINT16
+		self._position += data.dataSizes.UINT16
 
 		return value
 
@@ -119,9 +119,9 @@ class BinaryReader:
 
 		valueBytes = self.readBytes(data.dataSizes.UINT32)
 
-		value = int.from_bytes(valueBytes, byteorder = self.byteOrderString, signed = False)
+		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = False)
 
-		self.position += data.dataSizes.UINT32
+		self._position += data.dataSizes.UINT32
 
 		return value
 
@@ -131,13 +131,13 @@ class BinaryReader:
 		if position < 0 or position >= self.getLength():
 			raise ValueError("Seek position out of range.")
 		
-		self.position = position
+		self._position = position
 
 	def seekOffset(self, offset : int) -> None:
-		self.seek(self.position + offset)
+		self.seek(self._position + offset)
 
 	def checkSize(self, neededBytes : int) -> None:
-		availableBytes = self.getLength() - self.position
+		availableBytes = self.getLength() - self._position
 
 		if neededBytes > availableBytes:
 			raise ValueError(f"Operation requires an additional { neededBytes } bytes but only { availableBytes } bytes are available.")
