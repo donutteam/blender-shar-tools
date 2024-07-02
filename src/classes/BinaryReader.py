@@ -51,16 +51,12 @@ class BinaryReader:
 
 		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = True)
 
-		self._position += data.dataSizes.SBYTE
-
 		return value
 
 	def readInt16(self) -> int:
 		valueBytes = self.readBytes(data.dataSizes.INT16)
 
 		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = True)
-
-		self._position += data.dataSizes.INT16
 
 		return value
 
@@ -69,16 +65,12 @@ class BinaryReader:
 
 		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = True)
 
-		self._position += data.dataSizes.INT32
-
 		return value
 
 	def readInt64(self) -> int:
 		valueBytes = self.readBytes(data.dataSizes.INT64)
 
 		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = True)
-
-		self._position += data.dataSizes.INT64
 
 		return value
 
@@ -87,16 +79,12 @@ class BinaryReader:
 
 		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = False)
 
-		self._position += data.dataSizes.BYTE
-
 		return value
 
 	def readUInt16(self) -> int:
 		valueBytes = self.readBytes(data.dataSizes.UINT16)
 
 		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = False)
-
-		self._position += data.dataSizes.UINT16
 
 		return value
 
@@ -105,16 +93,12 @@ class BinaryReader:
 
 		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = False)
 
-		self._position += data.dataSizes.UINT32
-
 		return value
 
 	def readUInt64(self) -> int:
 		valueBytes = self.readBytes(data.dataSizes.UINT64)
 
 		value = int.from_bytes(valueBytes, byteorder = self._byteOrderString, signed = False)
-
-		self._position += data.dataSizes.UINT64
 
 		return value
 
@@ -123,16 +107,12 @@ class BinaryReader:
 
 		value = struct.unpack(self._byteOrderSymbol + "f", valueBytes)[0]
 
-		self._position += data.dataSizes.FLOAT32
-
 		return value
 
 	def readDouble(self) -> float:
 		valueBytes = self.readBytes(data.dataSizes.FLOAT64)
 
 		value = struct.unpack(self._byteOrderSymbol + "d", valueBytes)[0]
-
-		self._position += data.dataSizes.FLOAT64
 
 		return value
 
