@@ -17,7 +17,7 @@ class Vector3Options(typing.TypedDict):
 
 	z : int
 
-class Vector3(Vector2Options):
+class Vector3:
 	def __init__(self, options: Vector3Options) -> None:
 		self.x : int = options["x"]
 		

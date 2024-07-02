@@ -19,7 +19,7 @@ class ColourOptions(typing.TypedDict):
 
 	alpha : int
 
-class Colour(ColourOptions):
+class Colour:
 	def __init__(self, options : ColourOptions) -> None:
 		self.red : int = options["red"]
 
