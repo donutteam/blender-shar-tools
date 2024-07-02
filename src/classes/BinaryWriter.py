@@ -11,7 +11,7 @@ import data.dataSizes
 #
 
 class BinaryWriter:
-	def __init__(self, isLittleEndian : bool = true, byteArraySize : int = 65536):
+	def __init__(self, isLittleEndian : bool = true, byteArraySize : int = 65536) -> None:
 		self.isLittleEndian : bool = isLittleEndian
 
 		self.expandSize : int = byteArraySize
