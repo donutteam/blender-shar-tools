@@ -41,7 +41,7 @@ class Pure3DBinaryReader(classes.BinaryReader.BinaryReader):
 
 		string = self.readString(stringLength)
 
-		return stringBytes.decode("utf-8")
+		return self.trimNull(string)
 
 	# TODO: readPure3DVector2
 
