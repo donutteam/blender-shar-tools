@@ -29,7 +29,9 @@ class Fence2ChunkOptions(typing.TypedDict):
 
 class Fence2Chunk(classes.chunks.Chunk.Chunk):
 	@staticmethod
-	def readData(binaryReader : classes.Pure3DBinaryReader.Pure3DBinaryReader) -> dict:
+	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
+		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+
 		start = binaryReader.readPure3DVector3()
 
 		end = binaryReader.readPure3DVector3()
@@ -56,7 +58,8 @@ class Fence2Chunk(classes.chunks.Chunk.Chunk):
 		self.normal : classes.Vector3.Vector3 = options["normal"]
 
 	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:
-		binaryWriter.writeUInt16(len(self.lines))
+		binaryWriter.writePure3DVector3(self.start)
 
-		for line in self.lines:
-			binaryWriter.writePure3DString(line)
+		binaryWriter.writePure3DVector3(self.end)
+
+		binaryWriter.writePure3DVector3(self.normal)

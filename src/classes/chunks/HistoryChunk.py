@@ -22,7 +22,9 @@ class HistoryChunkOptions(typing.TypedDict):
 
 class HistoryChunk(classes.chunks.Chunk.Chunk):
 	@staticmethod
-	def readData(binaryReader : classes.Pure3DBinaryReader.Pure3DBinaryReader) -> dict:
+	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
+		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+		
 		numberOfLines = binaryReader.readUInt16()
 
 		lines : list[str] = []

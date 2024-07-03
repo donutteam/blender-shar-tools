@@ -213,6 +213,11 @@ IDENTIFIERS = {
 # Class
 #
 
+class ChunkParseDataOptions(typing.TypedDict):
+	data : bytes
+
+	isLittleEndian : bool
+
 class ChunkOptions(typing.TypedDict):
 	identifier : int
 
@@ -220,7 +225,7 @@ class ChunkOptions(typing.TypedDict):
 
 class Chunk():
 	@staticmethod
-	def readData(binaryReader : classes.Pure3DBinaryReader.Pure3DBinaryReader) -> dict:
+	def parseData(options : ChunkParseDataOptions) -> dict:
 		return {}
 
 	def __init__(self, options: ChunkOptions) -> None:
@@ -241,7 +246,10 @@ class Chunk():
 
 		self.writeData(binaryWriter)
 
-		return len(binaryWriter.getByteArray())
+		# HACK: Feels kind of hacky, idk, I feel like it should get the length of 
+		# 	the binaryWriter's buffer minus the extra allocated space
+		#	this also feels like it may cause problems when writing files...
+		return binaryWriter.getPosition()
 
 	def getEntireSize(self) -> int:
 		return 12 + self.getDataSize() + self.getChildrenSize()

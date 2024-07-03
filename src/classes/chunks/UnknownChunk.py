@@ -8,6 +8,7 @@ import typing
 
 import classes.chunks.Chunk
 
+import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
 
 #
@@ -23,15 +24,15 @@ class UnknownChunkOptions(typing.TypedDict):
 
 class UnknownChunk(classes.chunks.Chunk.Chunk):
 	@staticmethod
-	def readData(binaryReader : classes.Pure3DBinaryReader.Pure3DBinaryReader) -> dict:
-		data = binaryReader.readBytes(binaryReader.getLength())
-		
+	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:	
 		return {
-			"data": data
+			"data": options["data"],
 		}
 
 	def __init__(self, options : UnknownChunkOptions) -> None:
 		super().__init__(options)
+
+		print("UnknownChunk", "identifier", options["identifier"], "len(data)", len(options["data"]))
 
 		self.data : bytes = options["data"]
 
