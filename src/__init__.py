@@ -29,6 +29,7 @@ sys.path.append(os.path.dirname(__file__))
 
 import bpy
 
+import classes.operators.ImportPure3DFile
 import classes.operators.MoveObjectX
 
 #
@@ -38,9 +39,11 @@ import classes.operators.MoveObjectX
 def register():
 	print("Registered The Simpsons Hit & Run Tools.")
 
+	classes.operators.ImportPure3DFile.register()
 	classes.operators.MoveObjectX.register()
 
 def unregister():
 	print("Unregistered The Simpsons Hit & Run Tools.")
 
+	classes.operators.ImportPure3DFile.unregister()
 	classes.operators.MoveObjectX.unregister()
