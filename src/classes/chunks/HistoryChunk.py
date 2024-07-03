@@ -22,7 +22,7 @@ class HistoryChunkOptions(typing.TypedDict):
 
 class HistoryChunk(classes.chunks.Chunk.Chunk):
 	@staticmethod
-	def parseData(binaryReader : classes.Pure3DBinaryReader.Pure3DBinaryReader) -> dict:
+	def readData(binaryReader : classes.Pure3DBinaryReader.Pure3DBinaryReader) -> dict:
 		numberOfLines = binaryReader.readUInt16()
 
 		lines : list[str] = []

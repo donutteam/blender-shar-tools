@@ -220,7 +220,7 @@ class ChunkOptions(typing.TypedDict):
 
 class Chunk():
 	@staticmethod
-	def parseData(binaryReader : classes.Pure3DBinaryReader.Pure3DBinaryReader) -> dict:
+	def readData(binaryReader : classes.Pure3DBinaryReader.Pure3DBinaryReader) -> dict:
 		return {}
 
 	def __init__(self, options: ChunkOptions) -> None:

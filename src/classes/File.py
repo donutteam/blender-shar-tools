@@ -172,7 +172,7 @@ class File:
 		if (data is not None):
 			binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, options["isLittleEndian"])
 
-			parsedData = chunkClass.parseData(binaryReader)
+			parsedData = chunkClass.readData(binaryReader)
 
 		#
 		# Get Children

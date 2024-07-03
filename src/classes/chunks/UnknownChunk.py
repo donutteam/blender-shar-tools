@@ -23,7 +23,7 @@ class UnknownChunkOptions(typing.TypedDict):
 
 class UnknownChunk(classes.chunks.Chunk.Chunk):
 	@staticmethod
-	def parseData(binaryReader : classes.Pure3DBinaryReader.Pure3DBinaryReader) -> dict:
+	def readData(binaryReader : classes.Pure3DBinaryReader.Pure3DBinaryReader) -> dict:
 		data = binaryReader.readBytes(binaryReader.getLength())
 		
 		return {
