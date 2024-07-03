@@ -32,8 +32,6 @@ class UnknownChunk(classes.chunks.Chunk.Chunk):
 	def __init__(self, options : UnknownChunkOptions) -> None:
 		super().__init__(options)
 
-		print("UnknownChunk", "identifier", options["identifier"], "len(data)", len(options["data"]))
-
 		self.data : bytes = options["data"]
 
 	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:
