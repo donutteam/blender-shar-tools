@@ -126,7 +126,7 @@ class File:
 		# Get Offset
 		#
 
-		offset = options["offset"] or 0
+		offset = options["offset"] if "offset" in options else 0
 
 		#
 		# Create Binary Reader
