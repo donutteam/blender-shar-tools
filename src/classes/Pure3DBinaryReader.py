@@ -81,9 +81,9 @@ class Pure3DBinaryReader(classes.BinaryReader.BinaryReader):
 		return self.trimNull(string)
 
 	def readPure3DVector2(self) -> classes.Vector2.Vector2:
-		x = self.readSingle()
+		x = self.readFloat()
 
-		y = self.readSingle()
+		y = self.readFloat()
 
 		return classes.Vector2.Vector2(
 			{
@@ -92,11 +92,11 @@ class Pure3DBinaryReader(classes.BinaryReader.BinaryReader):
 			})
 
 	def readPure3DVector3(self) -> classes.Vector3.Vector3:
-		x = self.readSingle()
+		x = self.readFloat()
 
-		y = self.readSingle()
+		y = self.readFloat()
 
-		z = self.readSingle()
+		z = self.readFloat()
 
 		return classes.Vector3.Vector3(
 			{
