@@ -101,7 +101,7 @@ class Pure3DBinaryWriter(classes.BinaryWriter.BinaryWriter):
 
 		self.writeFloat(vector2.y)
 
-	def writePure3DVector3(self, vector2 : classes.Vector3.Vector3) -> None:
+	def writePure3DVector3(self, vector3 : classes.Vector3.Vector3) -> None:
 		self.writeFloat(vector3.x)
 
 		self.writeFloat(vector3.y)
