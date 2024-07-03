@@ -2,6 +2,8 @@
 # Imports
 #
 
+import os
+
 import bpy
 import bpy_extras
 
@@ -32,6 +34,12 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 			{
 				"bytes": fileContents,
 			})
+
+		fileName = os.path.basename(self.filepath)
+
+		fileCollection = bpy.data.collections.new(fileName)
+
+		bpy.context.scene.collection.children.link(fileCollection)
 
 		# TODO: Actually import stuff
 

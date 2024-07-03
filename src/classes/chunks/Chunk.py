@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import typing
 
+import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
 
 #
@@ -212,11 +213,6 @@ IDENTIFIERS = {
 # Class
 #
 
-class ChunkParseDataOptions(typing.TypedDict):
-	bytes : bytes
-
-	isLittleEndian : bool
-
 class ChunkOptions(typing.TypedDict):
 	identifier : int
 
@@ -224,7 +220,7 @@ class ChunkOptions(typing.TypedDict):
 
 class Chunk():
 	@staticmethod
-	def parseData(options : ChunkParseDataOptions) -> dict:
+	def parseData(binaryReader : classes.Pure3DBinaryReader.Pure3DBinaryReader) -> dict:
 		return {}
 
 	def __init__(self, options: ChunkOptions) -> None:
