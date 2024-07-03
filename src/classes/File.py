@@ -188,7 +188,7 @@ class File:
 			children = File._readChunkChildren(
 				{
 					"bytes": childrenBytes,
-					"chunkRegistry": chunkRegistry,
+					"chunkRegistry": options["chunkRegistry"],
 					"isLittleEndian": options["isLittleEndian"]
 				})
 
