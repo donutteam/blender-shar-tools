@@ -45,7 +45,7 @@ def createFence(options : CreateFenceOptions) -> bpy.types.Object:
 
 	fenceCurve.dimensions = "2D"
 
-	fenceCurve.extrude = 50 # TODO: Is this what makes it have verticallity?
+	fenceCurve.extrude = 50
 
 	#
 	# Create Spline
@@ -62,8 +62,6 @@ def createFence(options : CreateFenceOptions) -> bpy.types.Object:
 	fenceCurveSpline.points[0].co = (start.x, start.z, start.y, 1) # Swap Z and Y because Hit & Run uses Y for the vertical axis
 
 	fenceCurveSpline.points[1].co = (end.x, end.z, end.y, 1) # Ditto
-
-	fenceCurveSpline.use_endpoint_u = True
 
 	fenceCurveSpline.use_smooth = False
 
