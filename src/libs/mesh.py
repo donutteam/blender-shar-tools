@@ -25,6 +25,8 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Object:
 	total_indices = []
 	total_uvs = []
 
+	indexoffset = 0
+	separators = [0]
 	for childChunkIndex, childChunk in enumerate(chunk.children):
 
 		if isinstance(childChunk, classes.chunks.OldPrimitiveGroupChunk.OldPrimitiveGroupChunk):
@@ -43,13 +45,21 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Object:
 							tri = childChildChunk.indices[i:i+3]
 							if len(tri) < 3:
 								continue
-							total_indices.append(tri)
+							total_indices.append((tri[0]+indexoffset,tri[1]+indexoffset,tri[2]+indexoffset))
 					elif childChunk.primitiveType == childChunk.primitiveTypes["TRIANGLE_STRIP"]:
 						for i in range(len(childChildChunk.indices) - 2):
 							if i % 2 == 1: # need to switch these around for some reason
-								total_indices.append((childChildChunk.indices[i],childChildChunk.indices[i+1],childChildChunk.indices[i+2]))
+								total_indices.append((
+									childChildChunk.indices[i] + indexoffset,
+									childChildChunk.indices[i+1] + indexoffset,
+									childChildChunk.indices[i+2] + indexoffset
+								))
 							else:
-								total_indices.append((childChildChunk.indices[i],childChildChunk.indices[i+2],childChildChunk.indices[i+1]))
+								total_indices.append((
+									childChildChunk.indices[i] + indexoffset,
+									childChildChunk.indices[i+2] + indexoffset,
+									childChildChunk.indices[i+1] + indexoffset
+								))
 					else:
 						# TODO: Implement LINE_LIST and LINE_STRIP
 						if childChunk.primitiveType == childChunk.primitiveTypes["LINE_LIST"]:
@@ -62,14 +72,20 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Object:
 				elif isinstance(childChildChunk,classes.chunks.UVListChunk.UVListChunk):
 					for uv in childChildChunk.uvs:
 						total_uvs.append((uv.x,uv.y))
-						
+
+		indexoffset += len(total_positions)
+		separators.append(len(total_indices))
 
 	mesh.from_pydata(total_positions,[],total_indices)
 	mesh.update()
 	
 	uvLayer = mesh.uv_layers.new()
 
-	for poly in mesh.polygons:
+	for i,poly in enumerate(mesh.polygons):
+		for k,j in enumerate(separators):
+			if i >= j:
+				poly.material_index = k
+				continue
 		for loop_index in poly.loop_indices:
 			loop = mesh.loops[loop_index]
 			vertex_index = loop.vertex_index

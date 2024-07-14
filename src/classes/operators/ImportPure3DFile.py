@@ -88,23 +88,9 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 		# Import Chunks
 		#
 
+		# Import these first so that shaders, etc. can find the images
 		for chunkIndex, chunk in enumerate(rootChunk.children):
-			if isinstance(chunk, classes.chunks.FenceChunk.FenceChunk):
-				for childChunkIndex, childChunk in enumerate(chunk.children):
-					if isinstance(childChunk, classes.chunks.Fence2Chunk.Fence2Chunk):
-						print("Fence", chunkIndex, childChunk.start.__dict__, childChunk.end.__dict__)
-
-						fenceChunkObject = libs.fence.createFence(
-							{
-								"start": childChunk.start,
-								"end": childChunk.end,
-								"normal": childChunk.normal,
-								"name": f"Fence { chunkIndex }",
-							})
-
-						fileCollection.objects.link(fenceChunkObject)
-			
-			elif isinstance(chunk, classes.chunks.TextureChunk.TextureChunk):
+			if isinstance(chunk, classes.chunks.TextureChunk.TextureChunk):
 				is_already_used = False
 				for i in bpy.data.images:
 					if i.name == chunk.name:
@@ -126,6 +112,25 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 								img.scale(chunk.width,chunk.height) # Make image stay in memory
 								bpy.data.images.remove(img_src)
 								os.remove(filename)
+
+		for chunkIndex, chunk in enumerate(rootChunk.children):
+			if isinstance(chunk, classes.chunks.FenceChunk.FenceChunk):
+				for childChunkIndex, childChunk in enumerate(chunk.children):
+					if isinstance(childChunk, classes.chunks.Fence2Chunk.Fence2Chunk):
+						print("Fence", chunkIndex, childChunk.start.__dict__, childChunk.end.__dict__)
+
+						fenceChunkObject = libs.fence.createFence(
+							{
+								"start": childChunk.start,
+								"end": childChunk.end,
+								"normal": childChunk.normal,
+								"name": f"Fence { chunkIndex }",
+							})
+
+						fileCollection.objects.link(fenceChunkObject)
+			
+			elif isinstance(chunk, classes.chunks.TextureChunk.TextureChunk):
+				pass # Imported above
 				
 			elif isinstance(chunk, classes.chunks.ShaderChunk.ShaderChunk):
 				if chunk.name in bpy.data.materials:
