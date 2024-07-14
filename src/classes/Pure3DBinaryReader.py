@@ -17,7 +17,7 @@ class Pure3DBinaryReader(classes.BinaryReader.BinaryReader):
 		valueBytes = self.readBytes(4)
 
 		if self.isLittleEndian:
-			valueBytes.reverse()
+			valueBytes = bytes(reversed(list(valueBytes)))
 
 		blue = valueBytes[0]
 
@@ -55,22 +55,22 @@ class Pure3DBinaryReader(classes.BinaryReader.BinaryReader):
 
 		return classes.Matrix.Matrix(
 			{
-				m11: matrix[0],
-				m12: matrix[1],
-				m13: matrix[2],
-				m14: matrix[3],
-				m21: matrix[4],
-				m22: matrix[5],
-				m23: matrix[6],
-				m24: matrix[7],
-				m31: matrix[8],
-				m32: matrix[9],
-				m33: matrix[10],
-				m34: matrix[11],
-				m41: matrix[12],
-				m42: matrix[13],
-				m43: matrix[14],
-				m44: matrix[15],
+				"m11": matrix[0],
+				"m12": matrix[1],
+				"m13": matrix[2],
+				"m14": matrix[3],
+				"m21": matrix[4],
+				"m22": matrix[5],
+				"m23": matrix[6],
+				"m24": matrix[7],
+				"m31": matrix[8],
+				"m32": matrix[9],
+				"m33": matrix[10],
+				"m34": matrix[11],
+				"m41": matrix[12],
+				"m42": matrix[13],
+				"m43": matrix[14],
+				"m44": matrix[15],
 			})
 
 	def readPure3DString(self) -> str:

@@ -88,7 +88,7 @@ class File:
 		if fileIdentifier == LITTLE_ENDIAN:
 			pass
 		elif fileIdentifier == BIG_ENDIAN:
-			binaryReader.isLittleEndian = false
+			binaryReader.isLittleEndian = False
 		else:
 			raise Exception("Input bytes are not a P3D file.")
 

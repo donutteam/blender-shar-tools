@@ -2,10 +2,5 @@
 	"files.exclude":
 	{
 		"**/__pycache__": true
-	},
-	
-    "python.autoComplete.extraPaths": 
-	[
-        "C:\\Users\\Loren\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages"
-    ],
+	}
 }

@@ -30,4 +30,5 @@ class ChunkRegistry:
 			return classes.chunks.UnknownChunk.UnknownChunk
 
 	def register(self, chunkIdentifier : int, chunkClass : classes.chunks.Chunk) -> None:
+		print("Register",chunkClass.__name__,hex(chunkIdentifier))
 		self.chunkClasses[chunkIdentifier] = chunkClass
