@@ -11,8 +11,6 @@ import classes.chunks.Chunk
 import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
 
-import classes.Vector3
-
 #
 # Class
 #

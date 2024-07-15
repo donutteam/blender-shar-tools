@@ -6,11 +6,12 @@ from __future__ import annotations
 
 import typing
 
-import classes.Vector2
 import classes.chunks.Chunk
 
 import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
+
+import mathutils
 
 #
 # Class
@@ -21,7 +22,7 @@ class UVListChunkOptions(typing.TypedDict):
 	
 	channel: int
 
-	uvs: list[classes.Vector2.Vector2]
+	uvs: list[mathutils.Vector]
 
 
 

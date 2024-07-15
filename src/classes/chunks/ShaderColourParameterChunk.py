@@ -7,7 +7,6 @@ from __future__ import annotations
 import typing
 
 import classes.Colour
-import classes.Vector2
 import classes.chunks.Chunk
 
 import classes.Pure3DBinaryReader

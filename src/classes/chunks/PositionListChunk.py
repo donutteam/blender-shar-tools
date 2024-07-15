@@ -11,7 +11,7 @@ import classes.chunks.Chunk
 import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
 
-import classes.Vector3
+import mathutils
 
 #
 # Class
@@ -20,7 +20,7 @@ import classes.Vector3
 class PositionListChunkOptions(typing.TypedDict):
 	children : list[classes.chunks.Chunk.Chunk] | None
 	
-	positions: list[classes.Vector3.Vector3]
+	positions: list[mathutils.Vector]
 
 
 
