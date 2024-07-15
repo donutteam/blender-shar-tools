@@ -17,7 +17,7 @@ class Pure3DBinaryReader(BinaryReader):
 	def readPure3DColour(self) -> Colour:
 		valueBytes = self.readBytes(4)
 
-		if self.isLittleEndian:
+		if not self.isLittleEndian:
 			valueBytes = bytes(reversed(list(valueBytes)))
 
 		blue = valueBytes[0]
