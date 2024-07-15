@@ -4,30 +4,29 @@
 
 from __future__ import annotations
 
+from classes.chunks.Chunk import Chunk
 from classes.chunks.RootChunk import RootChunk
 
 from classes.ChunkRegistry import ChunkRegistry
 from classes.Pure3DBinaryReader import Pure3DBinaryReader
+from classes.Pure3DBinaryWriter import Pure3DBinaryWriter
 
 from instances.defaultChunkRegistry import defaultChunkRegistry
-
-#
-# Constants
-#
-
-LITTLE_ENDIAN = 0xFF443350 # P3Dÿ
-
-LITTLE_ENDIAN_COMPRESSED = 0x5A443350 # P3DZ
-
-BIG_ENDIAN = 0x503344FF # ÿD3P
-
-BIG_ENDIAN_COMPRESSED = 0x5033445A # ZD3P
 
 #
 # Class
 #
 
 class File:
+	class Signatures:
+		LITTLE_ENDIAN = 0xFF443350 # P3Dÿ
+
+		LITTLE_ENDIAN_COMPRESSED = 0x5A443350 # P3DZ
+
+		BIG_ENDIAN = 0x503344FF # ÿD3P
+
+		BIG_ENDIAN_COMPRESSED = 0x5033445A # ZD3P
+
 	@staticmethod
 	def fromBytes(buffer : bytes, chunkRegistry : ChunkRegistry | None = None) -> RootChunk:
 		#
@@ -48,9 +47,9 @@ class File:
 		# Handle Endianness
 		#
 
-		if fileIdentifier == LITTLE_ENDIAN:
+		if fileIdentifier == File.Signatures.LITTLE_ENDIAN:
 			pass
-		elif fileIdentifier == BIG_ENDIAN:
+		elif fileIdentifier == File.Signatures.BIG_ENDIAN:
 			binaryReader.isLittleEndian = False
 		else:
 			raise Exception("Input bytes are not a P3D file.")
@@ -63,7 +62,25 @@ class File:
 
 	@staticmethod
 	def toBytes(chunks : list[Chunk], littleEndian : bool = True) -> bytes:
-		pass # TODO
+		binaryWriter = Pure3DBinaryWriter(littleEndian)
+		
+		# Note: Even when writing a big-endian file, the file signature here should still be little-endian.
+		#	It will be converted to big-endian when the file is written.
+		binaryWriter.writeUInt32(File.Signatures.LITTLE_ENDIAN)
+
+		binaryWriter.writeUInt32(12)
+
+		chunksSize = 0
+
+		for chunk in chunks:
+			chunksSize += chunk.getEntireSize()
+
+		binaryWriter.writeUInt32(12 + chunksSize)
+
+		for chunk in chunks:
+			chunk.write(binaryWriter)
+
+		return binaryWriter.getBytes()
 
 	@staticmethod
 	def _readChunk(buffer : bytes, chunkRegistry : ChunkRegistry, isLittleEndian : bool, offset : int | None = None) -> Chunk:

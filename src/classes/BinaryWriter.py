@@ -28,8 +28,8 @@ class BinaryWriter:
 
 		self._byteOrderSymbol = "<" if self.isLittleEndian else ">"
 
-	def getByteArray(self) -> bytearray:
-		return self._byteArray[:]
+	def getBytes(self) -> bytes:
+		return bytes(self._byteArray[:])
 
 	def getPosition(self) -> int:
 		return self._position
