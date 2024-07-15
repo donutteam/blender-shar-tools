@@ -53,11 +53,6 @@ def createFence(start : mathutils.Vector, end : mathutils.Vector, normal : mathu
 
 	fenceCurveSpline.points.add(1) # Only need to add one, splines start with 1 point
 
-	# TODO: Logic to flip the start and end if the normal is backwards?
-	#	Calculate a normal from the start and end points
-	#	Calculate a dot product with that ^ and the normal in the file?
-	#   If it's negative, flip the start and end points
-
 	# https://docs.blender.org/api/current/bpy.types.SplinePoint.html
 
 	fenceCurveSpline.points[0].co = (start.x, start.z, start.y, 1) # Swap Z and Y because Hit & Run uses Y for the vertical axis
