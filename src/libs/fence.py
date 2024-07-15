@@ -11,7 +11,7 @@ import mathutils
 # Utility Functions
 #
 
-def createFence(start : mathutils.Vector, end : mathutils.Vector, normal : mathutils.Vector, name : str | None) -> bpy.types.Object:
+def createFence(start : mathutils.Vector, end : mathutils.Vector, normal : mathutils.Vector, name : str | None = None) -> bpy.types.Object:
 	#
 	# Calculate Normal
 	#

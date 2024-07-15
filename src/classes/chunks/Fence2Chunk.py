@@ -30,7 +30,7 @@ class Fence2Chunk(Chunk):
 
 		return [ start, end, normal ]
 
-	def __init__(self, identifier : int = chunkIdentifiers.FENCE_2, children : list[Chunk] | None = None, start : mathutils.Vector = mathutils.Vector((0, 0, 0)), end : mathutils.Vector = mathutils.Vector((0, 0, 0)), normal : mathutils.Vector = mathutils.Vector((0, 0, 0))) -> None:
+	def __init__(self, identifier : int = chunkIdentifiers.FENCE_2, children : list[Chunk] = [], start : mathutils.Vector = mathutils.Vector((0, 0, 0)), end : mathutils.Vector = mathutils.Vector((0, 0, 0)), normal : mathutils.Vector = mathutils.Vector((0, 0, 0))) -> None:
 		super().__init__(chunkIdentifiers.FENCE_2, children)
 
 		self.start : mathutils.Vector = start
