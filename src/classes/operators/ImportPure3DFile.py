@@ -16,6 +16,7 @@ from classes.chunks.PathChunk import PathChunk
 from classes.File import File
 
 import libs.fence as FenceLib
+import libs.message as MessageLib
 import libs.path as PathLib
 
 #
@@ -24,20 +25,63 @@ import libs.path as PathLib
 
 class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 	bl_idname = "operators.import_pure3d_file"
-	bl_label = "Import Pure3D File..."
+	bl_label = "Import Pure3D File(s)..."
+	bl_description = "Import Pure3D File(s) from The Simpsons Hit & Run."
 	bl_options = {"REGISTER", "UNDO"}
 
 	filename_ext = ".p3d"
 
-	# https://docs.blender.org/api/current/bpy.props.html#bpy.props.StringProperty
+	directory: bpy.props.StringProperty(subtype = "DIR_PATH", options = {"HIDDEN"})
 	filter_glob: bpy.props.StringProperty(default = "*.p3d", options = {"HIDDEN"}, maxlen = 255)
+	files: bpy.props.CollectionProperty(type = bpy.types.OperatorFileListElement, options = {"HIDDEN", "SKIP_SAVE"})
+
+	option_import_fences: bpy.props.BoolProperty(name = "Import Fences", description = "Import Fence chunks from the Pure3D File(s).", default = True)
+
+	option_import_paths: bpy.props.BoolProperty(name = "Import Paths", description = "Import Path chunks from the Pure3D File(s).", default = True)
+
+	def draw(self, context):
+		self.layout.prop(self, "option_import_fences")
+
+		self.layout.prop(self, "option_import_paths")
 
 	def execute(self, context):
+		print(self.files)
+
+		results : list[dict] = []
+
+		for file in self.files:
+			filePath = os.path.join(self.directory, file.name)
+
+			print(f"Importing Pure3D File: { filePath }")
+
+			results.append(self.importFile(filePath))
+
+		messageLines : list[str] = []
+
+		messageLines.append(f"Imported { len(results) } Pure3D File(s):")
+
+		for result in results:
+			messageLines.append(f"- { result['fileName'] }:")
+
+			if result["numberOfFenceChunks"] > 0:
+				messageLines.append(f"\t- Number of Fences: { result['numberOfFenceChunks'] }")
+
+			if result["numberOfPathChunks"] > 0:
+				messageLines.append(f"\t- Number of Paths: { result['numberOfPathChunks'] }")
+
+			if result["numberOfUnsupportedChunks"] > 0:
+				messageLines.append(f"\t- Number of Unsupported Chunks: { result['numberOfUnsupportedChunks'] }")
+
+		MessageLib.alert("\n".join(messageLines))
+
+		return {"FINISHED"}
+
+	def importFile(self, filePath) -> dict:
 		#
 		# Read Pure3D File
 		#
 
-		with open(self.filepath, "rb") as file:
+		with open(filePath, "rb") as file:
 			fileContents = file.read()
 
 		rootChunk = File.fromBytes(fileContents)
@@ -46,7 +90,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 		# Create File Collection
 		#
 
-		fileName = os.path.basename(self.filepath)
+		fileName = os.path.basename(filePath)
 
 		fileCollection = bpy.data.collections.new(fileName)
 
@@ -64,32 +108,46 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 		# Import Chunks
 		#
 
+		numberOfFenceChunks = 0
+
+		numberOfPathChunks = 0
+
+		numberOfUnsupportedChunks = 0
+
 		for chunkIndex, chunk in enumerate(rootChunk.children):
 			if isinstance(chunk, FenceChunk):
-				for childChunkIndex, childChunk in enumerate(chunk.children):
-					if isinstance(childChunk, Fence2Chunk):
-						fenceChunkObject = FenceLib.createFence(childChunk.start, childChunk.end, childChunk.normal, f"Fence { chunkIndex }")
+				if self.option_import_fences:
+					for childChunkIndex, childChunk in enumerate(chunk.children):
+						if isinstance(childChunk, Fence2Chunk):
+							fenceChunkObject = FenceLib.createFence(childChunk.start, childChunk.end, childChunk.normal, f"Fence { chunkIndex }")
 
-						fenceCollection.objects.link(fenceChunkObject)
+							fenceCollection.objects.link(fenceChunkObject)
+
+							numberOfFenceChunks += 1
 
 			elif isinstance(chunk, PathChunk):
-				pathChunkObject = PathLib.createPath(chunk.points, f"Path { chunkIndex }")
+				if self.option_import_paths:
+					pathChunkObject = PathLib.createPath(chunk.points, f"Path { chunkIndex }")
 
-				pathCollection.objects.link(pathChunkObject)
+					pathCollection.objects.link(pathChunkObject)
+
+					numberOfPathChunks += 1
 
 			else:
 				print(f"Unsupported chunk type: { hex(chunk.identifier) }")
+
+				numberOfUnsupportedChunks += 1
 
 		#
 		# Add Sub Collections to File Collection OR Remove Empty Sub Collections
 		#
 
-		if len(fenceCollection.objects) > 0:
+		if numberOfFenceChunks > 0:
 			fileCollection.children.link(fenceCollection)
 		else:
 			bpy.data.collections.remove(fenceCollection)
 
-		if len(pathCollection.objects) > 0:
+		if numberOfPathChunks > 0:
 			fileCollection.children.link(pathCollection)
 		else:
 			bpy.data.collections.remove(pathCollection)
@@ -98,7 +156,12 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 		# Return
 		#
 
-		return {"FINISHED"}
+		return {
+			"fileName": fileName,
+			"numberOfFenceChunks": numberOfFenceChunks,
+			"numberOfPathChunks": numberOfPathChunks,
+			"numberOfUnsupportedChunks": numberOfUnsupportedChunks,
+		}
 
 def menu_item(self, context):
 	self.layout.operator(ImportPure3DFile.bl_idname, text = "Pure3D File (.p3d)")
