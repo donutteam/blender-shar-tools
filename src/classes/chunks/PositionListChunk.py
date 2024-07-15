@@ -6,10 +6,12 @@ from __future__ import annotations
 
 import typing
 
-import classes.chunks.Chunk
+from classes.chunks.Chunk import Chunk
 
 import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
+
+import data.chunkIdentifiers as chunkIdentifiers
 
 import mathutils
 
@@ -17,17 +19,10 @@ import mathutils
 # Class
 #
 
-class PositionListChunkOptions(typing.TypedDict):
-	children : list[classes.chunks.Chunk.Chunk] | None
-	
-	positions: list[mathutils.Vector]
-
-
-
 class PositionListChunk(classes.chunks.Chunk.Chunk):
 	@staticmethod
-	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+	def parseData(data : bytes, isLittleEndian : bool) -> list:
+		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
 
 		numberOfPositions = binaryReader.readUInt32()
 		
@@ -36,18 +31,12 @@ class PositionListChunk(classes.chunks.Chunk.Chunk):
 		for i in range(numberOfPositions):
 			positions.append(binaryReader.readPure3DVector3())
 
-		return {
-			"positions": positions
-		}
+		return [positions]
 
-	def __init__(self, options : PositionListChunkOptions) -> None:
-		super().__init__(
-			{
-				"identifier": classes.chunks.Chunk.IDENTIFIERS["POSITION_LIST"],
-				"children": options["children"] if "children" in options else None,
-			})
+	def __init__(self, identifier: chunkIdentifiers.POSITION_LIST, children : list[Chunk] | None = None, positions: list[mathutils.Vector] = []) -> None:
+		super().__init__(identifier,children)
 	
-		self.positions = options["positions"]
+		self.positions = positions
 		
 
 	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:

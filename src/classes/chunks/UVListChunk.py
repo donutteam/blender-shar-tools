@@ -6,10 +6,12 @@ from __future__ import annotations
 
 import typing
 
-import classes.chunks.Chunk
+from classes.chunks.Chunk import Chunk
 
 import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
+
+import data.chunkIdentifiers as chunkIdentifiers
 
 import mathutils
 
@@ -17,19 +19,10 @@ import mathutils
 # Class
 #
 
-class UVListChunkOptions(typing.TypedDict):
-	children : list[classes.chunks.Chunk.Chunk] | None
-	
-	channel: int
-
-	uvs: list[mathutils.Vector]
-
-
-
 class UVListChunk(classes.chunks.Chunk.Chunk):
 	@staticmethod
-	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+	def parseData(data : bytes, isLittleEndian : bool) -> list:
+		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
 
 		numberOfUVs = binaryReader.readUInt32()
 
@@ -40,20 +33,13 @@ class UVListChunk(classes.chunks.Chunk.Chunk):
 		for i in range(numberOfUVs):
 			uvs.append(binaryReader.readPure3DVector2())
 
-		return {
-			"channel":channel,
-			"uvs": uvs
-		}
+		return [channel,uvs]
 
-	def __init__(self, options : UVListChunkOptions) -> None:
-		super().__init__(
-			{
-				"identifier": classes.chunks.Chunk.IDENTIFIERS["UV_LIST"],
-				"children": options["children"] if "children" in options else None,
-			})
+	def __init__(self, identifier: chunkIdentifiers.UV_LIST, children : list[Chunk] | None = None, channel: int = 0, uvs: list[mathutils.Vector] = []) -> None:
+		super().__init__(identifier,children)
 	
-		self.channel = options["channel"]
-		self.uvs = options["uvs"]
+		self.channel = channel
+		self.uvs = uvs
 		
 
 	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:

@@ -6,58 +6,39 @@ from __future__ import annotations
 
 import typing
 
-import classes.chunks.Chunk
+from classes.chunks.Chunk import Chunk
 
 import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
+
+import data.chunkIdentifiers as chunkIdentifiers
 
 #
 # Class
 #
 
-class MeshChunkOptions(typing.TypedDict):
-	children : list[classes.chunks.Chunk.Chunk] | None
-	
-	name: str
-
-	version: int
-	
-	data : bytes | None
-
-
-
 class MeshChunk(classes.chunks.Chunk.Chunk):
 	@staticmethod
-	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+	def parseData(data : bytes, isLittleEndian : bool) -> list:
+		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
 
 		name = binaryReader.readPure3DString()
 
 		version = binaryReader.readUInt32()
 
-		return {
-			"name":name,
-			"version":version,
-			"data": options["data"],
-		}
+		return [name, version]
 
-	def __init__(self, options : MeshChunkOptions) -> None:
-		super().__init__(
-			{
-				"identifier": classes.chunks.Chunk.IDENTIFIERS["MESH"],
-				"children": options["children"] if "children" in options else None,
-			})
+	def __init__(self, identifier: chunkIdentifiers.MESH, children : list[Chunk] | None = None, name: str = "", version: int = 0) -> None:
+		super().__init__(chunkIdentifiers.MESH,children)
 	
-		self.name: str = options["name"]
+		self.name = name
 
-		self.version: int = options["version"]
-
-		self.data : bytes = options["data"]
+		self.version = version
 	
 	def getNumberOfOldPrimitiveGroups(self) -> int:
 		numberOfOldPrimitiveGroups = 0
 		for child in self.children:
-			if child.identifier == classes.chunks.Chunk.IDENTIFIERS["OLD_PRIMITIVE_GROUP"]:
+			if child.identifier == chunkIdentifiers.OLD_PRIMITIVE_GROUP:
 				numberOfOldPrimitiveGroups += 1
 		return numberOfOldPrimitiveGroups
 

@@ -6,47 +6,33 @@ from __future__ import annotations
 
 import typing
 
-import classes.Colour
-import classes.chunks.Chunk
+from classes.Colour import Colour
+from classes.chunks.Chunk import Chunk
 
 import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
+
+import data.chunkIdentifiers as chunkIdentifiers
 
 #
 # Class
 #
 
-class ShaderColourParameterChunkOptions(typing.TypedDict):
-	children : list[classes.chunks.Chunk.Chunk] | None
-	
-	parameter: str
-
-	colour: classes.Colour.Colour
-
-
-
 class ShaderColourParameterChunk(classes.chunks.Chunk.Chunk):
 	@staticmethod
-	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+	def parseData(data : bytes, isLittleEndian : bool) -> list:
+		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
 
 		parameter = binaryReader.readPure3DFourCharacterCode()
 		colour = binaryReader.readPure3DColour()
 
-		return {
-			"parameter":parameter,
-			"colour":colour,
-		}
+		return [parameter,colour]
 
-	def __init__(self, options : ShaderColourParameterChunkOptions) -> None:
-		super().__init__(
-			{
-				"identifier": classes.chunks.Chunk.IDENTIFIERS["SHADER_COLOUR_PARAMETER"],
-				"children": options["children"] if "children" in options else None,
-			})
+	def __init__(self, identifier: chunkIdentifiers.SHADER_COLOUR_PARAMETER, children : list[Chunk] | None = None, parameter: str = "", colour: Colour = Colour(0,0,0,255)) -> None:
+		super().__init__(identifier,children)
 	
-		self.parameter = options["parameter"]
-		self.colour = options["colour"]
+		self.parameter = parameter
+		self.colour = colour
 		
 
 	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:

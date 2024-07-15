@@ -6,35 +6,16 @@ from __future__ import annotations
 
 import typing
 
-import classes.chunks.Chunk
+from classes.chunks.Chunk import Chunk
 
 import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
 
+import data.chunkIdentifiers as chunkIdentifiers
+
 #
 # Class
 #
-
-class ImageChunkOptions(typing.TypedDict):
-	children: list[classes.chunks.Chunk.Chunk] | None
-	
-	name: str
-
-	version: int
-
-	width: int
-
-	height: int
-
-	bitsPerPixel: int
-
-	palettized: int
-
-	hasAlpha: int
-
-	format: int
-
-
 
 class ImageChunk(classes.chunks.Chunk.Chunk):
 	formats = {
@@ -64,8 +45,8 @@ class ImageChunk(classes.chunks.Chunk.Chunk):
 	}
 	
 	@staticmethod
-	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+	def parseData(data : bytes, isLittleEndian : bool) -> list:
+		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
 
 		name = binaryReader.readPure3DString()
 		version = binaryReader.readUInt32()
@@ -76,32 +57,19 @@ class ImageChunk(classes.chunks.Chunk.Chunk):
 		hasAlpha = binaryReader.readUInt32()
 		format = binaryReader.readUInt32()
 
-		return {
-			"name":name,
-			"version":version,
-			"width": width,
-			"height": height,
-			"bitsPerPixel": bitsPerPixel,
-			"palettized": palettized,
-			"hasAlpha": hasAlpha,
-			"format": format,
-		}
+		return [name,version,width,height,bitsPerPixel,palettized,hasAlpha,format]
 
-	def __init__(self, options : ImageChunkOptions) -> None:
-		super().__init__(
-			{
-				"identifier": classes.chunks.Chunk.IDENTIFIERS["IMAGE"],
-				"children": options["children"] if "children" in options else None,
-			})
+	def __init__(self, identifier: int = chunkIdentifiers.IMAGE, children: list[Chunk] = [], name: str = "", version: int = 0, width: int = 0, height: int = 0, bitsPerPixel: int = 0, palettized: int = 0, hasAlpha: int = 0, format: int = 0) -> None:
+		super().__init__(chunkIdentifiers.IMAGE, children)
 	
-		self.name = options["name"]
-		self.version = options["version"]
-		self.width = options["width"]
-		self.height = options["height"]
-		self.bitsPerPixel = options["bitsPerPixel"]
-		self.palettized = options["palettized"]
-		self.hasAlpha = options["hasAlpha"]
-		self.format = options["format"]
+		self.name = name
+		self.version = version
+		self.width = width
+		self.height = height
+		self.bitsPerPixel = bitsPerPixel
+		self.palettized = palettized
+		self.hasAlpha = hasAlpha
+		self.format = format
 
 	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DString(self.name)

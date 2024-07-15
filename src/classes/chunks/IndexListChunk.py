@@ -6,26 +6,21 @@ from __future__ import annotations
 
 import typing
 
-import classes.chunks.Chunk
+from classes.chunks.Chunk import Chunk
 
 import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
+
+import data.chunkIdentifiers as chunkIdentifiers
 
 #
 # Class
 #
 
-class IndexListChunkOptions(typing.TypedDict):
-	children : list[classes.chunks.Chunk.Chunk] | None
-	
-	indices: list[int]
-
-
-
 class IndexListChunk(classes.chunks.Chunk.Chunk):
 	@staticmethod
-	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+	def parseData(data : bytes, isLittleEndian : bool) -> list:
+		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
 
 		numberOfIndices = binaryReader.readUInt32()
 		
@@ -34,18 +29,12 @@ class IndexListChunk(classes.chunks.Chunk.Chunk):
 		for i in range(numberOfIndices):
 			indices.append(binaryReader.readUInt32())
 		
-		return {
-			"indices": indices
-		}
+		return [indices]
 
-	def __init__(self, options : IndexListChunkOptions) -> None:
-		super().__init__(
-			{
-				"identifier": classes.chunks.Chunk.IDENTIFIERS["INDEX_LIST"],
-				"children": options["children"] if "children" in options else None,
-			})
+	def __init__(self, identifier: int = chunkIdentifiers.INDEX_LIST, children: list[Chunk] = [], indices: list[int] = []) -> None:
+		super().__init__(chunkIdentifiers.INDEX_LIST, children)
 	
-		self.indices = options["indices"]
+		self.indices = indices
 		
 
 	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:

@@ -6,10 +6,12 @@ from __future__ import annotations
 
 import typing
 
-import classes.chunks.Chunk
+from classes.chunks.Chunk import Chunk
 
 import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
+
+import data.chunkIdentifiers as chunkIdentifiers
 
 #
 # Class
@@ -34,8 +36,8 @@ class ShaderChunkOptions(typing.TypedDict):
 
 class ShaderChunk(classes.chunks.Chunk.Chunk):
 	@staticmethod
-	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+	def parseData(data : bytes, isLittleEndian : bool) -> list:
+		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
 
 		name = binaryReader.readPure3DString()
 
@@ -49,28 +51,17 @@ class ShaderChunk(classes.chunks.Chunk.Chunk):
 
 		vertexMask = binaryReader.readUInt32()
 
-		return {
-			"name":name,
-			"version":version,
-			"pddiShaderName":pddiShaderName,
-			"hasTranslucency":hasTranslucency,
-			"vertexNeeds":vertexNeeds,
-			"vertexMask":vertexMask,
-		}
+		return [name,version,pddiShaderName,hasTranslucency,vertexNeeds,vertexMask]
 
-	def __init__(self, options : ShaderChunkOptions) -> None:
-		super().__init__(
-			{
-				"identifier": classes.chunks.Chunk.IDENTIFIERS["SHADER"],
-				"children": options["children"] if "children" in options else None,
-			})
+	def __init__(self, identifier: chunkIdentifiers.SHADER, children : list[Chunk] | None = None, name: str = "", version: int = 0, pddiShaderName: str = "", hasTranslucency: int = 0, vertexNeeds: int = 0, vertexMask: int = 0) -> None:
+		super().__init__(identifier,children)
 	
-		self.name = options["name"]
-		self.version = options["version"]
-		self.pddiShaderName = options["pddiShaderName"]
-		self.hasTranslucency = options["hasTranslucency"]
-		self.vertexNeeds = options["vertexNeeds"]
-		self.vertexMask = options["vertexMask"]
+		self.name = name
+		self.version = version
+		self.pddiShaderName = pddiShaderName
+		self.hasTranslucency = hasTranslucency
+		self.vertexNeeds = vertexNeeds
+		self.vertexMask = vertexMask
 		
 
 	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:

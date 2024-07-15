@@ -6,42 +6,31 @@ from __future__ import annotations
 
 import typing
 
-import classes.chunks.Chunk
+from classes.chunks.Chunk import Chunk
 
 import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
+
+import data.chunkIdentifiers as chunkIdentifiers
 
 #
 # Class
 #
 
-class ImageDataChunkOptions(typing.TypedDict):
-	children: list[classes.chunks.Chunk.Chunk] | None
-	
-	imageData: bytes
-
-
-
 class ImageDataChunk(classes.chunks.Chunk.Chunk):
 	@staticmethod
-	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+	def parseData(data : bytes, isLittleEndian : bool) -> list:
+		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
 
 		imageDataLength = binaryReader.readUInt32()
 		imageData = binaryReader.readBytes(imageDataLength)
 
-		return {
-			"imageData":imageData
-		}
+		return [imageData]
 
-	def __init__(self, options : ImageDataChunkOptions) -> None:
-		super().__init__(
-			{
-				"identifier": classes.chunks.Chunk.IDENTIFIERS["IMAGE_DATA"],
-				"children": options["children"] if "children" in options else None,
-			})
+	def __init__(self, identifier: int = chunkIdentifiers.IMAGE_DATA, children: list[Chunk] = [], imageData: bytes = bytes()) -> None:
+		super().__init__(chunkIdentifiers.IMAGE_DATA,children)
 	
-		self.imageData = options["imageData"]
+		self.imageData = imageData
 
 	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt32(len(self.imageData))

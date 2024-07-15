@@ -6,32 +6,16 @@ from __future__ import annotations
 
 import typing
 
-import classes.chunks.Chunk
+from classes.chunks.Chunk import Chunk
 
 import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
 
+import data.chunkIdentifiers as chunkIdentifiers
+
 #
 # Class
 #
-
-class OldPrimitiveGroupChunkOptions(typing.TypedDict):
-	children : list[classes.chunks.Chunk.Chunk] | None
-	
-	version: int
-	
-	shaderName: str
-
-	primitiveType: int
-
-	numberOfVertices: int
-
-	numberofIndices: int
-
-	numberOfMatrices: int
-	
-
-
 
 class OldPrimitiveGroupChunk(classes.chunks.Chunk.Chunk):
 	
@@ -74,13 +58,13 @@ class OldPrimitiveGroupChunk(classes.chunks.Chunk.Chunk):
 	}
 
 	vertexTypeMap = {
-		classes.chunks.Chunk.IDENTIFIERS["PACKED_NORMAL_LIST"]: vertexTypes["NORMALS"],
-		classes.chunks.Chunk.IDENTIFIERS["NORMAL_LIST"]: vertexTypes["NORMALS"],
-		classes.chunks.Chunk.IDENTIFIERS["COLOUR_LIST"]: vertexTypes["COLOURS"],
-		classes.chunks.Chunk.IDENTIFIERS["MATRIX_LIST"]: vertexTypes["MATRICES"],
-		classes.chunks.Chunk.IDENTIFIERS["MATRIX_PALETTE"]: vertexTypes["MATRICES"],
-		classes.chunks.Chunk.IDENTIFIERS["WEIGHT_LIST"]: vertexTypes["WEIGHTS"],
-		classes.chunks.Chunk.IDENTIFIERS["POSITION_LIST"]: vertexTypes["POSITION"],
+		chunkIdentifiers.PACKED_NORMAL_LIST: vertexTypes["NORMALS"],
+		chunkIdentifiers.NORMAL_LIST: vertexTypes["NORMALS"],
+		chunkIdentifiers.COLOUR_LIST: vertexTypes["COLOURS"],
+		chunkIdentifiers.MATRIX_LIST: vertexTypes["MATRICES"],
+		chunkIdentifiers.MATRIX_PALETTE: vertexTypes["MATRICES"],
+		chunkIdentifiers.WEIGHT_LIST: vertexTypes["WEIGHTS"],
+		chunkIdentifiers.POSITION_LIST: vertexTypes["POSITION"],
 	}
 
 	uvTypeMap = [
@@ -95,8 +79,8 @@ class OldPrimitiveGroupChunk(classes.chunks.Chunk.Chunk):
 	]
 
 	@staticmethod
-	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+	def parseData(data : bytes, isLittleEndian : bool) -> list:
+		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
 
 		version = binaryReader.readUInt32()
 
@@ -114,36 +98,24 @@ class OldPrimitiveGroupChunk(classes.chunks.Chunk.Chunk):
 
 		numberOfMatrices = binaryReader.readUInt32()
 
-		return {
-			"version":version,
-			"shaderName":shaderName,
-			"primitiveType":primitiveType,
-			"numberOfVertices":numberOfVertices,
-			"numberOfIndices":numberOfIndices,
-			"numberOfMatrices":numberOfMatrices,
-			"data": options["data"],
-		}
+		return [version,shaderName,primitiveType,numberOfVertices,numberOfIndices,numberOfMatrices]
 
-	def __init__(self, options : OldPrimitiveGroupChunkOptions) -> None:
-		super().__init__(
-			{
-				"identifier": classes.chunks.Chunk.IDENTIFIERS["OLD_PRIMITIVE_GROUP"],
-				"children": options["children"] if "children" in options else None,
-			})
+	def __init__(self, identifier: chunkIdentifiers.OLD_PRIMITIVE_GROUP, children : list[Chunk] | None = None, version: int = 0, shaderName: str = "", primitiveType: str = "", numberOfVertices: int = 0, numberOfIndices: int = 0, numberOfMatrices: int = 0) -> None:
+		super().__init__(identifier,children)
 		
-		self.version = options["version"]
-		self.shaderName = options["shaderName"]
-		self.primitiveType = options["primitiveType"]
-		self.numberOfVertices = options["numberOfVertices"]
-		self.numberOfIndices = options["numberOfIndices"]
-		self.numberOfMatrices = options["numberOfMatrices"]
+		self.version = version
+		self.shaderName = shaderName
+		self.primitiveType = primitiveType
+		self.numberOfVertices = numberOfVertices
+		self.numberOfIndices = numberOfIndices
+		self.numberOfMatrices = numberOfMatrices
 	
 	def getVertexType(self) -> int:
 		vertexType = 0
 		uvListCount = 0
 	
 		for chunk in self.children:
-			if chunk.identifier == classes.chunks.Chunk.IDENTIFIERS["UV_LIST"]:
+			if chunk.identifier == chunkIdentifiers.UV_LIST:
 				uvListCount += 1
 			else:
 				if chunk.identifier in OldPrimitiveGroupChunk.vertexTypeMap:

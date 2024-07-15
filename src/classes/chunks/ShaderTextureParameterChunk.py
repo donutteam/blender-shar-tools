@@ -6,46 +6,32 @@ from __future__ import annotations
 
 import typing
 
-import classes.chunks.Chunk
+from classes.chunks.Chunk import Chunk
 
 import classes.Pure3DBinaryReader
 import classes.Pure3DBinaryWriter
+
+import data.chunkIdentifiers as chunkIdentifiers
 
 #
 # Class
 #
 
-class ShaderTextureParameterChunkOptions(typing.TypedDict):
-	children : list[classes.chunks.Chunk.Chunk] | None
-	
-	parameter: str
-
-	value: str
-
-
-
 class ShaderTextureParameterChunk(classes.chunks.Chunk.Chunk):
 	@staticmethod
-	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+	def parseData(data : bytes, isLittleEndian : bool) -> list:
+		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
 
 		parameter = binaryReader.readPure3DFourCharacterCode()
 		value = binaryReader.readPure3DString()
 
-		return {
-			"parameter":parameter,
-			"value":value,
-		}
+		return [parameter,value]
 
-	def __init__(self, options : ShaderTextureParameterChunkOptions) -> None:
-		super().__init__(
-			{
-				"identifier": classes.chunks.Chunk.IDENTIFIERS["SHADER_TEXTURE_PARAMETER"],
-				"children": options["children"] if "children" in options else None,
-			})
+	def __init__(self, identifier: chunkIdentifiers.SHADER_TEXTURE_PARAMETER, children : list[Chunk] | None = None, parameter: str = "", value: str = "") -> None:
+		super().__init__(identifier,children)
 	
-		self.parameter = options["parameter"]
-		self.value = options["value"]
+		self.parameter = parameter
+		self.value = value
 		
 
 	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:
