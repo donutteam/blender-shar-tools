@@ -4,38 +4,15 @@
 
 from __future__ import annotations
 
-import typing
-
 import bpy
 
-import classes.Vector3
+from classes.Vector3 import Vector3
 
 #
 # Utility Functions
 #
 
-class CreateFenceOptions(typing.TypedDict):
-	start : classes.Vector3.Vector3
-
-	end : classes.Vector3.Vector3
-
-	normal : classes.Vector3.Vector3
-
-	name : str | None
-
-def createFence(options : CreateFenceOptions) -> bpy.types.Object:
-	#
-	# Options
-	#
-
-	start = options.get("start")
-
-	end = options.get("end")
-
-	normal = options.get("normal")
-
-	name = options.get("name", "Fence")
-	
+def createFence(start : Vector3, end : Vector3, normal : Vector3, name : str | None) -> bpy.types.Object:	
 	#
 	# Create Curve
 	#
@@ -56,7 +33,10 @@ def createFence(options : CreateFenceOptions) -> bpy.types.Object:
 
 	fenceCurveSpline.points.add(1) # Only need to add one, splines start with 1 point
 
-	# TODO: This might need more advanced logic for normals
+	# TODO: Logic to flip the start and end if the normal is backwards?
+	#	Calculate a normal from the start and end points
+	#	Calculate a dot product with that ^ and the normal in the file?
+	#   If it's negative, flip the start and end points
 
 	# https://docs.blender.org/api/current/bpy.types.SplinePoint.html
 	fenceCurveSpline.points[0].co = (start.x, start.z, start.y, 1) # Swap Z and Y because Hit & Run uses Y for the vertical axis
@@ -68,6 +48,8 @@ def createFence(options : CreateFenceOptions) -> bpy.types.Object:
 	#
 	# Create Object
 	#
+
+	name = name if name is not None else "Fence"
 
 	# https://docs.blender.org/api/current/bpy.types.Object.html
 	fence = bpy.data.objects.new(name, fenceCurve)

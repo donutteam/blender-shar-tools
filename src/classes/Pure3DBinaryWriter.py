@@ -2,20 +2,22 @@
 # Imports
 #
 
-import math
+from __future__ import annotations
 
-import classes.BinaryWriter
-import classes.Colour
-import classes.Matrix
-import classes.Vector2
-import classes.Vector3
+from math import ceil
+
+from classes.BinaryWriter import BinaryWriter
+from classes.Colour import Colour
+from classes.Matrix import Matrix
+from classes.Vector2 import Vector2
+from classes.Vector3 import Vector3
 
 #
 # Class
 #
 
-class Pure3DBinaryWriter(classes.BinaryWriter.BinaryWriter):
-	def writePure3DColour(self, colour : classes.Colour.Colour) -> None:
+class Pure3DBinaryWriter(BinaryWriter):
+	def writePure3DColour(self, colour : Colour) -> None:
 		if self.isLittleEndian:
 			self.writeByte(colour.blue)
 
@@ -48,7 +50,7 @@ class Pure3DBinaryWriter(classes.BinaryWriter.BinaryWriter):
 
 		self.writeString(paddedValue)
 
-	def writePure3DMatrix(self, matrix : classes.Matrix.Matrix) -> None:
+	def writePure3DMatrix(self, matrix : Matrix) -> None:
 		self.writeFloat(matrix.m11)
 
 		self.writeFloat(matrix.m12)
@@ -90,18 +92,18 @@ class Pure3DBinaryWriter(classes.BinaryWriter.BinaryWriter):
 		if len(value) < 252:
 			# Note: This padding is intentionally fucked (doesn't include the length byte)
 			#	because Radical was stupid when they were making The Simpsons Hit & Run
-			valueToWrite = value.ljust(4 * math.ceil(len(value) / 4), "\0")
+			valueToWrite = value.ljust(4 * ceil(len(value) / 4), "\0")
 
 		self.writeByte(len(value))
 
 		self.writeString(valueToWrite)
 
-	def writePure3DVector2(self, vector2 : classes.Vector2.Vector2) -> None:
+	def writePure3DVector2(self, vector2 : Vector2) -> None:
 		self.writeFloat(vector2.x)
 
 		self.writeFloat(vector2.y)
 
-	def writePure3DVector3(self, vector3 : classes.Vector3.Vector3) -> None:
+	def writePure3DVector3(self, vector3 : Vector3) -> None:
 		self.writeFloat(vector3.x)
 
 		self.writeFloat(vector3.y)

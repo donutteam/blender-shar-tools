@@ -2,21 +2,25 @@
 # Imports
 #
 
-import classes.chunks.Chunk
-import classes.chunks.Fence2Chunk
-import classes.chunks.FenceChunk
-import classes.chunks.HistoryChunk
+from __future__ import annotations
 
-import classes.ChunkRegistry
+from classes.chunks.Chunk import Chunk
+from classes.chunks.Fence2Chunk import Fence2Chunk
+from classes.chunks.FenceChunk import FenceChunk
+from classes.chunks.HistoryChunk import HistoryChunk
+
+from classes.ChunkRegistry import ChunkRegistry
+
+import data.chunkIdentifiers as chunkIdentifiers
 
 #
 # Default Chunk Registry
 #
 
-defaultChunkRegistry = classes.ChunkRegistry.ChunkRegistry()
+defaultChunkRegistry = ChunkRegistry()
 
-defaultChunkRegistry.register(classes.chunks.Chunk.IDENTIFIERS["HISTORY"], classes.chunks.HistoryChunk.HistoryChunk)
+defaultChunkRegistry.register(chunkIdentifiers.HISTORY, HistoryChunk)
 
-defaultChunkRegistry.register(classes.chunks.Chunk.IDENTIFIERS["FENCE"], classes.chunks.FenceChunk.FenceChunk)
+defaultChunkRegistry.register(chunkIdentifiers.FENCE, FenceChunk)
 
-defaultChunkRegistry.register(classes.chunks.Chunk.IDENTIFIERS["FENCE_2"], classes.chunks.Fence2Chunk.Fence2Chunk)
+defaultChunkRegistry.register(chunkIdentifiers.FENCE_2, Fence2Chunk)

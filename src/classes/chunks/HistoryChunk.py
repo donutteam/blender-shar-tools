@@ -4,26 +4,21 @@
 
 from __future__ import annotations
 
-import typing
+from classes.chunks.Chunk import Chunk
 
-import classes.chunks.Chunk
+from classes.Pure3DBinaryReader import Pure3DBinaryReader
+from classes.Pure3DBinaryWriter import Pure3DBinaryWriter
 
-import classes.Pure3DBinaryReader
-import classes.Pure3DBinaryWriter
+import data.chunkIdentifiers as chunkIdentifiers
 
 #
 # Class
 #
 
-class HistoryChunkOptions(typing.TypedDict):
-	children : list[Chunk] | None
-
-	lines : list[str]
-
-class HistoryChunk(classes.chunks.Chunk.Chunk):
+class HistoryChunk(Chunk):
 	@staticmethod
-	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+	def parseData(data : bytes, isLittleEndian : bool) -> list:
+		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 		
 		numberOfLines = binaryReader.readUInt16()
 
@@ -32,20 +27,14 @@ class HistoryChunk(classes.chunks.Chunk.Chunk):
 		for i in range(numberOfLines):
 			lines.append(binaryReader.readPure3DString())
 
-		return {
-			"lines": lines,
-		}
+		return [ lines ]
 
-	def __init__(self, options : HistoryChunkOptions) -> None:
-		super().__init__(
-			{
-				"identifier": classes.chunks.Chunk.IDENTIFIERS["HISTORY"],
-				"children": options["children"] if "children" in options else None,
-			})
+	def __init__(self, identifier : int = chunkIdentifiers.HISTORY, children : list[Chunk] = [], lines : list[str] = []) -> None:
+		super().__init__(chunkIdentifiers.HISTORY)
 
-		self.lines : list[str] = options["lines"]
+		self.lines : list[str] = lines
 
-	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:
+	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt16(len(self.lines))
 
 		for line in self.lines:

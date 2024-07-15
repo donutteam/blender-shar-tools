@@ -2,18 +2,20 @@
 # Imports
 #
 
+from __future__ import annotations
+
 import os
 
 import bpy
 import bpy_extras
 
-import classes.chunks.FenceChunk
-import classes.chunks.Fence2Chunk
-import classes.chunks.HistoryChunk
+from classes.chunks.FenceChunk import FenceChunk
+from classes.chunks.Fence2Chunk import Fence2Chunk
+from classes.chunks.HistoryChunk import HistoryChunk
 
-import classes.File
+from classes.File import File
 
-import libs.fence
+import libs.fence as FenceLib
 
 #
 # Class
@@ -36,10 +38,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 		with open(self.filepath, "rb") as file:
 			fileContents = file.read()
 
-		rootChunk = classes.File.File.fromBytes(
-			{
-				"bytes": fileContents,
-			})
+		rootChunk = File.fromBytes(fileContents)
 
 		#
 		# Create File Collection
@@ -56,18 +55,12 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 		#
 
 		for chunkIndex, chunk in enumerate(rootChunk.children):
-			if isinstance(chunk, classes.chunks.FenceChunk.FenceChunk):
+			if isinstance(chunk, FenceChunk):
 				for childChunkIndex, childChunk in enumerate(chunk.children):
-					if isinstance(childChunk, classes.chunks.Fence2Chunk.Fence2Chunk):
+					if isinstance(childChunk, Fence2Chunk):
 						print("Fence", chunkIndex, childChunk.start.__dict__, childChunk.end.__dict__)
 
-						fenceChunkObject = libs.fence.createFence(
-							{
-								"start": childChunk.start,
-								"end": childChunk.end,
-								"normal": childChunk.normal,
-								"name": f"Fence { chunkIndex }",
-							})
+						fenceChunkObject = FenceLib.createFence(childChunk.start, childChunk.end, childChunk.normal, f"Fence { chunkIndex }")
 
 						fileCollection.objects.link(fenceChunkObject)
 			else:

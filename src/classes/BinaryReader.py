@@ -2,6 +2,8 @@
 # Imports
 #
 
+from __future__ import annotations
+
 import struct
 
 import data.dataSizes
@@ -11,7 +13,7 @@ import data.dataSizes
 #
 
 class BinaryReader:
-	def __init__(self, data : bytes, isLittleEndian : bool) -> None:
+	def __init__(self, data : bytes, isLittleEndian : bool = True) -> None:
 		self._data = memoryview(data)
 
 		self.isLittleEndian = isLittleEndian

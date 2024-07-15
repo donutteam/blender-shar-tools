@@ -4,33 +4,22 @@
 
 from __future__ import annotations
 
-import typing
+from classes.chunks.Chunk import Chunk
 
-import classes.chunks.Chunk
+from classes.Pure3DBinaryReader import Pure3DBinaryReader
+from classes.Pure3DBinaryWriter import Pure3DBinaryWriter
+from classes.Vector3 import Vector3
 
-import classes.Pure3DBinaryReader
-import classes.Pure3DBinaryWriter
-import classes.Vector3
+import data.chunkIdentifiers as chunkIdentifiers
 
 #
 # Class
 #
 
-class Fence2ChunkOptions(typing.TypedDict):
-	children : list[Chunk] | None
-
-	lines : list[str]
-
-	start : classes.Vector3.Vector3
-
-	end : classes.Vector3.Vector3
-
-	normal : classes.Vector3.Vector3
-
-class Fence2Chunk(classes.chunks.Chunk.Chunk):
+class Fence2Chunk(Chunk):
 	@staticmethod
-	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["data"], options["isLittleEndian"])
+	def parseData(data : bytes, isLittleEndian : bool) -> list:
+		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
 		start = binaryReader.readPure3DVector3()
 
@@ -38,26 +27,18 @@ class Fence2Chunk(classes.chunks.Chunk.Chunk):
 
 		normal = binaryReader.readPure3DVector3()
 
-		return {
-			"start": start,
-			"end": end,
-			"normal": normal,
-		}
+		return [ start, end, normal ]
 
-	def __init__(self, options : Fence2ChunkOptions) -> None:
-		super().__init__(
-			{
-				"identifier": classes.chunks.Chunk.IDENTIFIERS["FENCE_2"],
-				"children": options["children"] if "children" in options else None,
-			})
+	def __init__(self, identifier : int = chunkIdentifiers.FENCE_2, children : list[Chunk] | None = None, start : Vector3 = Vector3(0, 0, 0), end : Vector3 = Vector3(0, 0, 0), normal : Vector3 = Vector3(0, 0, 0)) -> None:
+		super().__init__(chunkIdentifiers.FENCE_2, children)
 
-		self.start : classes.Vector3.Vector3 = options["start"]
+		self.start : Vector3 = start
 
-		self.end : classes.Vector3.Vector3 = options["end"]
+		self.end : Vector3 = end
 
-		self.normal : classes.Vector3.Vector3 = options["normal"]
+		self.normal : Vector3 = normal
 
-	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:
+	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DVector3(self.start)
 
 		binaryWriter.writePure3DVector3(self.end)
