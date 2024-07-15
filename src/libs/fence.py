@@ -11,7 +11,7 @@ import mathutils
 # Utility Functions
 #
 
-def createFence(start : mathutils.Vector, end : mathutils.Vector, normal : mathutils.Vector, name : str | None) -> bpy.types.Object:
+def createFence(start : mathutils.Vector, end : mathutils.Vector, normal : mathutils.Vector, name : str | None = None) -> bpy.types.Object:
 	#
 	# Calculate Normal
 	#
@@ -26,12 +26,10 @@ def createFence(start : mathutils.Vector, end : mathutils.Vector, normal : mathu
 	# Flip (if necessary)
 	#
 
-	flipped = dot < 0
+	isFlipped = dot < 0
 
-	if flipped:
+	if isFlipped:
 		start, end = end, start
-
-	# TODO: store "flipped" as a property on the object, for exporting later
 
 	#
 	# Create Curve
@@ -70,6 +68,9 @@ def createFence(start : mathutils.Vector, end : mathutils.Vector, normal : mathu
 	fence = bpy.data.objects.new(name, fenceCurve)
 
 	fence.lock_rotation = [ True, True, False ]
+
+	fence.isFence = True
+	fence.fenceProperties.isFlipped = isFlipped
 
 	#
 	# Return

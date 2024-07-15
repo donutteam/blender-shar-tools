@@ -33,6 +33,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 	bl_idname = "operators.import_pure3d_file"
 	bl_label = "Import Pure3D File..."
 	bl_description = "Import a Pure3D file (limited support)"
+	bl_options = {"REGISTER", "UNDO"}
 
 	filename_ext = ".p3d"
 

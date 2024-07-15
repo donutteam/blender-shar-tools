@@ -32,6 +32,8 @@ import bpy
 import classes.operators.ImportPure3DFile
 import classes.operators.MoveObjectX
 
+import classes.properties.FenceProperties
+
 #
 # Initialisation
 #
@@ -42,8 +44,12 @@ def register():
 	classes.operators.ImportPure3DFile.register()
 	classes.operators.MoveObjectX.register()
 
+	classes.properties.FenceProperties.register()
+
 def unregister():
 	print("Unregistered The Simpsons Hit & Run Tools.")
 
 	classes.operators.ImportPure3DFile.unregister()
 	classes.operators.MoveObjectX.unregister()
+
+	classes.properties.FenceProperties.unregister()
