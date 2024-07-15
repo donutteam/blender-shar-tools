@@ -11,11 +11,12 @@ import bpy_extras
 
 from classes.chunks.FenceChunk import FenceChunk
 from classes.chunks.Fence2Chunk import Fence2Chunk
-from classes.chunks.HistoryChunk import HistoryChunk
+from classes.chunks.PathChunk import PathChunk
 
 from classes.File import File
 
 import libs.fence as FenceLib
+import libs.path as PathLib
 
 #
 # Class
@@ -52,6 +53,14 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 		bpy.context.scene.collection.children.link(fileCollection)
 
 		#
+		# Create Sub Collections
+		#
+
+		fenceCollection = bpy.data.collections.new("Fences")
+
+		pathCollection = bpy.data.collections.new("Paths")
+
+		#
 		# Import Chunks
 		#
 
@@ -61,9 +70,29 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 					if isinstance(childChunk, Fence2Chunk):
 						fenceChunkObject = FenceLib.createFence(childChunk.start, childChunk.end, childChunk.normal, f"Fence { chunkIndex }")
 
-						fileCollection.objects.link(fenceChunkObject)
+						fenceCollection.objects.link(fenceChunkObject)
+
+			elif isinstance(chunk, PathChunk):
+				pathChunkObject = PathLib.createPath(chunk.points, f"Path { chunkIndex }")
+
+				pathCollection.objects.link(pathChunkObject)
+
 			else:
 				print(f"Unsupported chunk type: { hex(chunk.identifier) }")
+
+		#
+		# Add Sub Collections to File Collection OR Remove Empty Sub Collections
+		#
+
+		if len(fenceCollection.objects) > 0:
+			fileCollection.children.link(fenceCollection)
+		else:
+			bpy.data.collections.remove(fenceCollection)
+
+		if len(pathCollection.objects) > 0:
+			fileCollection.children.link(pathCollection)
+		else:
+			bpy.data.collections.remove(pathCollection)
 
 		#
 		# Return
