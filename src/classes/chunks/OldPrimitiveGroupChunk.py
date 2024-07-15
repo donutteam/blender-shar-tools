@@ -4,12 +4,10 @@
 
 from __future__ import annotations
 
-import typing
-
 from classes.chunks.Chunk import Chunk
 
-import classes.Pure3DBinaryReader
-import classes.Pure3DBinaryWriter
+from classes.Pure3DBinaryReader import Pure3DBinaryReader
+from classes.Pure3DBinaryWriter import Pure3DBinaryWriter
 
 import data.chunkIdentifiers as chunkIdentifiers
 
@@ -17,7 +15,7 @@ import data.chunkIdentifiers as chunkIdentifiers
 # Class
 #
 
-class OldPrimitiveGroupChunk(classes.chunks.Chunk.Chunk):
+class OldPrimitiveGroupChunk(Chunk):
 	
 	primitiveTypes = {
 		"TRIANGLE_LIST": 0,
@@ -80,7 +78,7 @@ class OldPrimitiveGroupChunk(classes.chunks.Chunk.Chunk):
 
 	@staticmethod
 	def parseData(data : bytes, isLittleEndian : bool) -> list:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
+		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
 		version = binaryReader.readUInt32()
 
@@ -100,7 +98,7 @@ class OldPrimitiveGroupChunk(classes.chunks.Chunk.Chunk):
 
 		return [version,shaderName,primitiveType,numberOfVertices,numberOfIndices,numberOfMatrices]
 
-	def __init__(self, identifier: chunkIdentifiers.OLD_PRIMITIVE_GROUP, children : list[Chunk] | None = None, version: int = 0, shaderName: str = "", primitiveType: str = "", numberOfVertices: int = 0, numberOfIndices: int = 0, numberOfMatrices: int = 0) -> None:
+	def __init__(self, identifier: int = chunkIdentifiers.OLD_PRIMITIVE_GROUP, children : list[Chunk] | None = None, version: int = 0, shaderName: str = "", primitiveType: str = "", numberOfVertices: int = 0, numberOfIndices: int = 0, numberOfMatrices: int = 0) -> None:
 		super().__init__(identifier,children)
 		
 		self.version = version
@@ -129,7 +127,7 @@ class OldPrimitiveGroupChunk(classes.chunks.Chunk.Chunk):
 			vertexType |= OldPrimitiveGroupChunk.uvTypeMap[uvListCount - 1]
 		return vertexType
 
-	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:
+	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt32(self.version)
 
 		binaryWriter.writePure3DString(self.shaderName)

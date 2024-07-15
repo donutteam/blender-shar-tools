@@ -4,12 +4,10 @@
 
 from __future__ import annotations
 
-import typing
-
 from classes.chunks.Chunk import Chunk
 
-import classes.Pure3DBinaryReader
-import classes.Pure3DBinaryWriter
+from classes.Pure3DBinaryReader import Pure3DBinaryReader
+from classes.Pure3DBinaryWriter import Pure3DBinaryWriter
 
 import data.chunkIdentifiers as chunkIdentifiers
 
@@ -17,27 +15,10 @@ import data.chunkIdentifiers as chunkIdentifiers
 # Class
 #
 
-class ShaderChunkOptions(typing.TypedDict):
-	children : list[classes.chunks.Chunk.Chunk] | None
-	
-	name: str
-
-	version: int
-
-	pddiShaderName: str
-
-	hasTranslucency: int
-
-	vertexNeeds: int
-
-	vertexMask: int
-
-
-
-class ShaderChunk(classes.chunks.Chunk.Chunk):
+class ShaderChunk(Chunk):
 	@staticmethod
 	def parseData(data : bytes, isLittleEndian : bool) -> list:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
+		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
 		name = binaryReader.readPure3DString()
 
@@ -53,7 +34,7 @@ class ShaderChunk(classes.chunks.Chunk.Chunk):
 
 		return [name,version,pddiShaderName,hasTranslucency,vertexNeeds,vertexMask]
 
-	def __init__(self, identifier: chunkIdentifiers.SHADER, children : list[Chunk] | None = None, name: str = "", version: int = 0, pddiShaderName: str = "", hasTranslucency: int = 0, vertexNeeds: int = 0, vertexMask: int = 0) -> None:
+	def __init__(self, identifier: int = chunkIdentifiers.SHADER, children : list[Chunk] | None = None, name: str = "", version: int = 0, pddiShaderName: str = "", hasTranslucency: int = 0, vertexNeeds: int = 0, vertexMask: int = 0) -> None:
 		super().__init__(identifier,children)
 	
 		self.name = name
@@ -64,7 +45,7 @@ class ShaderChunk(classes.chunks.Chunk.Chunk):
 		self.vertexMask = vertexMask
 		
 
-	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:
+	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DString(self.name)
 		binaryWriter.writeUInt32(self.version)
 		binaryWriter.writePure3DString(self.pddiShaderName)

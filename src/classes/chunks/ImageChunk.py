@@ -4,12 +4,10 @@
 
 from __future__ import annotations
 
-import typing
-
 from classes.chunks.Chunk import Chunk
 
-import classes.Pure3DBinaryReader
-import classes.Pure3DBinaryWriter
+from classes.Pure3DBinaryReader import Pure3DBinaryReader
+from classes.Pure3DBinaryWriter import Pure3DBinaryWriter
 
 import data.chunkIdentifiers as chunkIdentifiers
 
@@ -17,7 +15,7 @@ import data.chunkIdentifiers as chunkIdentifiers
 # Class
 #
 
-class ImageChunk(classes.chunks.Chunk.Chunk):
+class ImageChunk(Chunk):
 	formats = {
 		"RAW": 0,
 		"PNG": 1,
@@ -46,7 +44,7 @@ class ImageChunk(classes.chunks.Chunk.Chunk):
 	
 	@staticmethod
 	def parseData(data : bytes, isLittleEndian : bool) -> list:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
+		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
 		name = binaryReader.readPure3DString()
 		version = binaryReader.readUInt32()
@@ -71,7 +69,7 @@ class ImageChunk(classes.chunks.Chunk.Chunk):
 		self.hasAlpha = hasAlpha
 		self.format = format
 
-	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:
+	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DString(self.name)
 
 		binaryWriter.writeUInt32(self.version)

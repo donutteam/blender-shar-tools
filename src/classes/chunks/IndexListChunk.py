@@ -4,12 +4,10 @@
 
 from __future__ import annotations
 
-import typing
-
 from classes.chunks.Chunk import Chunk
 
-import classes.Pure3DBinaryReader
-import classes.Pure3DBinaryWriter
+from classes.Pure3DBinaryReader import Pure3DBinaryReader
+from classes.Pure3DBinaryWriter import Pure3DBinaryWriter
 
 import data.chunkIdentifiers as chunkIdentifiers
 
@@ -17,10 +15,10 @@ import data.chunkIdentifiers as chunkIdentifiers
 # Class
 #
 
-class IndexListChunk(classes.chunks.Chunk.Chunk):
+class IndexListChunk(Chunk):
 	@staticmethod
 	def parseData(data : bytes, isLittleEndian : bool) -> list:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
+		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
 		numberOfIndices = binaryReader.readUInt32()
 		
@@ -37,7 +35,7 @@ class IndexListChunk(classes.chunks.Chunk.Chunk):
 		self.indices = indices
 		
 
-	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:
+	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt32(len(self.indices))
 
 		for index in self.indices:

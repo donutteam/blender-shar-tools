@@ -4,12 +4,10 @@
 
 from __future__ import annotations
 
-import typing
-
 from classes.chunks.Chunk import Chunk
 
-import classes.Pure3DBinaryReader
-import classes.Pure3DBinaryWriter
+from classes.Pure3DBinaryReader import Pure3DBinaryReader
+from classes.Pure3DBinaryWriter import Pure3DBinaryWriter
 
 import data.chunkIdentifiers as chunkIdentifiers
 
@@ -17,10 +15,10 @@ import data.chunkIdentifiers as chunkIdentifiers
 # Class
 #
 
-class TextureChunk(classes.chunks.Chunk.Chunk):
+class TextureChunk(Chunk):
 	@staticmethod
 	def parseData(data : bytes, isLittleEndian : bool) -> list:
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(data, isLittleEndian)
+		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
 		name = binaryReader.readPure3DString()
 		version = binaryReader.readUInt32()
@@ -35,7 +33,7 @@ class TextureChunk(classes.chunks.Chunk.Chunk):
 
 		return [name,version,width,height,bitsPerPixel,alphaDepth,numberOfMipMaps,textureType,usage,priority]
 
-	def __init__(self, identifier: chunkIdentifiers.TEXTURE, children : list[Chunk] | None = None, name: str = "", version: int = 0, width: int = 0, height: int = 0, bitsPerPixel: int = 0, alphaDepth: int = 0, numberOfMipMaps: int = 0, textureType: int = 0, usage: int = 0, priority: int = 0) -> None:
+	def __init__(self, identifier: int = chunkIdentifiers.TEXTURE, children : list[Chunk] | None = None, name: str = "", version: int = 0, width: int = 0, height: int = 0, bitsPerPixel: int = 0, alphaDepth: int = 0, numberOfMipMaps: int = 0, textureType: int = 0, usage: int = 0, priority: int = 0) -> None:
 		super().__init__(identifier,children)
 	
 		self.name = name
@@ -49,7 +47,7 @@ class TextureChunk(classes.chunks.Chunk.Chunk):
 		self.usage = usage
 		self.priority = priority
 
-	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:
+	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DString(self.name)
 
 		binaryWriter.writeUInt32(self.version)
