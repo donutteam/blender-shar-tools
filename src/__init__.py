@@ -15,7 +15,7 @@ bl_info = {
 }
 
 #
-# Add Add-on Directory to Path (HACK: Blender is shit ass software)
+# Add Add-on Directory to Path
 #
 
 import os
@@ -34,6 +34,7 @@ import classes.operators.MoveObjectX
 
 import classes.properties.FenceProperties
 import classes.properties.ShaderProperties
+import classes.properties.PathProperties
 
 #
 # Initialisation
@@ -47,6 +48,7 @@ def register():
 
 	classes.properties.FenceProperties.register()
 	classes.properties.ShaderProperties.register()
+	classes.properties.PathProperties.register()
 
 def unregister():
 	print("Unregistered The Simpsons Hit & Run Tools.")
@@ -56,3 +58,4 @@ def unregister():
 
 	classes.properties.FenceProperties.unregister()
 	classes.properties.ShaderProperties.unregister()
+	classes.properties.PathProperties.unregister()
