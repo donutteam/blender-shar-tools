@@ -5,14 +5,34 @@
 from __future__ import annotations
 
 import bpy
-
-from classes.Vector3 import Vector3
+import mathutils
 
 #
 # Utility Functions
 #
 
-def createFence(start : Vector3, end : Vector3, normal : Vector3, name : str | None) -> bpy.types.Object:	
+def createFence(start : mathutils.Vector, end : mathutils.Vector, normal : mathutils.Vector, name : str | None) -> bpy.types.Object:
+	#
+	# Calculate Normal
+	#
+
+	calculatedNormal = (end - start).cross(mathutils.Vector((0, 1, 0))).normalized()
+
+	calculatedNormal.y = 0
+
+	dot = normal.dot(calculatedNormal)
+
+	#
+	# Flip (if necessary)
+	#
+
+	flipped = dot < 0
+
+	if flipped:
+		start, end = end, start
+
+	# TODO: store "flipped" as a property on the object, for exporting later
+
 	#
 	# Create Curve
 	#
@@ -39,8 +59,8 @@ def createFence(start : Vector3, end : Vector3, normal : Vector3, name : str | N
 	#   If it's negative, flip the start and end points
 
 	# https://docs.blender.org/api/current/bpy.types.SplinePoint.html
-	fenceCurveSpline.points[0].co = (start.x, start.z, start.y, 1) # Swap Z and Y because Hit & Run uses Y for the vertical axis
 
+	fenceCurveSpline.points[0].co = (start.x, start.z, start.y, 1) # Swap Z and Y because Hit & Run uses Y for the vertical axis
 	fenceCurveSpline.points[1].co = (end.x, end.z, end.y, 1) # Ditto
 
 	fenceCurveSpline.use_smooth = False

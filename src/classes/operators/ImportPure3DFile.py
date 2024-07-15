@@ -58,8 +58,6 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 			if isinstance(chunk, FenceChunk):
 				for childChunkIndex, childChunk in enumerate(chunk.children):
 					if isinstance(childChunk, Fence2Chunk):
-						print("Fence", chunkIndex, childChunk.start.__dict__, childChunk.end.__dict__)
-
 						fenceChunkObject = FenceLib.createFence(childChunk.start, childChunk.end, childChunk.normal, f"Fence { chunkIndex }")
 
 						fileCollection.objects.link(fenceChunkObject)
