@@ -4,14 +4,12 @@
 
 from __future__ import annotations
 
-import typing
+from classes.chunks.RootChunk import RootChunk
 
-import classes.chunks.RootChunk
+from classes.ChunkRegistry import ChunkRegistry
+from classes.Pure3DBinaryReader import Pure3DBinaryReader
 
-import classes.ChunkRegistry
-import classes.Pure3DBinaryReader
-
-import instances.defaultChunkRegistry
+from instances.defaultChunkRegistry import defaultChunkRegistry
 
 #
 # Constants
@@ -29,49 +27,14 @@ BIG_ENDIAN_COMPRESSED = 0x5033445A # ZD3P
 # Class
 #
 
-class FileFromBytesOptions(typing.TypedDict):
-	bytes : bytes
-
-	chunkRegistry : classes.ChunkRegistry.ChunkRegistry | None
-
-class FileToBytesUsingChunksOptions(typing.TypedDict):
-	addExportInfo : bool | None
-
-	littleEndian : bool | None
-
-	chunks : list[classes.chunks.Chunk.Chunk]
-
-class FileToBytesUsingRootChunkOptions(typing.TypedDict):
-	addExportInfo : bool | None
-
-	littleEndian : bool | None
-
-	rootChunk : classes.chunks.RootChunk.RootChunk
-
-class FileReadChunkOptions(typing.TypedDict):
-	bytes : bytes
-
-	chunkRegistry : classes.ChunkRegistry.ChunkRegistry
-
-	isLittleEndian : bool
-
-	offset : int | None
-
-class FileReadChunkChildrenOptions(typing.TypedDict):
-	bytes : bytes
-
-	chunkRegistry : classes.ChunkRegistry.ChunkRegistry
-
-	isLittleEndian : bool
-
 class File:
 	@staticmethod
-	def fromBytes(options : FileFromBytesOptions):
+	def fromBytes(buffer : bytes, chunkRegistry : ChunkRegistry | None = None) -> RootChunk:
 		#
 		# Read Buffer
 		#
 
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["bytes"], True)
+		binaryReader = Pure3DBinaryReader(buffer, True)
 
 		fileIdentifier = binaryReader.readUInt32()
 
@@ -96,43 +59,25 @@ class File:
 		# Create Root Chunk
 		#
 
-		return classes.chunks.RootChunk.RootChunk(
-			{
-				"identifier": fileIdentifier,
-
-				# Note: If the consumer is calling this method, it's likely that
-				#	the file has been loaded from disk, so it's not a new file.
-				"isNewFile": False,
-
-				"children": File._readChunkChildren(
-					{
-						"bytes": options["bytes"][12:],
-						"chunkRegistry": options["chunkRegistry"] if "chunkRegistry" in options else instances.defaultChunkRegistry.defaultChunkRegistry,
-						"isLittleEndian": binaryReader.isLittleEndian,
-					})
-			})
+		return RootChunk(identifier = fileIdentifier, children = File._readChunkChildren(buffer[12:], chunkRegistry if chunkRegistry is not None else defaultChunkRegistry, binaryReader.isLittleEndian))
 
 	@staticmethod
-	def toBytes(options : FileToBytesUsingChunksOptions | FileToBytesUsingRootChunkOptions) -> bytes:
+	def toBytes(chunks : list[Chunk], littleEndian : bool = True) -> bytes:
 		pass # TODO
 
 	@staticmethod
-	def _generateExportInfo() -> None: # TODO: Replace with classes.chunks.ExportInfoChunk.ExportInfoChunk
-		pass # TODO
-
-	@staticmethod
-	def _readChunk(options : FileReadChunkOptions) -> classes.chunks.Chunk:
+	def _readChunk(buffer : bytes, chunkRegistry : ChunkRegistry, isLittleEndian : bool, offset : int | None = None) -> Chunk:
 		#
 		# Get Offset
 		#
 
-		offset = options["offset"] if "offset" in options else 0
+		offset = offset if offset is not None else 0
 
 		#
 		# Create Binary Reader
 		#
 
-		binaryReader = classes.Pure3DBinaryReader.Pure3DBinaryReader(options["bytes"], options["isLittleEndian"])
+		binaryReader = Pure3DBinaryReader(buffer, isLittleEndian)
 
 		binaryReader.seek(offset)
 
@@ -150,7 +95,7 @@ class File:
 		# Get Chunk Class
 		#
 
-		chunkClass = options["chunkRegistry"].getClass(identifier)
+		chunkClass = chunkRegistry.getClass(identifier)
 
 		#
 		# Get Data
@@ -158,70 +103,47 @@ class File:
 
 		dataOffset = offset + 12
 
-		data : bytes | None = None
+		rawData : bytes | None = None
 
 		if dataSize > 12:
 			extraDataSize = dataSize - 12
 
-			data = options["bytes"][dataOffset : dataOffset + extraDataSize]
+			rawData = buffer[dataOffset : dataOffset + extraDataSize]
 
 			dataOffset += extraDataSize
 
-		parsedData = {}
+		parsedData = []
 
-		if (data is not None):
-			parsedData = chunkClass.parseData(
-				{
-					"isLittleEndian": options["isLittleEndian"],
-					"data": data,
-				})
+		if (rawData is not None):
+			parsedData = chunkClass.parseData(rawData, isLittleEndian)
 
 		#
 		# Get Children
 		#
 
-		children : list[classes.chunks.Chunk.Chunk] = []
+		children : list[Chunk] = []
 
 		if entireSize > dataSize:
 			childrenDataSize = entireSize - dataSize
 
-			childrenBytes = options["bytes"][dataOffset : dataOffset + childrenDataSize]
+			childrenBuffer = buffer[dataOffset : dataOffset + childrenDataSize]
 
-			children = File._readChunkChildren(
-				{
-					"bytes": childrenBytes,
-					"chunkRegistry": options["chunkRegistry"],
-					"isLittleEndian": options["isLittleEndian"]
-				})
+			children = File._readChunkChildren(childrenBuffer, chunkRegistry, isLittleEndian)
 
 		#
 		# Return
 		#
 
-		return chunkClass(
-			{
-				"identifier": identifier,
-				"data": parsedData,
-				"children": children,
-
-				**parsedData,
-			})
-
+		return chunkClass(identifier, children, *parsedData)
 
 	@staticmethod
-	def _readChunkChildren(options : FileReadChunkChildrenOptions) -> list[classes.chunks.Chunk]:
-		children : list[classes.chunks.Chunk.Chunk] = []
+	def _readChunkChildren(buffer : bytes, chunkRegistry : ChunkRegistry, isLittleEndian : bool) -> list[Chunk]:
+		children : list[Chunk] = []
 
 		offset : int = 0
 
-		while offset < len(options["bytes"]):
-			chunk = File._readChunk(
-				{
-					"bytes": options["bytes"],
-					"chunkRegistry": options["chunkRegistry"],
-					"isLittleEndian": options["isLittleEndian"],
-					"offset": offset,
-				})
+		while offset < len(buffer):
+			chunk = File._readChunk(buffer, chunkRegistry, isLittleEndian, offset)
 
 			children.append(chunk)
 

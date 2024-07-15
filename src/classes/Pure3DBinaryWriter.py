@@ -2,20 +2,20 @@
 # Imports
 #
 
-import math
+from __future__ import annotations
 
-import classes.BinaryWriter
-import classes.Colour
-import classes.Matrix
-import classes.Vector2
-import classes.Vector3
+import math
+import mathutils
+
+from classes.BinaryWriter import BinaryWriter
+from classes.Colour import Colour
 
 #
 # Class
 #
 
-class Pure3DBinaryWriter(classes.BinaryWriter.BinaryWriter):
-	def writePure3DColour(self, colour : classes.Colour.Colour) -> None:
+class Pure3DBinaryWriter(BinaryWriter):
+	def writePure3DColour(self, colour : Colour) -> None:
 		if self.isLittleEndian:
 			self.writeByte(colour.blue)
 
@@ -48,38 +48,46 @@ class Pure3DBinaryWriter(classes.BinaryWriter.BinaryWriter):
 
 		self.writeString(paddedValue)
 
-	def writePure3DMatrix(self, matrix : classes.Matrix.Matrix) -> None:
-		self.writeFloat(matrix.m11)
+	def writePure3DMatrix(self, matrix : mathutils.Matrix) -> None:
+		self.writeFloat(matrix[0][0])
 
-		self.writeFloat(matrix.m12)
+		self.writeFloat(matrix[0][1])
 
-		self.writeFloat(matrix.m13)
+		self.writeFloat(matrix[0][2])
 
-		self.writeFloat(matrix.m14)
+		self.writeFloat(matrix[0][3])
 
-		self.writeFloat(matrix.m21)
+		self.writeFloat(matrix[1][0])
 
-		self.writeFloat(matrix.m22)
+		self.writeFloat(matrix[1][1])
 
-		self.writeFloat(matrix.m23)
+		self.writeFloat(matrix[1][2])
 
-		self.writeFloat(matrix.m24)
+		self.writeFloat(matrix[1][3])
 
-		self.writeFloat(matrix.m31)
+		self.writeFloat(matrix[2][0])
 
-		self.writeFloat(matrix.m32)
+		self.writeFloat(matrix[2][1])
 
-		self.writeFloat(matrix.m33)
+		self.writeFloat(matrix[2][2])
 
-		self.writeFloat(matrix.m34)
+		self.writeFloat(matrix[2][3])
 
-		self.writeFloat(matrix.m41)
+		self.writeFloat(matrix[3][0])
 
-		self.writeFloat(matrix.m42)
+		self.writeFloat(matrix[3][1])
 
-		self.writeFloat(matrix.m43)
+		self.writeFloat(matrix[3][2])
 
-		self.writeFloat(matrix.m44)
+		self.writeFloat(matrix[3][3])
+
+		self.writeFloat(matrix[0][0])
+
+		self.writeFloat(matrix[0][1])
+
+		self.writeFloat(matrix[0][2])
+
+		self.writeFloat(matrix[0][3])
 
 	def writePure3DString(self, value : str) -> None:
 		if len(value) > 255:
@@ -96,12 +104,12 @@ class Pure3DBinaryWriter(classes.BinaryWriter.BinaryWriter):
 
 		self.writeString(valueToWrite)
 
-	def writePure3DVector2(self, vector2 : classes.Vector2.Vector2) -> None:
+	def writePure3DVector2(self, vector2 : mathutils.Vector) -> None:
 		self.writeFloat(vector2.x)
 
 		self.writeFloat(vector2.y)
 
-	def writePure3DVector3(self, vector3 : classes.Vector3.Vector3) -> None:
+	def writePure3DVector3(self, vector3 : mathutils.Vector) -> None:
 		self.writeFloat(vector3.x)
 
 		self.writeFloat(vector3.y)

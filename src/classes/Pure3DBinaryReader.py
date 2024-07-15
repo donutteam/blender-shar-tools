@@ -2,18 +2,18 @@
 # Imports
 #
 
-import classes.BinaryReader
-import classes.Colour
-import classes.Matrix
-import classes.Vector2
-import classes.Vector3
+from __future__ import annotations
+
+import mathutils
+
+from classes.BinaryReader import BinaryReader
 
 #
 # Class
 #
 
-class Pure3DBinaryReader(classes.BinaryReader.BinaryReader):
-	def readPure3DColour(self) -> classes.Colour.Colour:
+class Pure3DBinaryReader(BinaryReader):
+	def readPure3DColour(self) -> Colour:
 		valueBytes = self.readBytes(4)
 
 		if self.isLittleEndian:
@@ -27,13 +27,7 @@ class Pure3DBinaryReader(classes.BinaryReader.BinaryReader):
 
 		alpha = valueBytes[3]
 
-		return classes.Colour.Colour(
-			{
-				"red": red,
-				"green": green,
-				"blue": blue,
-				"alpha": alpha,
-			})
+		return Colour(red, green, blue, alpha)
 
 	def readPure3DFourCharacterCode(self) -> str:
 		rawString = self.readString(4)
@@ -47,31 +41,19 @@ class Pure3DBinaryReader(classes.BinaryReader.BinaryReader):
 
 		return self.trimNull(rawString)
 
-	def readPure3DMatrix(self) -> str:
-		matrix : list[int] = []
+	def readPure3DMatrix(self) -> mathutils.Matrix:
+		matrix : list[float] = []
 
 		for i in range(16):
 			matrix.append(self.readFloat())
 
-		return classes.Matrix.Matrix(
-			{
-				"m11": matrix[0],
-				"m12": matrix[1],
-				"m13": matrix[2],
-				"m14": matrix[3],
-				"m21": matrix[4],
-				"m22": matrix[5],
-				"m23": matrix[6],
-				"m24": matrix[7],
-				"m31": matrix[8],
-				"m32": matrix[9],
-				"m33": matrix[10],
-				"m34": matrix[11],
-				"m41": matrix[12],
-				"m42": matrix[13],
-				"m43": matrix[14],
-				"m44": matrix[15],
-			})
+		return mathutils.Matrix(
+			[
+				[ matrix[0], matrix[1], matrix[2], matrix[3] ],
+				[ matrix[4], matrix[5], matrix[6], matrix[7] ],
+				[ matrix[8], matrix[9], matrix[10], matrix[11] ],
+				[ matrix[12], matrix[13], matrix[14], matrix[15] ],
+			])
 
 	def readPure3DString(self) -> str:
 		stringLength = self.readByte()
@@ -80,31 +62,22 @@ class Pure3DBinaryReader(classes.BinaryReader.BinaryReader):
 
 		return self.trimNull(string)
 
-	def readPure3DVector2(self) -> classes.Vector2.Vector2:
+	def readPure3DVector2(self) -> mathutils.Vector:
 		x = self.readFloat()
 
 		y = self.readFloat()
 
-		return classes.Vector2.Vector2(
-			{
-				"x": x,
-				"y": y,
-			})
+		return mathutils.Vector((x, y))
 
-	def readPure3DVector3(self) -> classes.Vector3.Vector3:
+	def readPure3DVector3(self) -> mathutils.Vector:
 		x = self.readFloat()
 
 		y = self.readFloat()
 
 		z = self.readFloat()
 
-		return classes.Vector3.Vector3(
-			{
-				"x": x,
-				"y": y,
-				"z": z,
-			})
-			
+		return mathutils.Vector((x, y, z))
+		
 	def trimNull(self, string) -> str:
 		nullIndex = string.find("\0")
 

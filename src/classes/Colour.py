@@ -4,27 +4,16 @@
 
 from __future__ import annotations
 
-import typing
-
 #
 # Class
 #
 
-class ColourOptions(typing.TypedDict):
-	blue : int
-
-	green : int
-
-	red : int
-
-	alpha : int
-
 class Colour:
-	def __init__(self, options : ColourOptions) -> None:
-		self.red : int = options["red"]
+	def __init__(self, red : int, green : int, blue : int, alpha : int) -> None:
+		self.red : int = red
 
-		self.green : int = options["green"]
+		self.green : int = green
 
-		self.blue : int = options["blue"]
+		self.blue : int = blue
 
-		self.alpha : int = options["alpha"]
+		self.alpha : int = alpha

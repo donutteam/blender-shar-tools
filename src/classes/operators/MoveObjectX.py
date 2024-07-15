@@ -2,6 +2,8 @@
 # Imports
 #
 
+from __future__ import annotations
+
 import bpy
 
 #
@@ -24,10 +26,15 @@ class MoveObjectX(bpy.types.Operator):
 
 		return {"FINISHED"}
 
+def menu_item():
+	self.layout.operator(MoveObjectX.bl_idname)
+
 def register():
 	bpy.utils.register_class(MoveObjectX)
 
-	bpy.types.VIEW3D_MT_object.append(lambda self, context: self.layout.operator(MoveObjectX.bl_idname))
+	bpy.types.VIEW3D_MT_object.append(menu_item)
 
 def unregister():
 	bpy.utils.unregister_class(MoveObjectX)
+
+	bpy.types.VIEW3D_MT_object.remove(menu_item)

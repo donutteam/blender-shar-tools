@@ -4,38 +4,35 @@
 
 from __future__ import annotations
 
-import typing
-
 import bpy
-
-import classes.Vector3
+import mathutils
 
 #
 # Utility Functions
 #
 
-class CreateFenceOptions(typing.TypedDict):
-	start : classes.Vector3.Vector3
-
-	end : classes.Vector3.Vector3
-
-	normal : classes.Vector3.Vector3
-
-	name : str | None
-
-def createFence(options : CreateFenceOptions) -> bpy.types.Object:
+def createFence(start : mathutils.Vector, end : mathutils.Vector, normal : mathutils.Vector, name : str | None) -> bpy.types.Object:
 	#
-	# Options
+	# Calculate Normal
 	#
 
-	start = options.get("start")
+	calculatedNormal = (end - start).cross(mathutils.Vector((0, 1, 0))).normalized()
 
-	end = options.get("end")
+	calculatedNormal.y = 0
 
-	normal = options.get("normal")
+	dot = normal.dot(calculatedNormal)
 
-	name = options.get("name", "Fence")
-	
+	#
+	# Flip (if necessary)
+	#
+
+	flipped = dot < 0
+
+	if flipped:
+		start, end = end, start
+
+	# TODO: store "flipped" as a property on the object, for exporting later
+
 	#
 	# Create Curve
 	#
@@ -56,11 +53,9 @@ def createFence(options : CreateFenceOptions) -> bpy.types.Object:
 
 	fenceCurveSpline.points.add(1) # Only need to add one, splines start with 1 point
 
-	# TODO: This might need more advanced logic for normals
-
 	# https://docs.blender.org/api/current/bpy.types.SplinePoint.html
-	fenceCurveSpline.points[0].co = (start.x, start.z, start.y, 1) # Swap Z and Y because Hit & Run uses Y for the vertical axis
 
+	fenceCurveSpline.points[0].co = (start.x, start.z, start.y, 1) # Swap Z and Y because Hit & Run uses Y for the vertical axis
 	fenceCurveSpline.points[1].co = (end.x, end.z, end.y, 1) # Ditto
 
 	fenceCurveSpline.use_smooth = False
@@ -68,6 +63,8 @@ def createFence(options : CreateFenceOptions) -> bpy.types.Object:
 	#
 	# Create Object
 	#
+
+	name = name if name is not None else "Fence"
 
 	# https://docs.blender.org/api/current/bpy.types.Object.html
 	fence = bpy.data.objects.new(name, fenceCurve)

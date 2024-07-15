@@ -4,36 +4,23 @@
 
 from __future__ import annotations
 
-import typing
+from classes.chunks.Chunk import Chunk
 
-import classes.chunks.Chunk
-
-import classes.Pure3DBinaryReader
-import classes.Pure3DBinaryWriter
+from classes.Pure3DBinaryWriter import Pure3DBinaryWriter
 
 #
 # Class
 #
 
-class UnknownChunkOptions(typing.TypedDict):
-	identifier : int
-
-	children : list[Chunk]
-
-	data : bytes | None
-
-class UnknownChunk(classes.chunks.Chunk.Chunk):
+class UnknownChunk(Chunk):
 	@staticmethod
-	def parseData(options : classes.chunks.Chunk.ChunkParseDataOptions) -> dict:	
-		return {
-			"data": options["data"],
-		}
+	def parseData(data : bytes, isLittleEndian : bool) -> list:
+		return [ data ]
 
-	def __init__(self, options : UnknownChunkOptions) -> None:
-		super().__init__(options)
+	def __init__(self, identifier : int, children : list[Chunk] = [], data : bytes = bytes()) -> None:
+		super().__init__(identifier, children)
 
-		self.data : bytes = options["data"]
+		self.data : bytes = data
 
-	def writeData(self, binaryWriter : classes.Pure3DBinaryWriter.Pure3DBinaryWriter) -> None:
-		if self.data is not None:
-			binaryWriter.writeBytes(self.data)
+	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
+		binaryWriter.writeBytes(self.data)

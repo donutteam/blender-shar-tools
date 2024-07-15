@@ -2,6 +2,8 @@
 # Imports
 #
 
+from __future__ import annotations
+
 import os
 import tempfile
 
@@ -9,23 +11,24 @@ import bpy
 import bpy_extras
 
 import classes.chunks.Chunk
-import classes.chunks.FenceChunk
-import classes.chunks.Fence2Chunk
-import classes.chunks.HistoryChunk
-import classes.chunks.ImageChunk
-import classes.chunks.ImageDataChunk
-import classes.chunks.IndexListChunk
-import classes.chunks.MeshChunk
+from classes.chunks.FenceChunk import FenceChunk
+from classes.chunks.Fence2Chunk import Fence2Chunk
+from classes.chunks.HistoryChunk import HistoryChunk
+from classes.chunks.ImageChunk import ImageChunk
+from classes.chunks.ImageDataChunk import ImageDataChunk
+from classes.chunks.IndexListChunk import IndexListChunk
+from classes.chunks.TextureChunk import TextureChunk
+from classes.chunks.MeshChunk import MeshChunk
+from classes.chunks.OldPrimitiveGroupChunk import OldPrimitiveGroupChunk
+from classes.chunks.PositionListChunk import PositionListChunk
+from classes.chunks.ShaderChunk import ShaderChunk
+from classes.chunks.ShaderTextureParameterChunk import ShaderTextureParameterChunk
+from classes.chunks.TextureChunk import TextureChunk
 
-import classes.File
+from classes.File import File
 
-import classes.chunks.OldPrimitiveGroupChunk
-import classes.chunks.PositionListChunk
-import classes.chunks.ShaderChunk
-import classes.chunks.ShaderTextureParameterChunk
-import classes.chunks.TextureChunk
-import libs.fence
-import libs.mesh
+import libs.fence as FenceLib
+import libs.mesh as MeshLib
 
 #
 # Class
@@ -69,10 +72,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 		with open(filepath, "rb") as file:
 			fileContents = file.read()
 
-		rootChunk = classes.File.File.fromBytes(
-			{
-				"bytes": fileContents,
-			})
+		rootChunk = File.fromBytes(fileContents)
 
 		#
 		# Create File Collection
@@ -90,7 +90,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 
 		# Import these first so that shaders, etc. can find the images
 		for chunkIndex, chunk in enumerate(rootChunk.children):
-			if isinstance(chunk, classes.chunks.TextureChunk.TextureChunk):
+			if isinstance(chunk, TextureChunk):
 				is_already_used = False
 				for i in bpy.data.images:
 					if i.name == chunk.name:
@@ -98,9 +98,9 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 				if is_already_used:
 					continue
 				for childChunkIndex, childChunk in enumerate(chunk.children):
-					if isinstance(childChunk, classes.chunks.ImageChunk.ImageChunk):
+					if isinstance(childChunk, ImageChunk):
 						for childChildChunkIndex, childChildChunk in enumerate(childChunk.children):
-							if isinstance(childChildChunk, classes.chunks.ImageDataChunk.ImageDataChunk):
+							if isinstance(childChildChunk, ImageDataChunk):
 								filename = ""
 								with tempfile.NamedTemporaryFile(prefix="image",mode="wb+",delete=False) as f:
 									f.write(childChildChunk.imageData)
@@ -114,25 +114,17 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 								os.remove(filename)
 
 		for chunkIndex, chunk in enumerate(rootChunk.children):
-			if isinstance(chunk, classes.chunks.FenceChunk.FenceChunk):
+			if isinstance(chunk, FenceChunk):
 				for childChunkIndex, childChunk in enumerate(chunk.children):
-					if isinstance(childChunk, classes.chunks.Fence2Chunk.Fence2Chunk):
-						print("Fence", chunkIndex, childChunk.start.__dict__, childChunk.end.__dict__)
-
-						fenceChunkObject = libs.fence.createFence(
-							{
-								"start": childChunk.start,
-								"end": childChunk.end,
-								"normal": childChunk.normal,
-								"name": f"Fence { chunkIndex }",
-							})
+					if isinstance(childChunk, Fence2Chunk):
+						fenceChunkObject = FenceLib.createFence(childChunk.start, childChunk.end, childChunk.normal, f"Fence { chunkIndex }")
 
 						fileCollection.objects.link(fenceChunkObject)
 			
-			elif isinstance(chunk, classes.chunks.TextureChunk.TextureChunk):
+			elif isinstance(chunk, TextureChunk):
 				pass # Imported above
 				
-			elif isinstance(chunk, classes.chunks.ShaderChunk.ShaderChunk):
+			elif isinstance(chunk, ShaderChunk):
 				if chunk.name in bpy.data.materials:
 					continue
 				material = bpy.data.materials.new(chunk.name)
@@ -140,7 +132,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 				bsdf = material.node_tree.nodes["Principled BSDF"]
 
 				for childChunkIndex, childChunk in enumerate(chunk.children):
-					if isinstance(childChunk, classes.chunks.ShaderTextureParameterChunk.ShaderTextureParameterChunk):
+					if isinstance(childChunk, ShaderTextureParameterChunk):
 						if childChunk.parameter == "TEX":
 							if childChunk.value not in bpy.data.images:
 								continue
@@ -153,8 +145,8 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 							material.node_tree.links.new(bsdf.inputs["Base Color"],texture_image.outputs["Color"])
 
 
-			elif isinstance(chunk, classes.chunks.MeshChunk.MeshChunk):
-				obj = libs.mesh.createMesh(chunk)
+			elif isinstance(chunk, MeshChunk):
+				obj = MeshLib.createMesh(chunk)
 				fileCollection.objects.link(obj)
 			
 			else:
