@@ -26,7 +26,7 @@ class MoveObjectX(bpy.types.Operator):
 
 		return {"FINISHED"}
 
-def menu_item():
+def menu_item(self, context):
 	self.layout.operator(MoveObjectX.bl_idname)
 
 def register():
