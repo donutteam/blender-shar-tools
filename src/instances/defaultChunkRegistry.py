@@ -8,6 +8,7 @@ from classes.chunks.Chunk import Chunk
 from classes.chunks.Fence2Chunk import Fence2Chunk
 from classes.chunks.FenceChunk import FenceChunk
 from classes.chunks.HistoryChunk import HistoryChunk
+from classes.chunks.PathChunk import PathChunk
 
 from classes.ChunkRegistry import ChunkRegistry
 
@@ -24,3 +25,5 @@ defaultChunkRegistry.register(chunkIdentifiers.HISTORY, HistoryChunk)
 defaultChunkRegistry.register(chunkIdentifiers.FENCE, FenceChunk)
 
 defaultChunkRegistry.register(chunkIdentifiers.FENCE_2, Fence2Chunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.PATH, PathChunk)
