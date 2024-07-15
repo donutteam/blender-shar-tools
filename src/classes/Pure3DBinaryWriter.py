@@ -4,13 +4,11 @@
 
 from __future__ import annotations
 
-from math import ceil
+import math
+import mathutils
 
 from classes.BinaryWriter import BinaryWriter
 from classes.Colour import Colour
-from classes.Matrix import Matrix
-from classes.Vector2 import Vector2
-from classes.Vector3 import Vector3
 
 #
 # Class
@@ -50,38 +48,46 @@ class Pure3DBinaryWriter(BinaryWriter):
 
 		self.writeString(paddedValue)
 
-	def writePure3DMatrix(self, matrix : Matrix) -> None:
-		self.writeFloat(matrix.m11)
+	def writePure3DMatrix(self, matrix : mathutils.Matrix) -> None:
+		self.writeFloat(matrix[0][0])
 
-		self.writeFloat(matrix.m12)
+		self.writeFloat(matrix[0][1])
 
-		self.writeFloat(matrix.m13)
+		self.writeFloat(matrix[0][2])
 
-		self.writeFloat(matrix.m14)
+		self.writeFloat(matrix[0][3])
 
-		self.writeFloat(matrix.m21)
+		self.writeFloat(matrix[1][0])
 
-		self.writeFloat(matrix.m22)
+		self.writeFloat(matrix[1][1])
 
-		self.writeFloat(matrix.m23)
+		self.writeFloat(matrix[1][2])
 
-		self.writeFloat(matrix.m24)
+		self.writeFloat(matrix[1][3])
 
-		self.writeFloat(matrix.m31)
+		self.writeFloat(matrix[2][0])
 
-		self.writeFloat(matrix.m32)
+		self.writeFloat(matrix[2][1])
 
-		self.writeFloat(matrix.m33)
+		self.writeFloat(matrix[2][2])
 
-		self.writeFloat(matrix.m34)
+		self.writeFloat(matrix[2][3])
 
-		self.writeFloat(matrix.m41)
+		self.writeFloat(matrix[3][0])
 
-		self.writeFloat(matrix.m42)
+		self.writeFloat(matrix[3][1])
 
-		self.writeFloat(matrix.m43)
+		self.writeFloat(matrix[3][2])
 
-		self.writeFloat(matrix.m44)
+		self.writeFloat(matrix[3][3])
+
+		self.writeFloat(matrix[0][0])
+
+		self.writeFloat(matrix[0][1])
+
+		self.writeFloat(matrix[0][2])
+
+		self.writeFloat(matrix[0][3])
 
 	def writePure3DString(self, value : str) -> None:
 		if len(value) > 255:
@@ -92,18 +98,18 @@ class Pure3DBinaryWriter(BinaryWriter):
 		if len(value) < 252:
 			# Note: This padding is intentionally fucked (doesn't include the length byte)
 			#	because Radical was stupid when they were making The Simpsons Hit & Run
-			valueToWrite = value.ljust(4 * ceil(len(value) / 4), "\0")
+			valueToWrite = value.ljust(4 * math.ceil(len(value) / 4), "\0")
 
 		self.writeByte(len(value))
 
 		self.writeString(valueToWrite)
 
-	def writePure3DVector2(self, vector2 : Vector2) -> None:
+	def writePure3DVector2(self, vector2 : mathutils.Vector) -> None:
 		self.writeFloat(vector2.x)
 
 		self.writeFloat(vector2.y)
 
-	def writePure3DVector3(self, vector3 : Vector3) -> None:
+	def writePure3DVector3(self, vector3 : mathutils.Vector) -> None:
 		self.writeFloat(vector3.x)
 
 		self.writeFloat(vector3.y)

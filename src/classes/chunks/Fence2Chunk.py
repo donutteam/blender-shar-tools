@@ -4,11 +4,12 @@
 
 from __future__ import annotations
 
+import mathutils
+
 from classes.chunks.Chunk import Chunk
 
 from classes.Pure3DBinaryReader import Pure3DBinaryReader
 from classes.Pure3DBinaryWriter import Pure3DBinaryWriter
-from classes.Vector3 import Vector3
 
 import data.chunkIdentifiers as chunkIdentifiers
 
@@ -29,14 +30,14 @@ class Fence2Chunk(Chunk):
 
 		return [ start, end, normal ]
 
-	def __init__(self, identifier : int = chunkIdentifiers.FENCE_2, children : list[Chunk] | None = None, start : Vector3 = Vector3(0, 0, 0), end : Vector3 = Vector3(0, 0, 0), normal : Vector3 = Vector3(0, 0, 0)) -> None:
+	def __init__(self, identifier : int = chunkIdentifiers.FENCE_2, children : list[Chunk] | None = None, start : mathutils.Vector = mathutils.Vector((0, 0, 0)), end : mathutils.Vector = mathutils.Vector((0, 0, 0)), normal : mathutils.Vector = mathutils.Vector((0, 0, 0))) -> None:
 		super().__init__(chunkIdentifiers.FENCE_2, children)
 
-		self.start : Vector3 = start
+		self.start : mathutils.Vector = start
 
-		self.end : Vector3 = end
+		self.end : mathutils.Vector = end
 
-		self.normal : Vector3 = normal
+		self.normal : mathutils.Vector = normal
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DVector3(self.start)

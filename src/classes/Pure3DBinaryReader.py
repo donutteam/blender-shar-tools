@@ -4,11 +4,9 @@
 
 from __future__ import annotations
 
+import mathutils
+
 from classes.BinaryReader import BinaryReader
-from classes.Colour import Colour
-from classes.Matrix import Matrix
-from classes.Vector2 import Vector2
-from classes.Vector3 import Vector3
 
 #
 # Class
@@ -43,13 +41,19 @@ class Pure3DBinaryReader(BinaryReader):
 
 		return self.trimNull(rawString)
 
-	def readPure3DMatrix(self) -> str:
+	def readPure3DMatrix(self) -> mathutils.Matrix:
 		matrix : list[float] = []
 
 		for i in range(16):
 			matrix.append(self.readFloat())
 
-		return Matrix(*matrix)
+		return mathtils.Matrix(
+			[
+				[ matrix[0], matrix[1], matrix[2], matrix[3] ],
+				[ matrix[4], matrix[5], matrix[6], matrix[7] ],
+				[ matrix[8], matrix[9], matrix[10], matrix[11] ],
+				[ matrix[12], matrix[13], matrix[14], matrix[15] ],
+			])
 
 	def readPure3DString(self) -> str:
 		stringLength = self.readByte()
@@ -58,22 +62,22 @@ class Pure3DBinaryReader(BinaryReader):
 
 		return self.trimNull(string)
 
-	def readPure3DVector2(self) -> Vector2:
+	def readPure3DVector2(self) -> mathutils.Vector:
 		x = self.readFloat()
 
 		y = self.readFloat()
 
-		return Vector2(x, y)
+		return mathutils.Vector((x, y))
 
-	def readPure3DVector3(self) -> Vector3:
+	def readPure3DVector3(self) -> mathutils.Vector:
 		x = self.readFloat()
 
 		y = self.readFloat()
 
 		z = self.readFloat()
 
-		return Vector3(x, y, z)
-			
+		return mathutils.Vector((x, y, z))
+		
 	def trimNull(self, string) -> str:
 		nullIndex = string.find("\0")
 
