@@ -15,7 +15,7 @@ bl_info = {
 }
 
 #
-# Add Add-on Directory to Path (HACK: Blender is shit ass software)
+# Add Add-on Directory to Path
 #
 
 import os
