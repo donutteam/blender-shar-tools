@@ -7,6 +7,7 @@ from __future__ import annotations
 import mathutils
 
 from classes.BinaryReader import BinaryReader
+from classes.Colour import Colour
 
 #
 # Class

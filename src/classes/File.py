@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from classes.chunks.RootChunk import RootChunk
+from classes.chunks.Chunk import Chunk
 
 from classes.ChunkRegistry import ChunkRegistry
 from classes.Pure3DBinaryReader import Pure3DBinaryReader
