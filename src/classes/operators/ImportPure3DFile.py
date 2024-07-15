@@ -5,22 +5,16 @@
 from __future__ import annotations
 
 import os
-import tempfile
 
 import bpy
 import bpy_extras
 
-import classes.chunks.Chunk
 from classes.chunks.FenceChunk import FenceChunk
 from classes.chunks.Fence2Chunk import Fence2Chunk
 from classes.chunks.HistoryChunk import HistoryChunk
 from classes.chunks.ImageChunk import ImageChunk
-from classes.chunks.ImageDataChunk import ImageDataChunk
-from classes.chunks.IndexListChunk import IndexListChunk
 from classes.chunks.TextureChunk import TextureChunk
 from classes.chunks.MeshChunk import MeshChunk
-from classes.chunks.OldPrimitiveGroupChunk import OldPrimitiveGroupChunk
-from classes.chunks.PositionListChunk import PositionListChunk
 from classes.chunks.ShaderChunk import ShaderChunk
 from classes.chunks.ShaderTextureParameterChunk import ShaderTextureParameterChunk
 from classes.chunks.TextureChunk import TextureChunk
@@ -29,6 +23,7 @@ from classes.File import File
 
 import libs.fence as FenceLib
 import libs.mesh as MeshLib
+import libs.image as ImageLib
 
 #
 # Class
@@ -99,19 +94,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 					continue
 				for childChunkIndex, childChunk in enumerate(chunk.children):
 					if isinstance(childChunk, ImageChunk):
-						for childChildChunkIndex, childChildChunk in enumerate(childChunk.children):
-							if isinstance(childChildChunk, ImageDataChunk):
-								filename = ""
-								with tempfile.NamedTemporaryFile(prefix="image",mode="wb+",delete=False) as f:
-									f.write(childChildChunk.imageData)
-									filename = f.name
-								
-								img_src = bpy.data.images.load(filename)
-								img = img_src.copy() # Don't make file appear as it's from a file in a temp directory
-								img.name = chunk.name
-								img.scale(chunk.width,chunk.height) # Make image stay in memory
-								bpy.data.images.remove(img_src)
-								os.remove(filename)
+						ImageLib.createImage(childChunk)
 
 		for chunkIndex, chunk in enumerate(rootChunk.children):
 			if isinstance(chunk, FenceChunk):

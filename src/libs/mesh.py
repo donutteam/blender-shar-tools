@@ -11,8 +11,6 @@ import classes.chunks.OldPrimitiveGroupChunk
 import classes.chunks.PositionListChunk
 import classes.chunks.UVListChunk
 
-import random
-
 #
 # Utility Functions
 #
