@@ -35,8 +35,8 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 	filter_glob: bpy.props.StringProperty(default = "*.p3d", options = {"HIDDEN"}, maxlen = 255)
 	files: bpy.props.CollectionProperty(type = bpy.types.OperatorFileListElement, options = {"HIDDEN", "SKIP_SAVE"})
 
-	option_import_fences: bpy.props.BoolProperty(name = "Import Fences", description = "Import Fence chunks from the Pure3D File(s).", default = True)
-	option_import_paths: bpy.props.BoolProperty(name = "Import Paths", description = "Import Path chunks from the Pure3D File(s).", default = True)
+	option_import_fences: bpy.props.BoolProperty(name = "Import Fences", description = "Import Fence chunks from the Pure3D File(s)", default = True)
+	option_import_paths: bpy.props.BoolProperty(name = "Import Paths", description = "Import Path chunks from the Pure3D File(s)", default = True)
 
 	def draw(self, context):
 		self.layout.prop(self, "option_import_fences")
@@ -72,6 +72,8 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 				messageLines.append(f"\t- Number of Unsupported Chunks: { result['numberOfUnsupportedChunks'] }")
 
 		MessageLib.alert("\n".join(messageLines))
+
+		print("\n".join(messageLines))
 
 		return {"FINISHED"}
 
