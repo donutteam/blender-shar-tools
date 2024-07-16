@@ -29,6 +29,7 @@ def createImage(chunk: ImageChunk, textureChunk: TextureChunk | None = None):
             else:
                 img.name = chunk.name
             img.scale(chunk.width,chunk.height) # Make image stay in memory
+            img.use_fake_user = True
             bpy.data.images.remove(img_src)
             os.remove(filename)
             return img

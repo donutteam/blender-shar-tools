@@ -207,6 +207,8 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 
 				material.shaderProperties.pddiShader = chunk.pddiShaderName
 
+				material.use_fake_user = True # Save material even when it's not used
+
 				if chunk.hasTranslucency:
 					material.blend_method = "HASHED"
 					material.shadow_method = "HASHED"
