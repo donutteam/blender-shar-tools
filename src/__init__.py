@@ -47,8 +47,8 @@ def register():
 	classes.operators.MoveObjectX.register()
 
 	classes.properties.FenceProperties.register()
-	classes.properties.ShaderProperties.register()
 	classes.properties.PathProperties.register()
+	classes.properties.ShaderProperties.register()
 
 def unregister():
 	print("Unregistered The Simpsons Hit & Run Tools.")
@@ -57,5 +57,5 @@ def unregister():
 	classes.operators.MoveObjectX.unregister()
 
 	classes.properties.FenceProperties.unregister()
-	classes.properties.ShaderProperties.unregister()
 	classes.properties.PathProperties.unregister()
+	classes.properties.ShaderProperties.unregister()
