@@ -83,7 +83,7 @@ class File:
 		return binaryWriter.getBytes()
 
 	@staticmethod
-	def _readChunk(buffer : bytes, chunkRegistry : ChunkRegistry, isLittleEndian : bool, offset : int | None = None) -> Chunk:
+	def _readChunk(buffer : bytes, chunkRegistry : ChunkRegistry, isLittleEndian : bool, offset : int | None = None) -> tuple[Chunk, int]:
 		#
 		# Get Offset
 		#
@@ -154,7 +154,7 @@ class File:
 		# Note: We now return the entireSize here because chocolateimage
 		#	found this to me notably faster in _readChunkChildren than
 		#	calling getEntireSize (which "writes" all the data to get the size)
-		return (chunkClass(identifier, children, *parsedData), entireSize)
+		return chunkClass(identifier, children, *parsedData), entireSize
 
 	@staticmethod
 	def _readChunkChildren(buffer : bytes, chunkRegistry : ChunkRegistry, isLittleEndian : bool) -> list[Chunk]:
