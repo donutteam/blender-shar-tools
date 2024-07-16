@@ -32,11 +32,17 @@ def createFence(start : mathutils.Vector, end : mathutils.Vector, normal : mathu
 		start, end = end, start
 
 	#
+	# Name
+	#
+
+	name = name if name is not None else "Fence"
+
+	#
 	# Create Curve
 	#
 
 	# https://docs.blender.org/api/current/bpy.types.Curve.html
-	fenceCurve = bpy.data.curves.new("Fence", "CURVE")
+	fenceCurve = bpy.data.curves.new(name, "CURVE")
 
 	fenceCurve.dimensions = "2D"
 
@@ -61,8 +67,6 @@ def createFence(start : mathutils.Vector, end : mathutils.Vector, normal : mathu
 	#
 	# Create Object
 	#
-
-	name = name if name is not None else "Fence"
 
 	# https://docs.blender.org/api/current/bpy.types.Object.html
 	fence = bpy.data.objects.new(name, fenceCurve)

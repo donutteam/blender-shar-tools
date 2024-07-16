@@ -13,12 +13,18 @@ import mathutils
 
 def createPath(points : list[mathutils.Vector], name : str | None = None) -> bpy.types.Object:
 	#
+	# Name
+	#
+
+	name = name if name is not None else "Path"
+
+	#
 	# Create Curve
 	#
 
-	pathCurve = bpy.data.curves.new("Fence", "CURVE")
+	pathCurve = bpy.data.curves.new(name, "CURVE")
 
-	pathCurve.dimensions = "2D"
+	pathCurve.dimensions = "3D"
 
 	#
 	# Create Spline
@@ -36,8 +42,6 @@ def createPath(points : list[mathutils.Vector], name : str | None = None) -> bpy
 	#
 	# Create Object
 	#
-
-	name = name if name is not None else "Path"
 
 	path = bpy.data.objects.new(name, pathCurve)
 
