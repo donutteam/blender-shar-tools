@@ -23,9 +23,9 @@ class ShaderFloatParameterChunk(Chunk):
 		parameter = binaryReader.readPure3DFourCharacterCode()
 		value = binaryReader.readFloat()
 
-		return [parameter,value]
+		return [parameter, value]
 
-	def __init__(self, identifier: int = chunkIdentifiers.SHADER_FLOAT_PARAMETER, children : list[Chunk] | None = None, parameter: str = "", value: float = 0) -> None:
+	def __init__(self, identifier: int = chunkIdentifiers.SHADER_FLOAT_PARAMETER, children : list[Chunk] = [], parameter: str = "", value: float = 0) -> None:
 		super().__init__(identifier,children)
 	
 		self.parameter = parameter

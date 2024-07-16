@@ -24,9 +24,9 @@ class ShaderColourParameterChunk(Chunk):
 		parameter = binaryReader.readPure3DFourCharacterCode()
 		colour = binaryReader.readPure3DColour()
 
-		return [parameter,colour]
+		return [parameter, colour]
 
-	def __init__(self, identifier: int = chunkIdentifiers.SHADER_COLOUR_PARAMETER, children : list[Chunk] | None = None, parameter: str = "", colour: Colour = Colour(0,0,0,255)) -> None:
+	def __init__(self, identifier: int = chunkIdentifiers.SHADER_COLOUR_PARAMETER, children : list[Chunk] = [], parameter: str = "", colour: Colour = Colour(0, 0, 0, 255)) -> None:
 		super().__init__(identifier,children)
 	
 		self.parameter = parameter

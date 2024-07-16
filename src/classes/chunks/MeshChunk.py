@@ -35,9 +35,11 @@ class MeshChunk(Chunk):
 	
 	def getNumberOfOldPrimitiveGroups(self) -> int:
 		numberOfOldPrimitiveGroups = 0
+
 		for child in self.children:
 			if child.identifier == chunkIdentifiers.OLD_PRIMITIVE_GROUP:
 				numberOfOldPrimitiveGroups += 1
+
 		return numberOfOldPrimitiveGroups
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:

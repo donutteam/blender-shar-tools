@@ -31,14 +31,13 @@ class UVListChunk(Chunk):
 		for i in range(numberOfUVs):
 			uvs.append(binaryReader.readPure3DVector2())
 
-		return [channel,uvs]
+		return [channel, uvs]
 
-	def __init__(self, identifier: int = chunkIdentifiers.UV_LIST, children : list[Chunk] | None = None, channel: int = 0, uvs: list[mathutils.Vector] = []) -> None:
+	def __init__(self, identifier: int = chunkIdentifiers.UV_LIST, children : list[Chunk] = [], channel: int = 0, uvs: list[mathutils.Vector] = []) -> None:
 		super().__init__(identifier,children)
 	
 		self.channel = channel
 		self.uvs = uvs
-		
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt32(len(self.uvs))

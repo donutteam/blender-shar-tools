@@ -23,9 +23,9 @@ class ShaderTextureParameterChunk(Chunk):
 		parameter = binaryReader.readPure3DFourCharacterCode()
 		value = binaryReader.readPure3DString()
 
-		return [parameter,value]
+		return [parameter, value]
 
-	def __init__(self, identifier: int = chunkIdentifiers.SHADER_TEXTURE_PARAMETER, children : list[Chunk] | None = None, parameter: str = "", value: str = "") -> None:
+	def __init__(self, identifier: int = chunkIdentifiers.SHADER_TEXTURE_PARAMETER, children : list[Chunk] = [], parameter: str = "", value: str = "") -> None:
 		super().__init__(identifier,children)
 	
 		self.parameter = parameter

@@ -33,7 +33,6 @@ class IndexListChunk(Chunk):
 		super().__init__(chunkIdentifiers.INDEX_LIST, children)
 	
 		self.indices = indices
-		
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt32(len(self.indices))

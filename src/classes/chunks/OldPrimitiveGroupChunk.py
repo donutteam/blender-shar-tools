@@ -16,7 +16,6 @@ import data.chunkIdentifiers as chunkIdentifiers
 #
 
 class OldPrimitiveGroupChunk(Chunk):
-	
 	primitiveTypes = {
 		"TRIANGLE_LIST": 0,
 		"TRIANGLE_STRIP": 1,
@@ -96,9 +95,9 @@ class OldPrimitiveGroupChunk(Chunk):
 
 		numberOfMatrices = binaryReader.readUInt32()
 
-		return [version,shaderName,primitiveType,numberOfVertices,numberOfIndices,numberOfMatrices]
+		return [version, shaderName, primitiveType, numberOfVertices, numberOfIndices, numberOfMatrices]
 
-	def __init__(self, identifier: int = chunkIdentifiers.OLD_PRIMITIVE_GROUP, children : list[Chunk] | None = None, version: int = 0, shaderName: str = "", primitiveType: str = "", numberOfVertices: int = 0, numberOfIndices: int = 0, numberOfMatrices: int = 0) -> None:
+	def __init__(self, identifier: int = chunkIdentifiers.OLD_PRIMITIVE_GROUP, children : list[Chunk] = [], version: int = 0, shaderName: str = "", primitiveType: str = "", numberOfVertices: int = 0, numberOfIndices: int = 0, numberOfMatrices: int = 0) -> None:
 		super().__init__(identifier,children)
 		
 		self.version = version
@@ -125,6 +124,7 @@ class OldPrimitiveGroupChunk(Chunk):
 				raise Exception("Old Primitive Groups can only have a maximum of 8 UV Lists.")
 			
 			vertexType |= OldPrimitiveGroupChunk.uvTypeMap[uvListCount - 1]
+
 		return vertexType
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
