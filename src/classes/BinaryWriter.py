@@ -142,7 +142,7 @@ class BinaryWriter:
 		requiredSize = size + self._position
 
 		if (requiredSize >= len(self._byteArray)):
-			self._expand(size)
+			self._expand(requiredSize)
 
 	def _expand(self, requiredSize : int) -> None:
 		newSize = len(self._byteArray) + self.expandSize
