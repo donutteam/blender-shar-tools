@@ -23,13 +23,19 @@ def createImage(chunk: ImageChunk, textureChunk: TextureChunk | None = None):
                 filename = f.name
             
             img_src = bpy.data.images.load(filename)
-            img = img_src.copy() # Don't make file appear as it's from a file in a temp directory
-            if textureChunk != None:
-                img.name = textureChunk.name
-            else:
-                img.name = chunk.name
-            img.scale(chunk.width,chunk.height) # Make image stay in memory
+
+            img = bpy.data.images.new(textureChunk.name if textureChunk else chunk.name, chunk.width, chunk.height,alpha=True)
+
+            new_pixels = []
+            for i in img_src.pixels:
+                new_pixels.append(i)
+
+            img.pixels = new_pixels
+
             img.use_fake_user = True
+
             bpy.data.images.remove(img_src)
+
             os.remove(filename)
+
             return img
