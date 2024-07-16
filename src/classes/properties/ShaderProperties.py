@@ -187,7 +187,7 @@ class ShaderPropertiesPanel(bpy.types.Panel):
 		layout.use_property_decorate = False
 
 		# Props
-		layout.label(mat.name)
+		layout.prop(mat,"name")
 		layout.prop(mat.shaderProperties,"pddiShader")
 		if mat.use_nodes and mat.node_tree != None and "Principled BSDF" in mat.node_tree.nodes and "Image Texture" in mat.node_tree.nodes:
 			layout.label(text="Change texture above")

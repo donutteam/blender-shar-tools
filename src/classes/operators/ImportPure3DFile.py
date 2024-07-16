@@ -52,6 +52,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 	option_import_paths: bpy.props.BoolProperty(name = "Import Paths", description = "Import Path chunks from the Pure3D File(s)", default = True)
 	option_import_textures: bpy.props.BoolProperty(name = "Import Textures", description = "Import Texture chunks from the Pure3D File(s)", default = True)
 	option_import_shaders: bpy.props.BoolProperty(name = "Import Shaders", description = "Import Shader chunks from the Pure3D File(s)", default = True)
+	option_import_staticentities: bpy.props.BoolProperty(name = "Import Static Entities", description = "Import StaticEntity chunks from the Pure3D File(s)", default = True)
 
 	def draw(self, context):
 		self.layout.prop(self, "option_import_fences")
@@ -61,6 +62,8 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 		self.layout.prop(self, "option_import_textures")
 
 		self.layout.prop(self, "option_import_shaders")
+
+		self.layout.prop(self, "option_import_staticentities")
 
 	files: bpy.props.CollectionProperty(
 		type=bpy.types.OperatorFileListElement,
@@ -282,6 +285,8 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 			
 
 			elif isinstance(chunk, StaticEntityChunk):
+				if not self.option_import_staticentities:
+					continue
 				for childChunk in chunk.children:
 					if isinstance(childChunk,MeshChunk):
 						mesh = MeshLib.createMesh(childChunk)
