@@ -22,6 +22,7 @@ from classes.chunks.ShaderTextureParameterChunk import ShaderTextureParameterChu
 from classes.chunks.TextureChunk import TextureChunk
 from classes.chunks.UVListChunk import UVListChunk
 from classes.chunks.PathChunk import PathChunk
+from classes.chunks.StaticEntityChunk import StaticEntityChunk
 
 from classes.ChunkRegistry import ChunkRegistry
 
@@ -66,3 +67,5 @@ defaultChunkRegistry.register(chunkIdentifiers.SHADER_INTEGER_PARAMETER, ShaderI
 defaultChunkRegistry.register(chunkIdentifiers.SHADER_TEXTURE_PARAMETER, ShaderTextureParameterChunk)
 
 defaultChunkRegistry.register(chunkIdentifiers.PATH, PathChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.STATIC_ENTITY, StaticEntityChunk)

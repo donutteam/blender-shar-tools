@@ -15,9 +15,8 @@ import classes.chunks.UVListChunk
 # Utility Functions
 #
 
-def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Object:
+def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Mesh:
 	mesh = bpy.data.meshes.new(chunk.name + "Mesh")
-	obj = bpy.data.objects.new(chunk.name,mesh)
 
 	total_positions = []
 	total_indices = []
@@ -43,7 +42,7 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Object:
 							tri = childChildChunk.indices[i:i+3]
 							if len(tri) < 3:
 								continue
-							total_indices.append((tri[0]+indexoffset,tri[1]+indexoffset,tri[2]+indexoffset))
+							total_indices.append((tri[0]+indexoffset,tri[2]+indexoffset,tri[1]+indexoffset))
 					elif childChunk.primitiveType == childChunk.primitiveTypes["TRIANGLE_STRIP"]:
 						for i in range(len(childChildChunk.indices) - 2):
 							if i % 2 == 1: # need to switch these around for some reason
@@ -93,4 +92,4 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Object:
 	
 	mesh.update()
 
-	return obj
+	return mesh

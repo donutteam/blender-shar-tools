@@ -22,6 +22,7 @@ from classes.chunks.ShaderIntegerParameterChunk import ShaderIntegerParameterChu
 from classes.chunks.ShaderFloatParameterChunk import ShaderFloatParameterChunk
 from classes.chunks.TextureChunk import TextureChunk
 from classes.chunks.PathChunk import PathChunk
+from classes.chunks.StaticEntityChunk import StaticEntityChunk
 
 from classes.File import File
 
@@ -99,8 +100,8 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 			if result["numberOfShaderChunks"] > 0:
 				messageLines.append(f"\t- Number of Shaders: { result['numberOfShaderChunks'] }")
 
-			if result["numberOfMeshChunks"] > 0:
-				messageLines.append(f"\t- Number of Meshes: { result['numberOfMeshChunks'] }")
+			if result["numberOfStaticEntityChunks"] > 0:
+				messageLines.append(f"\t- Number of Static Entities: { result['numberOfStaticEntityChunks'] }")
 
 			if result["numberOfUnsupportedChunks"] > 0:
 				messageLines.append(f"\t- Number of Unsupported Chunks: { result['numberOfUnsupportedChunks'] }")
@@ -139,7 +140,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 
 		pathCollection = bpy.data.collections.new("Paths")
 
-		meshCollection = bpy.data.collections.new("Meshes")
+		staticEntityCollection = bpy.data.collections.new("Static Entities")
 
 		#
 		# Import Chunks
@@ -153,7 +154,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 
 		numberOfShaderChunks = 0
 
-		numberOfMeshChunks = 0 # TODO: Don't use meshes directly, but use the container formats
+		numberOfStaticEntityChunks = 0
 
 		numberOfUnsupportedChunks = 0
 
@@ -278,10 +279,13 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 				numberOfShaderChunks += 1
 			
 
-			elif isinstance(chunk, MeshChunk):
-				obj = MeshLib.createMesh(chunk)
-				meshCollection.objects.link(obj)
-				numberOfMeshChunks += 1
+			elif isinstance(chunk, StaticEntityChunk):
+				for childChunk in chunk.children:
+					if isinstance(childChunk,MeshChunk):
+						mesh = MeshLib.createMesh(childChunk)
+						obj = bpy.data.objects.new(chunk.name,mesh)
+						staticEntityCollection.objects.link(obj)
+						numberOfStaticEntityChunks += 1
 
 			else:
 				print(f"Unsupported chunk type: { hex(chunk.identifier) }")
@@ -302,10 +306,10 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 		else:
 			bpy.data.collections.remove(pathCollection)
 		
-		if numberOfMeshChunks > 0:
-			fileCollection.children.link(meshCollection)
+		if numberOfStaticEntityChunks > 0:
+			fileCollection.children.link(staticEntityCollection)
 		else:
-			bpy.data.collections.remove(meshCollection)
+			bpy.data.collections.remove(staticEntityCollection)
 
 		#
 		# Return
@@ -317,7 +321,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 			"numberOfPathChunks": numberOfPathChunks,
 			"numberOfTextureChunks": numberOfTextureChunks,
 			"numberOfShaderChunks": numberOfShaderChunks,
-			"numberOfMeshChunks": numberOfMeshChunks,
+			"numberOfStaticEntityChunks": numberOfStaticEntityChunks,
 			"numberOfUnsupportedChunks": numberOfUnsupportedChunks,
 		}
 
