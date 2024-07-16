@@ -24,7 +24,7 @@ class MeshChunk(Chunk):
 
 		version = binaryReader.readUInt32()
 
-		return [name, version]
+		return [ name, version ]
 
 	def __init__(self, identifier: int = chunkIdentifiers.MESH, children : list[Chunk] | None = None, name: str = "", version: int = 0) -> None:
 		super().__init__(chunkIdentifiers.MESH,children)
