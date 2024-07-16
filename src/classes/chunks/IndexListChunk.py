@@ -27,7 +27,7 @@ class IndexListChunk(Chunk):
 		for i in range(numberOfIndices):
 			indices.append(binaryReader.readUInt32())
 		
-		return [indices]
+		return [ indices ]
 
 	def __init__(self, identifier: int = chunkIdentifiers.INDEX_LIST, children: list[Chunk] = [], indices: list[int] = []) -> None:
 		super().__init__(chunkIdentifiers.INDEX_LIST, children)
