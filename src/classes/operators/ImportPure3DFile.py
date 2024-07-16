@@ -49,11 +49,17 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 
 	option_import_fences: bpy.props.BoolProperty(name = "Import Fences", description = "Import Fence chunks from the Pure3D File(s)", default = True)
 	option_import_paths: bpy.props.BoolProperty(name = "Import Paths", description = "Import Path chunks from the Pure3D File(s)", default = True)
+	option_import_textures: bpy.props.BoolProperty(name = "Import Textures", description = "Import Texture chunks from the Pure3D File(s)", default = True)
+	option_import_shaders: bpy.props.BoolProperty(name = "Import Shaders", description = "Import Shader chunks from the Pure3D File(s)", default = True)
 
 	def draw(self, context):
 		self.layout.prop(self, "option_import_fences")
 
 		self.layout.prop(self, "option_import_paths")
+
+		self.layout.prop(self, "option_import_textures")
+
+		self.layout.prop(self, "option_import_shaders")
 
 	files: bpy.props.CollectionProperty(
 		type=bpy.types.OperatorFileListElement,
@@ -154,6 +160,8 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 		# Import these first so that shaders, etc. can find the images
 		for chunkIndex, chunk in enumerate(rootChunk.children):
 			if isinstance(chunk, TextureChunk):
+				if not self.option_import_textures:
+					continue
 				is_already_used = False
 				for i in bpy.data.images:
 					if i.name == chunk.name:
@@ -188,6 +196,8 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 				pass # Imported above
 				
 			elif isinstance(chunk, ShaderChunk):
+				if not self.option_import_shaders:
+					continue
 				if chunk.name in bpy.data.materials:
 					continue
 				material = bpy.data.materials.new(chunk.name)
