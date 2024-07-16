@@ -23,7 +23,7 @@ class ImageDataChunk(Chunk):
 		imageDataLength = binaryReader.readUInt32()
 		imageData = binaryReader.readBytes(imageDataLength)
 
-		return [imageData]
+		return [ imageData ]
 
 	def __init__(self, identifier: int = chunkIdentifiers.IMAGE_DATA, children: list[Chunk] = [], imageData: bytes = bytes()) -> None:
 		super().__init__(chunkIdentifiers.IMAGE_DATA,children)
@@ -32,5 +32,4 @@ class ImageDataChunk(Chunk):
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt32(len(self.imageData))
-
 		binaryWriter.writeBytes(self.imageData)
