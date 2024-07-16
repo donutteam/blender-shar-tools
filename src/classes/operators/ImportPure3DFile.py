@@ -47,20 +47,20 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 	filter_glob: bpy.props.StringProperty(default = "*.p3d", options = {"HIDDEN"}, maxlen = 255)
 	files: bpy.props.CollectionProperty(type = bpy.types.OperatorFileListElement, options = {"HIDDEN", "SKIP_SAVE"})
 
-	option_import_fences: bpy.props.BoolProperty(name = "Import Fences", description = "Import Fence chunks from the Pure3D File(s)", default = True)
-	option_import_paths: bpy.props.BoolProperty(name = "Import Paths", description = "Import Path chunks from the Pure3D File(s)", default = True)
 	option_import_textures: bpy.props.BoolProperty(name = "Import Textures", description = "Import Texture chunks from the Pure3D File(s)", default = True)
 	option_import_shaders: bpy.props.BoolProperty(name = "Import Shaders", description = "Import Shader chunks from the Pure3D File(s)", default = True)
+	option_import_fences: bpy.props.BoolProperty(name = "Import Fences", description = "Import Fence chunks from the Pure3D File(s)", default = True)
+	option_import_paths: bpy.props.BoolProperty(name = "Import Paths", description = "Import Path chunks from the Pure3D File(s)", default = True)
 	option_import_static_entities: bpy.props.BoolProperty(name = "Import Static Entities", description = "Import StaticEntity chunks from the Pure3D File(s)", default = True)
 
 	def draw(self, context):
-		self.layout.prop(self, "option_import_fences")
-
-		self.layout.prop(self, "option_import_paths")
-
 		self.layout.prop(self, "option_import_textures")
 
 		self.layout.prop(self, "option_import_shaders")
+
+		self.layout.prop(self, "option_import_fences")
+
+		self.layout.prop(self, "option_import_paths")
 
 		self.layout.prop(self, "option_import_static_entities")
 
@@ -82,18 +82,18 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 
 		for result in results:
 			messageLines.append(f"- { result['fileName'] }:")
-
-			if result["numberOfFenceChunks"] > 0:
-				messageLines.append(f"\t- Number of Fences: { result['numberOfFenceChunks'] }")
-
-			if result["numberOfPathChunks"] > 0:
-				messageLines.append(f"\t- Number of Paths: { result['numberOfPathChunks'] }")
 	
 			if result["numberOfTextureChunks"] > 0:
 				messageLines.append(f"\t- Number of Textures: { result['numberOfTextureChunks'] }")
 
 			if result["numberOfShaderChunks"] > 0:
 				messageLines.append(f"\t- Number of Shaders: { result['numberOfShaderChunks'] }")
+
+			if result["numberOfFenceChunks"] > 0:
+				messageLines.append(f"\t- Number of Fences: { result['numberOfFenceChunks'] }")
+
+			if result["numberOfPathChunks"] > 0:
+				messageLines.append(f"\t- Number of Paths: { result['numberOfPathChunks'] }")
 
 			if result["numberOfStaticEntityChunks"] > 0:
 				messageLines.append(f"\t- Number of Static Entities: { result['numberOfStaticEntityChunks'] }")
@@ -141,13 +141,13 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 		# Import Chunks
 		#
 
-		numberOfFenceChunks = 0
-
-		numberOfPathChunks = 0
-
 		numberOfTextureChunks = 0
 
 		numberOfShaderChunks = 0
+
+		numberOfFenceChunks = 0
+
+		numberOfPathChunks = 0
 
 		numberOfStaticEntityChunks = 0
 
@@ -316,10 +316,10 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 
 		return {
 			"fileName": fileName,
-			"numberOfFenceChunks": numberOfFenceChunks,
-			"numberOfPathChunks": numberOfPathChunks,
 			"numberOfTextureChunks": numberOfTextureChunks,
 			"numberOfShaderChunks": numberOfShaderChunks,
+			"numberOfFenceChunks": numberOfFenceChunks,
+			"numberOfPathChunks": numberOfPathChunks,
 			"numberOfStaticEntityChunks": numberOfStaticEntityChunks,
 			"numberOfUnsupportedChunks": numberOfUnsupportedChunks,
 		}
