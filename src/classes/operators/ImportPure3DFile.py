@@ -15,20 +15,19 @@ from classes.chunks.HistoryChunk import HistoryChunk
 from classes.chunks.ImageChunk import ImageChunk
 from classes.chunks.TextureChunk import TextureChunk
 from classes.chunks.MeshChunk import MeshChunk
-from classes.chunks.ShaderChunk import ShaderChunk
-from classes.chunks.ShaderTextureParameterChunk import ShaderTextureParameterChunk
-from classes.chunks.ShaderColourParameterChunk import ShaderColourParameterChunk
-from classes.chunks.ShaderIntegerParameterChunk import ShaderIntegerParameterChunk
-from classes.chunks.ShaderFloatParameterChunk import ShaderFloatParameterChunk
-from classes.chunks.TextureChunk import TextureChunk
 from classes.chunks.PathChunk import PathChunk
+from classes.chunks.ShaderChunk import ShaderChunk
+from classes.chunks.ShaderColourParameterChunk import ShaderColourParameterChunk
+from classes.chunks.ShaderFloatParameterChunk import ShaderFloatParameterChunk
+from classes.chunks.ShaderIntegerParameterChunk import ShaderIntegerParameterChunk
+from classes.chunks.ShaderTextureParameterChunk import ShaderTextureParameterChunk
 from classes.chunks.StaticEntityChunk import StaticEntityChunk
 
 from classes.File import File
 
 import libs.fence as FenceLib
-import libs.mesh as MeshLib
 import libs.image as ImageLib
+import libs.mesh as MeshLib
 import libs.message as MessageLib
 import libs.path as PathLib
 
@@ -52,7 +51,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 	option_import_paths: bpy.props.BoolProperty(name = "Import Paths", description = "Import Path chunks from the Pure3D File(s)", default = True)
 	option_import_textures: bpy.props.BoolProperty(name = "Import Textures", description = "Import Texture chunks from the Pure3D File(s)", default = True)
 	option_import_shaders: bpy.props.BoolProperty(name = "Import Shaders", description = "Import Shader chunks from the Pure3D File(s)", default = True)
-	option_import_staticentities: bpy.props.BoolProperty(name = "Import Static Entities", description = "Import StaticEntity chunks from the Pure3D File(s)", default = True)
+	option_import_static_entities: bpy.props.BoolProperty(name = "Import Static Entities", description = "Import StaticEntity chunks from the Pure3D File(s)", default = True)
 
 	def draw(self, context):
 		self.layout.prop(self, "option_import_fences")
@@ -63,14 +62,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 
 		self.layout.prop(self, "option_import_shaders")
 
-		self.layout.prop(self, "option_import_staticentities")
-
-	files: bpy.props.CollectionProperty(
-		type=bpy.types.OperatorFileListElement,
-		options={"HIDDEN","SKIP_SAVE"}
-	)
-
-	directory: bpy.props.StringProperty(subtype="DIR_PATH")
+		self.layout.prop(self, "option_import_static_entities")
 
 	def execute(self, context):
 		print(self.files)
@@ -285,7 +277,7 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 			
 
 			elif isinstance(chunk, StaticEntityChunk):
-				if not self.option_import_staticentities:
+				if not self.option_import_static_entities:
 					continue
 				for childChunk in chunk.children:
 					if isinstance(childChunk,MeshChunk):
