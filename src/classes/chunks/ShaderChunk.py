@@ -32,7 +32,7 @@ class ShaderChunk(Chunk):
 
 		vertexMask = binaryReader.readUInt32()
 
-		return [name, version, pddiShaderName, hasTranslucency, vertexNeeds, vertexMask]
+		return [ name, version, pddiShaderName, hasTranslucency, vertexNeeds, vertexMask ]
 
 	def __init__(self, identifier: int = chunkIdentifiers.SHADER, children : list[Chunk] = [], name: str = "", version: int = 0, pddiShaderName: str = "", hasTranslucency: int = 0, vertexNeeds: int = 0, vertexMask: int = 0) -> None:
 		super().__init__(identifier,children)
