@@ -95,7 +95,7 @@ class OldPrimitiveGroupChunk(Chunk):
 
 		numberOfMatrices = binaryReader.readUInt32()
 
-		return [version, shaderName, primitiveType, numberOfVertices, numberOfIndices, numberOfMatrices]
+		return [ version, shaderName, primitiveType, numberOfVertices, numberOfIndices, numberOfMatrices ]
 
 	def __init__(self, identifier: int = chunkIdentifiers.OLD_PRIMITIVE_GROUP, children : list[Chunk] = [], version: int = 0, shaderName: str = "", primitiveType: str = "", numberOfVertices: int = 0, numberOfIndices: int = 0, numberOfMatrices: int = 0) -> None:
 		super().__init__(identifier,children)
