@@ -26,7 +26,7 @@ class StaticEntityChunk(Chunk):
 
 		hasAlpha = binaryReader.readUInt32()
 
-		return [name, version, hasAlpha]
+		return [ name, version, hasAlpha ]
 
 	def __init__(self, identifier: int = chunkIdentifiers.STATIC_ENTITY, children : list[Chunk] = [], name: str = "", version: int = 0, hasAlpha: int = 0) -> None:
 		super().__init__(identifier,children)
@@ -35,7 +35,6 @@ class StaticEntityChunk(Chunk):
 		self.version = version
 		self.hasAlpha = hasAlpha
 		
-
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DString(self.name)
 		binaryWriter.writeUInt32(self.version)
