@@ -23,7 +23,7 @@ class ShaderIntegerParameterChunk(Chunk):
 		parameter = binaryReader.readPure3DFourCharacterCode()
 		value = binaryReader.readUInt32()
 
-		return [parameter, value]
+		return [ parameter, value ]
 
 	def __init__(self, identifier: int = chunkIdentifiers.SHADER_INTEGER_PARAMETER, children : list[Chunk] = [], parameter: str = "", value: int = 0) -> None:
 		super().__init__(identifier,children)
@@ -31,7 +31,6 @@ class ShaderIntegerParameterChunk(Chunk):
 		self.parameter = parameter
 		self.value = value
 		
-
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DFourCharacterCode(self.parameter)
 		binaryWriter.writeUInt32(self.value)
