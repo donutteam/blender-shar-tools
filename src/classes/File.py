@@ -151,7 +151,10 @@ class File:
 		# Return
 		#
 
-		return chunkClass(identifier, children, *parsedData)
+		# Note: We now return the entireSize here because chocolateimage
+		#	found this to me notably faster in _readChunkChildren than
+		#	calling getEntireSize (which "writes" all the data to get the size)
+		return (chunkClass(identifier, children, *parsedData), entireSize)
 
 	@staticmethod
 	def _readChunkChildren(buffer : bytes, chunkRegistry : ChunkRegistry, isLittleEndian : bool) -> list[Chunk]:
@@ -160,10 +163,10 @@ class File:
 		offset : int = 0
 
 		while offset < len(buffer):
-			chunk = File._readChunk(buffer, chunkRegistry, isLittleEndian, offset)
+			chunk, entireSize = File._readChunk(buffer, chunkRegistry, isLittleEndian, offset)
 
 			children.append(chunk)
 
-			offset += chunk.getEntireSize()
+			offset += entireSize
 
 		return children
