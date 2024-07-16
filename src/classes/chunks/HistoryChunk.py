@@ -29,7 +29,12 @@ class HistoryChunk(Chunk):
 
 		return [ lines ]
 
-	def __init__(self, identifier : int = chunkIdentifiers.HISTORY, children : list[Chunk] = [], lines : list[str] = []) -> None:
+	def __init__(
+		self, 
+		identifier : int = chunkIdentifiers.HISTORY, 
+		children : list[Chunk] = [], 
+		lines : list[str] = []
+	) -> None:
 		super().__init__(chunkIdentifiers.HISTORY)
 
 		self.lines : list[str] = lines

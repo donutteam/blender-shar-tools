@@ -17,7 +17,12 @@ class UnknownChunk(Chunk):
 	def parseData(data : bytes, isLittleEndian : bool) -> list:
 		return [ data ]
 
-	def __init__(self, identifier : int, children : list[Chunk] = [], data : bytes = bytes()) -> None:
+	def __init__(
+		self, 
+		identifier : int, 
+		children : list[Chunk] = [], 
+		data : bytes = bytes()
+	) -> None:
 		super().__init__(identifier, children)
 
 		self.data : bytes = data

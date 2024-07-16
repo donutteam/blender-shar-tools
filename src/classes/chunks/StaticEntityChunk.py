@@ -21,14 +21,19 @@ class StaticEntityChunk(Chunk):
 		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
 		name = binaryReader.readPure3DString()
-
 		version = binaryReader.readUInt32()
-
 		hasAlpha = binaryReader.readUInt32()
 
 		return [ name, version, hasAlpha ]
 
-	def __init__(self, identifier: int = chunkIdentifiers.STATIC_ENTITY, children : list[Chunk] = [], name: str = "", version: int = 0, hasAlpha: int = 0) -> None:
+	def __init__(
+		self, 
+		identifier: int = chunkIdentifiers.STATIC_ENTITY, 
+		children : list[Chunk] = [], 
+		name: str = "", 
+		version: int = 0, 
+		hasAlpha: int = 0
+	) -> None:
 		super().__init__(identifier,children)
 	
 		self.name = name

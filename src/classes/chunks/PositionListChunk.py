@@ -31,7 +31,12 @@ class PositionListChunk(Chunk):
 
 		return [ positions ]
 
-	def __init__(self, identifier: int = chunkIdentifiers.POSITION_LIST, children : list[Chunk] = [], positions: list[mathutils.Vector] = []) -> None:
+	def __init__(
+		self, 
+		identifier: int = chunkIdentifiers.POSITION_LIST, 
+		children : list[Chunk] = [], 
+		positions: list[mathutils.Vector] = []
+	) -> None:
 		super().__init__(identifier,children)
 	
 		self.positions = positions

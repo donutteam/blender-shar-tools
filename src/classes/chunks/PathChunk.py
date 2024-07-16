@@ -31,7 +31,12 @@ class PathChunk(Chunk):
 
 		return [ points ]
 
-	def __init__(self, identifier : int = chunkIdentifiers.PATH, children : list[Chunk] = [], points : list[mathutils.Vector] = []) -> None:
+	def __init__(
+		self, 
+		identifier : int = chunkIdentifiers.PATH, 
+		children : list[Chunk] = [], 
+		points : list[mathutils.Vector] = []
+	) -> None:
 		super().__init__(chunkIdentifiers.PATH, children)
 
 		self.points = points

@@ -16,6 +16,7 @@ import data.chunkIdentifiers as chunkIdentifiers
 #
 
 class ImageChunk(Chunk):
+	# TODO: Either move to a sub class or a "data" file like the Chunk Identifiers
 	formats = {
 		"RAW": 0,
 		"PNG": 1,
@@ -57,7 +58,19 @@ class ImageChunk(Chunk):
 
 		return [ name, version, width, height, bitsPerPixel, palettized, hasAlpha, format ]
 
-	def __init__(self, identifier: int = chunkIdentifiers.IMAGE, children: list[Chunk] = [], name: str = "", version: int = 0, width: int = 0, height: int = 0, bitsPerPixel: int = 0, palettized: int = 0, hasAlpha: int = 0, format: int = 0) -> None:
+	def __init__(
+		self, 
+		identifier: int = chunkIdentifiers.IMAGE, 
+		children: list[Chunk] = [], 
+		name: str = "", 
+		version: int = 0, 
+		width: int = 0, 
+		height: int = 0, 
+		bitsPerPixel: int = 0, 
+		palettized: int = 0, 
+		hasAlpha: int = 0, 
+		format: int = 0
+	) -> None:
 		super().__init__(chunkIdentifiers.IMAGE, children)
 	
 		self.name = name

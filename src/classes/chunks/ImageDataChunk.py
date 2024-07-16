@@ -25,7 +25,12 @@ class ImageDataChunk(Chunk):
 
 		return [ imageData ]
 
-	def __init__(self, identifier: int = chunkIdentifiers.IMAGE_DATA, children: list[Chunk] = [], imageData: bytes = bytes()) -> None:
+	def __init__(
+		self, 
+		identifier: int = chunkIdentifiers.IMAGE_DATA, 
+		children: list[Chunk] = [], 
+		imageData: bytes = bytes()
+	) -> None:
 		super().__init__(chunkIdentifiers.IMAGE_DATA,children)
 	
 		self.imageData = imageData

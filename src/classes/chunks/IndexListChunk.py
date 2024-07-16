@@ -29,7 +29,12 @@ class IndexListChunk(Chunk):
 		
 		return [ indices ]
 
-	def __init__(self, identifier: int = chunkIdentifiers.INDEX_LIST, children: list[Chunk] = [], indices: list[int] = []) -> None:
+	def __init__(
+		self, 
+		identifier: int = chunkIdentifiers.INDEX_LIST, 
+		children: list[Chunk] = [], 
+		indices: list[int] = []
+	) -> None:
 		super().__init__(chunkIdentifiers.INDEX_LIST, children)
 	
 		self.indices = indices

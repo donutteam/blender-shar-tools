@@ -16,6 +16,7 @@ import data.chunkIdentifiers as chunkIdentifiers
 #
 
 class OldPrimitiveGroupChunk(Chunk):
+
 	primitiveTypes = {
 		"TRIANGLE_LIST": 0,
 		"TRIANGLE_STRIP": 1,
@@ -80,9 +81,7 @@ class OldPrimitiveGroupChunk(Chunk):
 		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
 		version = binaryReader.readUInt32()
-
 		shaderName = binaryReader.readPure3DString()
-
 		primitiveType = binaryReader.readUInt32()
 
 		# Note: This is the Vertex Type, this is not stored
@@ -90,14 +89,22 @@ class OldPrimitiveGroupChunk(Chunk):
 		binaryReader.readUInt32()
 
 		numberOfVertices = binaryReader.readUInt32()
-
 		numberOfIndices = binaryReader.readUInt32()
-
 		numberOfMatrices = binaryReader.readUInt32()
 
 		return [ version, shaderName, primitiveType, numberOfVertices, numberOfIndices, numberOfMatrices ]
 
-	def __init__(self, identifier: int = chunkIdentifiers.OLD_PRIMITIVE_GROUP, children : list[Chunk] = [], version: int = 0, shaderName: str = "", primitiveType: str = "", numberOfVertices: int = 0, numberOfIndices: int = 0, numberOfMatrices: int = 0) -> None:
+	def __init__(
+		self, 
+		identifier: int = chunkIdentifiers.OLD_PRIMITIVE_GROUP, 
+		children : list[Chunk] = [], 
+		version: int = 0, 
+		shaderName: str = "", 
+		primitiveType: str = "", 
+		numberOfVertices: int = 0, 
+		numberOfIndices: int = 0, 
+		numberOfMatrices: int = 0
+	) -> None:
 		super().__init__(identifier,children)
 		
 		self.version = version
@@ -109,6 +116,7 @@ class OldPrimitiveGroupChunk(Chunk):
 	
 	def getVertexType(self) -> int:
 		vertexType = 0
+		
 		uvListCount = 0
 	
 		for chunk in self.children:
@@ -129,15 +137,9 @@ class OldPrimitiveGroupChunk(Chunk):
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt32(self.version)
-
 		binaryWriter.writePure3DString(self.shaderName)
-
 		binaryWriter.writeUInt32(self.primitiveType)
-
 		binaryWriter.writeUInt32(self.getVertexType())
-
 		binaryWriter.writeUInt32(self.numberOfVertices)
-
 		binaryWriter.writeUInt32(self.numberOfIndices)
-
 		binaryWriter.writeUInt32(self.numberOfMatrices)

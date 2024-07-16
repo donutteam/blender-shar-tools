@@ -13,5 +13,9 @@ import data.chunkIdentifiers as chunkIdentifiers
 #
 
 class FenceChunk(Chunk):
-	def __init__(self, identifier : int = chunkIdentifiers.FENCE, children : list[Chunk] = []) -> None:
+	def __init__(
+		self, 
+		identifier : int = chunkIdentifiers.FENCE, 
+		children : list[Chunk] = []
+	) -> None:
 		super().__init__(chunkIdentifiers.FENCE, children)

@@ -16,7 +16,11 @@ class Chunk():
 	def parseData(data : bytes, isLittleEndian : bool = True) -> list:
 		return []
 
-	def __init__(self, identifier : int, children : list[Chunk] = []) -> None:
+	def __init__(
+		self, 
+		identifier : int, 
+		children : list[Chunk] = []
+	) -> None:
 		self.identifier = identifier
 
 		self.children = children

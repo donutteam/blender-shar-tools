@@ -33,7 +33,21 @@ class TextureChunk(Chunk):
 
 		return [ name, version, width, height, bitsPerPixel, alphaDepth, numberOfMipMaps, textureType, usage, priority ]
 
-	def __init__(self, identifier: int = chunkIdentifiers.TEXTURE, children : list[Chunk] = [], name: str = "", version: int = 0, width: int = 0, height: int = 0, bitsPerPixel: int = 0, alphaDepth: int = 0, numberOfMipMaps: int = 0, textureType: int = 0, usage: int = 0, priority: int = 0) -> None:
+	def __init__(
+		self, 
+		identifier: int = chunkIdentifiers.TEXTURE, 
+		children : list[Chunk] = [], 
+		name: str = "", 
+		version: int = 0, 
+		width: int = 0, 
+		height: int = 0, 
+		bitsPerPixel: int = 0, 
+		alphaDepth: int = 0, 
+		numberOfMipMaps: int = 0, 
+		textureType: int = 0, 
+		usage: int = 0, 
+		priority: int = 0
+	) -> None:
 		super().__init__(identifier,children)
 	
 		self.name = name
@@ -49,9 +63,7 @@ class TextureChunk(Chunk):
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DString(self.name)
-
 		binaryWriter.writeUInt32(self.version)
-
 		binaryWriter.writeUInt32(self.width)
 		binaryWriter.writeUInt32(self.height)
 		binaryWriter.writeUInt32(self.bitsPerPixel)

@@ -23,7 +23,6 @@ class UVListChunk(Chunk):
 		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
 		numberOfUVs = binaryReader.readUInt32()
-
 		channel = binaryReader.readUInt32()
 		
 		uvs = []
@@ -33,7 +32,13 @@ class UVListChunk(Chunk):
 
 		return [ channel, uvs ]
 
-	def __init__(self, identifier: int = chunkIdentifiers.UV_LIST, children : list[Chunk] = [], channel: int = 0, uvs: list[mathutils.Vector] = []) -> None:
+	def __init__(
+		self, 
+		identifier: int = chunkIdentifiers.UV_LIST, 
+		children : list[Chunk] = [], 
+		channel: int = 0, 
+		uvs: list[mathutils.Vector] = []
+	) -> None:
 		super().__init__(identifier,children)
 	
 		self.channel = channel
@@ -41,7 +46,6 @@ class UVListChunk(Chunk):
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt32(len(self.uvs))
-
 		binaryWriter.writeUInt32(self.channel)
 
 		for uv in self.uvs:

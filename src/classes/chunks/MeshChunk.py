@@ -21,16 +21,20 @@ class MeshChunk(Chunk):
 		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
 		name = binaryReader.readPure3DString()
-
 		version = binaryReader.readUInt32()
 
 		return [ name, version ]
 
-	def __init__(self, identifier: int = chunkIdentifiers.MESH, children : list[Chunk] | None = None, name: str = "", version: int = 0) -> None:
+	def __init__(
+		self, 
+		identifier: int = chunkIdentifiers.MESH, 
+		children : list[Chunk] = [], 
+		name: str = "", 
+		version: int = 0
+	) -> None:
 		super().__init__(chunkIdentifiers.MESH,children)
 	
 		self.name = name
-
 		self.version = version
 	
 	def getNumberOfOldPrimitiveGroups(self) -> int:
@@ -44,7 +48,5 @@ class MeshChunk(Chunk):
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DString(self.name)
-
 		binaryWriter.writeUInt32(self.version)
-
 		binaryWriter.writeUInt32(self.getNumberOfOldPrimitiveGroups())

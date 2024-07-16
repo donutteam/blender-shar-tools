@@ -26,12 +26,17 @@ class ShaderColourParameterChunk(Chunk):
 
 		return [ parameter, colour ]
 
-	def __init__(self, identifier: int = chunkIdentifiers.SHADER_COLOUR_PARAMETER, children : list[Chunk] = [], parameter: str = "", colour: Colour = Colour(0, 0, 0, 255)) -> None:
+	def __init__(
+		self, 
+		identifier: int = chunkIdentifiers.SHADER_COLOUR_PARAMETER, 
+		children : list[Chunk] = [], 
+		parameter: str = "", 
+		colour: Colour = Colour(0, 0, 0, 255)
+	) -> None:
 		super().__init__(identifier,children)
 	
 		self.parameter = parameter
 		self.colour = colour
-		
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DFourCharacterCode(self.parameter)
