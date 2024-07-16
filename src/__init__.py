@@ -29,8 +29,7 @@ sys.path.append(os.path.dirname(__file__))
 
 import bpy
 
-import classes.operators.ImportPure3DFile
-import classes.operators.MoveObjectX
+import classes.operators.ImportPure3DFileOperator
 
 import classes.properties.FenceProperties
 import classes.properties.ShaderProperties
@@ -43,8 +42,7 @@ import classes.properties.PathProperties
 def register():
 	print("Registered The Simpsons Hit & Run Tools.")
 
-	classes.operators.ImportPure3DFile.register()
-	classes.operators.MoveObjectX.register()
+	classes.operators.ImportPure3DFileOperator.register()
 
 	classes.properties.FenceProperties.register()
 	classes.properties.PathProperties.register()
@@ -53,8 +51,7 @@ def register():
 def unregister():
 	print("Unregistered The Simpsons Hit & Run Tools.")
 
-	classes.operators.ImportPure3DFile.unregister()
-	classes.operators.MoveObjectX.unregister()
+	classes.operators.ImportPure3DFileOperator.unregister()\
 
 	classes.properties.FenceProperties.unregister()
 	classes.properties.PathProperties.unregister()

@@ -151,6 +151,9 @@ class File:
 		# Return
 		#
 
+		# Note: We now return the entireSize here because chocolateimage
+		#	found this to me notably faster in _readChunkChildren than
+		#	calling getEntireSize (which "writes" all the data to get the size)
 		return chunkClass(identifier, children, *parsedData), entireSize
 
 	@staticmethod
