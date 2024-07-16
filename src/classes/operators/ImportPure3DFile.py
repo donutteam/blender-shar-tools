@@ -11,11 +11,23 @@ import bpy_extras
 
 from classes.chunks.FenceChunk import FenceChunk
 from classes.chunks.Fence2Chunk import Fence2Chunk
+from classes.chunks.HistoryChunk import HistoryChunk
+from classes.chunks.ImageChunk import ImageChunk
+from classes.chunks.TextureChunk import TextureChunk
+from classes.chunks.MeshChunk import MeshChunk
 from classes.chunks.PathChunk import PathChunk
+from classes.chunks.ShaderChunk import ShaderChunk
+from classes.chunks.ShaderColourParameterChunk import ShaderColourParameterChunk
+from classes.chunks.ShaderFloatParameterChunk import ShaderFloatParameterChunk
+from classes.chunks.ShaderIntegerParameterChunk import ShaderIntegerParameterChunk
+from classes.chunks.ShaderTextureParameterChunk import ShaderTextureParameterChunk
+from classes.chunks.StaticEntityChunk import StaticEntityChunk
 
 from classes.File import File
 
 import libs.fence as FenceLib
+import libs.image as ImageLib
+import libs.mesh as MeshLib
 import libs.message as MessageLib
 import libs.path as PathLib
 
@@ -37,11 +49,20 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 
 	option_import_fences: bpy.props.BoolProperty(name = "Import Fences", description = "Import Fence chunks from the Pure3D File(s)", default = True)
 	option_import_paths: bpy.props.BoolProperty(name = "Import Paths", description = "Import Path chunks from the Pure3D File(s)", default = True)
+	option_import_textures: bpy.props.BoolProperty(name = "Import Textures", description = "Import Texture chunks from the Pure3D File(s)", default = True)
+	option_import_shaders: bpy.props.BoolProperty(name = "Import Shaders", description = "Import Shader chunks from the Pure3D File(s)", default = True)
+	option_import_static_entities: bpy.props.BoolProperty(name = "Import Static Entities", description = "Import StaticEntity chunks from the Pure3D File(s)", default = True)
 
 	def draw(self, context):
 		self.layout.prop(self, "option_import_fences")
 
 		self.layout.prop(self, "option_import_paths")
+
+		self.layout.prop(self, "option_import_textures")
+
+		self.layout.prop(self, "option_import_shaders")
+
+		self.layout.prop(self, "option_import_static_entities")
 
 	def execute(self, context):
 		print(self.files)
@@ -67,6 +88,15 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 
 			if result["numberOfPathChunks"] > 0:
 				messageLines.append(f"\t- Number of Paths: { result['numberOfPathChunks'] }")
+	
+			if result["numberOfTextureChunks"] > 0:
+				messageLines.append(f"\t- Number of Textures: { result['numberOfTextureChunks'] }")
+
+			if result["numberOfShaderChunks"] > 0:
+				messageLines.append(f"\t- Number of Shaders: { result['numberOfShaderChunks'] }")
+
+			if result["numberOfStaticEntityChunks"] > 0:
+				messageLines.append(f"\t- Number of Static Entities: { result['numberOfStaticEntityChunks'] }")
 
 			if result["numberOfUnsupportedChunks"] > 0:
 				messageLines.append(f"\t- Number of Unsupported Chunks: { result['numberOfUnsupportedChunks'] }")
@@ -105,6 +135,8 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 
 		pathCollection = bpy.data.collections.new("Paths")
 
+		staticEntityCollection = bpy.data.collections.new("Static Entities")
+
 		#
 		# Import Chunks
 		#
@@ -113,7 +145,29 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 
 		numberOfPathChunks = 0
 
+		numberOfTextureChunks = 0
+
+		numberOfShaderChunks = 0
+
+		numberOfStaticEntityChunks = 0
+
 		numberOfUnsupportedChunks = 0
+
+		# Import these first so that shaders, etc. can find the images
+		for chunkIndex, chunk in enumerate(rootChunk.children):
+			if isinstance(chunk, TextureChunk):
+				if not self.option_import_textures:
+					continue
+				is_already_used = False
+				for i in bpy.data.images:
+					if i.name == chunk.name:
+						is_already_used = True
+				if is_already_used:
+					continue
+				for childChunkIndex, childChunk in enumerate(chunk.children):
+					if isinstance(childChunk, ImageChunk):
+						ImageLib.createImage(childChunk,chunk)
+						numberOfTextureChunks += 1
 
 		for chunkIndex, chunk in enumerate(rootChunk.children):
 			if isinstance(chunk, FenceChunk):
@@ -133,6 +187,104 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 					pathCollection.objects.link(pathChunkObject)
 
 					numberOfPathChunks += 1
+			
+			elif isinstance(chunk, TextureChunk):
+				pass # Imported above
+				
+			elif isinstance(chunk, ShaderChunk):
+				if not self.option_import_shaders:
+					continue
+				if chunk.name in bpy.data.materials:
+					continue
+				material = bpy.data.materials.new(chunk.name)
+				material.use_nodes = True
+				bsdf = material.node_tree.nodes["Principled BSDF"]
+
+				material.shaderProperties.pddiShader = chunk.pddiShaderName
+
+				material.use_fake_user = True # Save material even when it's not used
+
+				if chunk.hasTranslucency:
+					material.blend_method = "HASHED"
+					material.shadow_method = "HASHED"
+
+				for childChunkIndex, childChunk in enumerate(chunk.children):
+					if isinstance(childChunk, ShaderTextureParameterChunk):
+						if childChunk.parameter == "TEX":
+							if childChunk.value not in bpy.data.images:
+								print("Image",childChunk.value,"not found to apply on a material")
+								continue
+
+							image = bpy.data.images[childChunk.value]
+
+							texture_image = material.node_tree.nodes.new("ShaderNodeTexImage")
+							texture_image.image = image
+							
+							material.node_tree.links.new(bsdf.inputs["Base Color"],texture_image.outputs["Color"])
+							material.node_tree.links.new(bsdf.inputs["Alpha"],texture_image.outputs["Alpha"]) # Always connect alpha nodes, transparency only visible when blend method is set to "Alpha Hashed"
+					
+					elif isinstance(childChunk, ShaderColourParameterChunk):
+						# hacky way to do it
+						color_argb = (childChunk.colour.red / 255,childChunk.colour.green / 255,childChunk.colour.blue / 255,childChunk.colour.alpha / 255)
+						color_rgb = (childChunk.colour.red / 255,childChunk.colour.green / 255,childChunk.colour.blue / 255)
+						if childChunk.parameter == "DIFF":
+							bsdf.inputs[0].default_value = color_argb # Diffusive Color
+							material.shaderProperties.diffuseColor = color_rgb # Specular
+						elif childChunk.parameter == "SPEC":
+							material.shaderProperties.specularColor = color_rgb # Specular
+						elif childChunk.parameter == "AMBI":
+							material.shaderProperties.ambientColor = color_rgb # Ambient
+						elif childChunk.parameter == "EMIS":
+							bsdf.inputs[26].default_value = color_argb # Emission Color
+							bsdf.inputs[27].default_value = 1 # Emission Strength
+						else:
+							pass
+					
+					elif isinstance(childChunk, ShaderIntegerParameterChunk):
+						if childChunk.parameter == "2SID":
+							material.shaderProperties.twoSided = childChunk.value
+							material.use_backface_culling = not childChunk.value
+						elif childChunk.parameter == "LIT":
+							material.shaderProperties.lighting = childChunk.value == 1
+						elif childChunk.parameter == "ATST":
+							material.shaderProperties.alphaTest = childChunk.value == 1
+						elif childChunk.parameter == "BLMD":
+							material.shaderProperties.blendMode = ("none","alpha","additive","subtractive")[childChunk.value]
+						elif childChunk.parameter == "FIMD":
+							material.shaderProperties.filterMode = ("nearestNeighbour","linear","nearestNeighbourMipNN","linearMipNN","linearMipL")[childChunk.value]
+						elif childChunk.parameter == "UVMD":
+							material.shaderProperties.uvMode = ("tile","clamp")[childChunk.value]
+						elif childChunk.parameter == "SHMD":
+							material.shaderProperties.shadeMode = ("flat","gouraud")[childChunk.value]
+						elif childChunk.parameter == "ACMP":
+							material.shaderProperties.alphaCompare = ("none","always","less","lessEqual","greater","greaterEqual","equal","notEqual")[childChunk.value]
+						elif childChunk.parameter == "MMIN":
+							material.shaderProperties.mipmapMin = str(pow(2,3+childChunk.value))
+						elif childChunk.parameter == "MMAX":
+							material.shaderProperties.mipmapMax = str(pow(2,3+childChunk.value))
+						else:
+							pass
+					
+					elif isinstance(childChunk, ShaderFloatParameterChunk):
+						if childChunk.parameter == "SHIN":
+							material.shaderProperties.shininess = childChunk.value
+						elif childChunk.parameter == "ACTH":
+							material.shaderProperties.alphaCompareThreshold = childChunk.value
+						else:
+							pass
+			
+				numberOfShaderChunks += 1
+			
+
+			elif isinstance(chunk, StaticEntityChunk):
+				if not self.option_import_static_entities:
+					continue
+				for childChunk in chunk.children:
+					if isinstance(childChunk,MeshChunk):
+						mesh = MeshLib.createMesh(childChunk)
+						obj = bpy.data.objects.new(chunk.name,mesh)
+						staticEntityCollection.objects.link(obj)
+						numberOfStaticEntityChunks += 1
 
 			else:
 				print(f"Unsupported chunk type: { hex(chunk.identifier) }")
@@ -152,6 +304,11 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 			fileCollection.children.link(pathCollection)
 		else:
 			bpy.data.collections.remove(pathCollection)
+		
+		if numberOfStaticEntityChunks > 0:
+			fileCollection.children.link(staticEntityCollection)
+		else:
+			bpy.data.collections.remove(staticEntityCollection)
 
 		#
 		# Return
@@ -161,6 +318,9 @@ class ImportPure3DFile(bpy.types.Operator, bpy_extras.io_utils.ImportHelper):
 			"fileName": fileName,
 			"numberOfFenceChunks": numberOfFenceChunks,
 			"numberOfPathChunks": numberOfPathChunks,
+			"numberOfTextureChunks": numberOfTextureChunks,
+			"numberOfShaderChunks": numberOfShaderChunks,
+			"numberOfStaticEntityChunks": numberOfStaticEntityChunks,
 			"numberOfUnsupportedChunks": numberOfUnsupportedChunks,
 		}
 

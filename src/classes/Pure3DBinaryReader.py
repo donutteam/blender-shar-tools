@@ -7,6 +7,7 @@ from __future__ import annotations
 import mathutils
 
 from classes.BinaryReader import BinaryReader
+from classes.Colour import Colour
 
 #
 # Class
@@ -17,7 +18,7 @@ class Pure3DBinaryReader(BinaryReader):
 		valueBytes = self.readBytes(4)
 
 		if not self.isLittleEndian:
-			valueBytes.reverse()
+			valueBytes = bytes(reversed(list(valueBytes)))
 
 		blue = valueBytes[0]
 
@@ -47,7 +48,7 @@ class Pure3DBinaryReader(BinaryReader):
 		for i in range(16):
 			matrix.append(self.readFloat())
 
-		return mathtils.Matrix(
+		return mathutils.Matrix(
 			[
 				[ matrix[0], matrix[1], matrix[2], matrix[3] ],
 				[ matrix[4], matrix[5], matrix[6], matrix[7] ],
