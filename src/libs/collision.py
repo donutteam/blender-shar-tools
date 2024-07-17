@@ -30,18 +30,14 @@ def createFromVolume(collisionObject: CollisionObjectChunk, collisionVolume: Col
 				(rotationMatrixXChunk.vector.x,rotationMatrixXChunk.vector.y,rotationMatrixXChunk.vector.z,0),
 				(rotationMatrixYChunk.vector.x,rotationMatrixYChunk.vector.y,rotationMatrixYChunk.vector.z,0),
 				(rotationMatrixZChunk.vector.x,rotationMatrixZChunk.vector.y,rotationMatrixZChunk.vector.z,0),
-				(0,0,0,0),
+				(0,0,0,1),
 			))
-			bpy.ops.mesh.primitive_cube_add(
-				location=(centerChunk.vector.x, centerChunk.vector.z, centerChunk.vector.y),
-				rotation=matrix.to_euler(),
-				size=2,
-				scale=(child.halfExtents.x, child.halfExtents.z, child.halfExtents.y),
-			)
-			obj = bpy.context.active_object
-			for collection in obj.users_collection:
-				collection.objects.unlink(obj)
-			obj.name = collisionObject.name+"Box"
+			obj = bpy.data.objects.new(collisionObject.name+"Box",None)
+			obj.empty_display_size = 1
+			obj.empty_display_type = "CUBE"
+			obj.rotation_euler = matrix.to_euler()
+			obj.location = centerChunk.vector.xzy
+			obj.scale = child.halfExtents.xzy
 			objects.append(obj)
 		else:
 			print("Unknown collision type " + hex(child.identifier))
