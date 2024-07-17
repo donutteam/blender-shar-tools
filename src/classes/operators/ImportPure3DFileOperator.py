@@ -218,7 +218,7 @@ class ImportedPure3DFile():
 		# Create File Collection
 		#
 
-		if self.numberOfFenceChunksImported == 0 and self.numberOfPathChunksImported == 0 and self.numberOfStaticEntityChunksImported == 0:
+		if self.numberOfFenceChunksImported == 0 and self.numberOfPathChunksImported == 0 and self.numberOfStaticEntityChunksImported == 0 and self.numberOfCollisionsImported == 0:
 			return
 
 		fileCollection = bpy.data.collections.new(self.fileName)
