@@ -23,6 +23,11 @@ from classes.chunks.ShaderTextureParameterChunk import ShaderTextureParameterChu
 from classes.chunks.StaticEntityChunk import StaticEntityChunk
 from classes.chunks.TextureChunk import TextureChunk
 from classes.chunks.UVListChunk import UVListChunk
+from classes.chunks.StaticPhysChunk import StaticPhysChunk
+from classes.chunks.CollisionObjectChunk import CollisionObjectChunk
+from classes.chunks.CollisionVolumeChunk import CollisionVolumeChunk
+from classes.chunks.CollisionOrientedBoundingBoxChunk import CollisionOrientedBoundingBoxChunk
+from classes.chunks.CollisionVectorChunk import CollisionVectorChunk
 
 from classes.ChunkRegistry import ChunkRegistry
 
@@ -69,3 +74,13 @@ defaultChunkRegistry.register(chunkIdentifiers.STATIC_ENTITY, StaticEntityChunk)
 defaultChunkRegistry.register(chunkIdentifiers.TEXTURE, TextureChunk)
 
 defaultChunkRegistry.register(chunkIdentifiers.UV_LIST, UVListChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.STATIC_PHYS, StaticPhysChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.COLLISION_OBJECT, CollisionObjectChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.COLLISION_VOLUME, CollisionVolumeChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.COLLISION_ORIENTED_BOUNDING_BOX, CollisionOrientedBoundingBoxChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.COLLISION_VECTOR, CollisionVectorChunk)

@@ -22,6 +22,8 @@ from classes.chunks.ShaderFloatParameterChunk import ShaderFloatParameterChunk
 from classes.chunks.ShaderIntegerParameterChunk import ShaderIntegerParameterChunk
 from classes.chunks.ShaderTextureParameterChunk import ShaderTextureParameterChunk
 from classes.chunks.StaticEntityChunk import StaticEntityChunk
+from classes.chunks.StaticPhysChunk import StaticPhysChunk
+from classes.chunks.CollisionObjectChunk import CollisionObjectChunk
 
 from classes.File import File
 
@@ -30,6 +32,7 @@ import libs.image as ImageLib
 import libs.mesh as MeshLib
 import libs.message as MessageLib
 import libs.path as PathLib
+import libs.collision as CollisionLib
 
 #
 # Class
@@ -149,6 +152,8 @@ class ImportedPure3DFile():
 		self.pathCollection : bpy.types.Collection = bpy.data.collections.new("Paths")
 
 		self.staticEntityCollection : bpy.types.Collection = bpy.data.collections.new("Static Entities")
+	
+		self.collisionCollection : bpy.types.Collection = bpy.data.collections.new("Collisions")
 
 		self.numberOfTextureChunksImported : int = 0
 
@@ -159,6 +164,8 @@ class ImportedPure3DFile():
 		self.numberOfPathChunksImported : int = 0
 
 		self.numberOfStaticEntityChunksImported : int = 0
+
+		self.numberOfCollisionsImported : int = 0
 
 		self.numberOfUnsupportedChunksSkipped : int = 0
 
@@ -193,6 +200,14 @@ class ImportedPure3DFile():
 			elif isinstance(chunk, TextureChunk):
 				if self.importPure3DFileOperator.option_import_textures:
 					self.importTextureChunk(chunk)
+			
+			elif isinstance(chunk, StaticPhysChunk):
+				for childChunk in chunk.children:
+					if isinstance(childChunk,CollisionObjectChunk):
+						objects = CollisionLib.createCollision(childChunk)
+						for i in objects:
+							self.collisionCollection.objects.link(i)
+							self.numberOfCollisionsImported += 1
 
 			else:
 				print(f"Unsupported chunk type: { hex(chunk.identifier) }")
@@ -224,6 +239,11 @@ class ImportedPure3DFile():
 			fileCollection.children.link(self.staticEntityCollection)
 		else:
 			bpy.data.collections.remove(self.staticEntityCollection)
+
+		if self.numberOfCollisionsImported > 0:
+			fileCollection.children.link(self.collisionCollection)
+		else:
+			bpy.data.collections.remove(self.collisionCollection)
 
 	def importFenceChunk(self, chunkIndex : int, chunk : FenceChunk) -> None:
 		for childChunkIndex, childChunk in enumerate(chunk.children):
