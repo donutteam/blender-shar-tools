@@ -8,5 +8,8 @@ The Pure3D classes within this repo are based very significantly upon [LuaP3DLib
 ## Usage
 Not even close to ready yet, stay tuned?
 
+## Contributing
+We are not looking for contributions on this project at this early stage. We will update this section when we are ready for contributions.
+
 ## License
 [MIT](https://github.com/donutteam/blender-shar-tools/blob/main/LICENSE.md)
