@@ -41,6 +41,7 @@ def createFromVolume(collisionObject: CollisionObjectChunk, collisionVolume: Col
 			obj.matrix_world = matrix2
 			obj.location = obj.location.xzy
 			obj.rotation_euler = (mathutils.Matrix.Rotation(math.radians(90),3,"X") @ obj.rotation_euler.to_matrix()).to_euler()
+			obj.rotation_euler = (mathutils.Matrix.Rotation(math.radians(180),3,"Y") @ obj.rotation_euler.to_matrix()).to_euler()
 
 			objects.append(obj)
 		else:
