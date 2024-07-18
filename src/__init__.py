@@ -34,6 +34,7 @@ import classes.operators.ImportPure3DFileOperator
 import classes.properties.FenceProperties
 import classes.properties.ShaderProperties
 import classes.properties.PathProperties
+import classes.properties.CollisionProperties
 
 #
 # Initialisation
@@ -47,6 +48,7 @@ def register():
 	classes.properties.FenceProperties.register()
 	classes.properties.PathProperties.register()
 	classes.properties.ShaderProperties.register()
+	classes.properties.CollisionProperties.register()
 
 def unregister():
 	print("Unregistered The Simpsons Hit & Run Tools.")
@@ -56,3 +58,4 @@ def unregister():
 	classes.properties.FenceProperties.unregister()
 	classes.properties.PathProperties.unregister()
 	classes.properties.ShaderProperties.unregister()
+	classes.properties.CollisionProperties.unregister()
