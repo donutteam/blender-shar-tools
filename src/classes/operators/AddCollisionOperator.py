@@ -4,6 +4,9 @@
 
 import bpy
 import re
+import mathutils
+import math
+
 import libs.collision as CollisionLib
 
 #
@@ -67,8 +70,8 @@ class BaseCollisionOperator(bpy.types.Operator):
 		col.label(text="You can change all settings later in the SHAR")
 		col.label(text="Tools panel")
 
-class OBJECT_OT_add_collision_box(BaseCollisionOperator):
-	bl_idname = "object.add_collision_box"
+class OBJECT_OT_add_shar_collision_box(BaseCollisionOperator):
+	bl_idname = "object.add_shar_collision_box"
 	bl_label = "Add Collision Box"
 	bl_description = "Add a collision box"
 	bl_options = {"REGISTER", "UNDO"}
@@ -87,7 +90,7 @@ class OBJECT_OT_add_collision_box(BaseCollisionOperator):
 	def execute(self, context):
 		obj = CollisionLib.createNewCollisionBox()
 		obj.location = self.location
-		obj.rotation_euler = self.rotation
+		obj.rotation_euler = mathutils.Vector(self.rotation) * math.pi / 180
 		obj.scale = self.size
 		return super().execute(context,obj)
 	
@@ -102,8 +105,8 @@ class OBJECT_OT_add_collision_box(BaseCollisionOperator):
 
 		return super().draw(context)
 
-class OBJECT_OT_add_collision_cylinder(BaseCollisionOperator):
-	bl_idname = "object.add_collision_cylinder"
+class OBJECT_OT_add_shar_collision_cylinder(BaseCollisionOperator):
+	bl_idname = "object.add_shar_collision_cylinder"
 	bl_label = "Add Collision Cylinder"
 	bl_description = "Add a collision cylinder"
 	bl_options = {"REGISTER", "UNDO"}
@@ -130,7 +133,7 @@ class OBJECT_OT_add_collision_cylinder(BaseCollisionOperator):
 	def execute(self, context):
 		obj = CollisionLib.createNewCollisionCylinder(self.radius,self.length,self.flatEnd)
 		obj.location = self.location
-		obj.rotation_euler = self.rotation
+		obj.rotation_euler = mathutils.Vector(self.rotation) * math.pi / 180
 		return super().execute(context,obj)
 	
 	def draw(self, context):
@@ -146,8 +149,8 @@ class OBJECT_OT_add_collision_cylinder(BaseCollisionOperator):
 
 		return super().draw(context)
 
-class OBJECT_OT_add_collision_sphere(BaseCollisionOperator):
-	bl_idname = "object.add_collision_sphere"
+class OBJECT_OT_add_shar_collision_sphere(BaseCollisionOperator):
+	bl_idname = "object.add_shar_collision_sphere"
 	bl_label = "Add Collision Sphere"
 	bl_description = "Add a collision sphere"
 	bl_options = {"REGISTER", "UNDO"}
@@ -175,33 +178,33 @@ class OBJECT_OT_add_collision_sphere(BaseCollisionOperator):
 
 		return super().draw(context)
 
-class VIEW3D_MT_collision_menu(bpy.types.Menu):
-	bl_idname = "VIEW3D_MT_collision_menu"
-	bl_label = "Collision"
+class VIEW3D_MT_shar_collision_menu(bpy.types.Menu):
+	bl_idname = "VIEW3D_MT_shar_collision_menu"
+	bl_label = "SHAR Collision"
 
 	def draw(self, context):
 		layout = self.layout
-		layout.operator(OBJECT_OT_add_collision_box.bl_idname, text="Box", icon="CUBE")
-		layout.operator(OBJECT_OT_add_collision_cylinder.bl_idname, text="Cylinder", icon="MESH_CYLINDER")
-		layout.operator(OBJECT_OT_add_collision_sphere.bl_idname, text="Sphere", icon="SPHERE")
+		layout.operator(OBJECT_OT_add_shar_collision_box.bl_idname, text="Box", icon="CUBE")
+		layout.operator(OBJECT_OT_add_shar_collision_cylinder.bl_idname, text="Cylinder", icon="MESH_CYLINDER")
+		layout.operator(OBJECT_OT_add_shar_collision_sphere.bl_idname, text="Sphere", icon="SPHERE")
 
 
 def draw_custom_menu(self, context):
 	layout = self.layout
-	layout.menu(VIEW3D_MT_collision_menu.bl_idname, icon="MOD_PHYSICS")
+	layout.menu(VIEW3D_MT_shar_collision_menu.bl_idname, icon="MOD_PHYSICS")
 
 def register():
-	bpy.utils.register_class(VIEW3D_MT_collision_menu)
-	bpy.utils.register_class(OBJECT_OT_add_collision_box)
-	bpy.utils.register_class(OBJECT_OT_add_collision_cylinder)
-	bpy.utils.register_class(OBJECT_OT_add_collision_sphere)
+	bpy.utils.register_class(VIEW3D_MT_shar_collision_menu)
+	bpy.utils.register_class(OBJECT_OT_add_shar_collision_box)
+	bpy.utils.register_class(OBJECT_OT_add_shar_collision_cylinder)
+	bpy.utils.register_class(OBJECT_OT_add_shar_collision_sphere)
 
 	bpy.types.VIEW3D_MT_add.append(draw_custom_menu)
 
 def unregister():
-	bpy.utils.unregister_class(VIEW3D_MT_collision_menu)
-	bpy.utils.unregister_class(OBJECT_OT_add_collision_box)
-	bpy.utils.unregister_class(OBJECT_OT_add_collision_cylinder)
-	bpy.utils.unregister_class(OBJECT_OT_add_collision_sphere)
+	bpy.utils.unregister_class(VIEW3D_MT_shar_collision_menu)
+	bpy.utils.unregister_class(OBJECT_OT_add_shar_collision_box)
+	bpy.utils.unregister_class(OBJECT_OT_add_shar_collision_cylinder)
+	bpy.utils.unregister_class(OBJECT_OT_add_shar_collision_sphere)
 
 	bpy.types.VIEW3D_MT_add.remove(draw_custom_menu)
