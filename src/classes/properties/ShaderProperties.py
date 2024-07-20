@@ -222,4 +222,6 @@ def register():
 	bpy.utils.register_class(ShaderPropertiesPanel)
 
 def unregister():
+	bpy.utils.unregister_class(ShaderProperties)
+
 	bpy.utils.unregister_class(ShaderPropertiesPanel)
