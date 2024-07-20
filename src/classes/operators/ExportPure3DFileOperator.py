@@ -8,6 +8,9 @@ import os
 
 import bpy
 import bpy_extras
+import mathutils
+
+import re
 
 from classes.chunks.RootChunk import RootChunk
 from classes.chunks.FenceChunk import FenceChunk
@@ -36,12 +39,14 @@ import libs.path as PathLib
 # Class
 #
 
-def collectionItems(self: ExportPure3DFileOperator, context: bpy.types.Context):
+def collectionItems(self: ExportPure3DFileOperator = None, context: bpy.types.Context = None):
 	items = []
 
-	for collectionIndex, collection in enumerate(bpy.data.collections):
+	index = 0
+	for collection in bpy.data.collections:
 		if collection.name.endswith(".p3d"):
-			items.append((collection.name,collection.name,"",collectionIndex))
+			items.append((collection.name,collection.name,"","",index))
+			index += 1
 
 	return items
 
@@ -57,13 +62,59 @@ class ExportPure3DFileOperator(bpy.types.Operator, bpy_extras.io_utils.ExportHel
 		name="File Collection",
 		description="The collection should contain all things to export and end with \".p3d\"",
 		items=collectionItems,
+		default=0
 		# TODO: Automatically update filename when collection changes
 	)
 	
+	def draw(self, context):
+		layout = self.layout
+
+		layout.use_property_decorate = False
+		layout.use_property_split = True
+
+		layout.prop(self, "collection")
+
+		if len(collectionItems()) > 0 and os.path.basename(self.filepath) != self.collection:
+			layout.label(text="Warning: Filename doesn't match collection name")
+
 	def execute(self, context):
+		print("Exporting to " + self.filepath)
 		chunks = []
 
-		chunks.append(HistoryChunk(lines=["Hello","World"]))
+		if len(collectionItems()) > 0:
+			collection = bpy.data.collections[self.collection]
+		else:
+			collection = bpy.context.scene.collection
+
+		for childCollection in collection.children:
+			collectionBasename = re.sub(r"\.\d+$", "", childCollection.name)
+	
+			if collectionBasename == "Fences":
+				for fence in childCollection.all_objects:
+					if not fence.isFence:
+						continue
+
+					fenceCurve: bpy.types.Curve = fence.data
+
+					fenceCurveSpline = fenceCurve.splines[0]
+
+					start = fenceCurveSpline.points[0].co.xzy
+					end = fenceCurveSpline.points[1].co.xzy
+
+					calculatedNormal = (end - start).cross(mathutils.Vector((0, 1, 0))).normalized()
+
+					calculatedNormal.y = 0
+
+					if fence.fenceProperties.isFlipped:
+						calculatedNormal = -calculatedNormal
+
+					chunks.append(FenceChunk(children=[
+						Fence2Chunk(
+							start=start,
+							end=end,
+							normal=calculatedNormal
+						)
+					]))
 
 		b = File.toBytes(chunks) # don't do it directly in the with context to not make a file when an error occurs
 		with open(self.filepath,"wb+") as f:
