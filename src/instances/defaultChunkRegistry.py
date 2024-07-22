@@ -23,6 +23,10 @@ from classes.chunks.ShaderTextureParameterChunk import ShaderTextureParameterChu
 from classes.chunks.StaticEntityChunk import StaticEntityChunk
 from classes.chunks.TextureChunk import TextureChunk
 from classes.chunks.UVListChunk import UVListChunk
+from classes.chunks.ColourListChunk import ColourListChunk
+from classes.chunks.VertexShaderChunk import VertexShaderChunk
+from classes.chunks.BoundingBoxChunk import BoundingBoxChunk
+from classes.chunks.BoundingSphereChunk import BoundingSphereChunk
 
 from classes.ChunkRegistry import ChunkRegistry
 
@@ -69,3 +73,11 @@ defaultChunkRegistry.register(chunkIdentifiers.STATIC_ENTITY, StaticEntityChunk)
 defaultChunkRegistry.register(chunkIdentifiers.TEXTURE, TextureChunk)
 
 defaultChunkRegistry.register(chunkIdentifiers.UV_LIST, UVListChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.COLOUR_LIST, ColourListChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.VERTEX_SHADER, VertexShaderChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.BOUNDING_BOX, BoundingBoxChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.BOUNDING_SPHERE, BoundingSphereChunk)

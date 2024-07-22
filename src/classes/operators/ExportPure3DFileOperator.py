@@ -10,6 +10,8 @@ import bpy
 import bpy_extras
 import mathutils
 
+import utils
+
 import re
 
 from classes.chunks.RootChunk import RootChunk
@@ -87,7 +89,7 @@ class ExportPure3DFileOperator(bpy.types.Operator, bpy_extras.io_utils.ExportHel
 			collection = bpy.context.scene.collection
 
 		for childCollection in collection.children:
-			collectionBasename = re.sub(r"\.\d+$", "", childCollection.name)
+			collectionBasename = utils.get_basename(childCollection.name)
 	
 			if collectionBasename == "Fences":
 				for fence in childCollection.all_objects:
@@ -115,6 +117,12 @@ class ExportPure3DFileOperator(bpy.types.Operator, bpy_extras.io_utils.ExportHel
 							normal=calculatedNormal
 						)
 					]))
+			elif collectionBasename == "Static Entities":
+				for obj in childCollection.all_objects:
+					mesh = obj.data
+					chunk = MeshLib.meshToChunk(mesh)
+					chunks.append(chunk)
+
 
 		b = File.toBytes(chunks) # don't do it directly in the with context to not make a file when an error occurs
 		with open(self.filepath,"wb+") as f:
