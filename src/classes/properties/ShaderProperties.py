@@ -43,6 +43,7 @@ class ShaderProperties(bpy.types.PropertyGroup):
 		min=0,
 		max=1,
 		subtype="COLOR",
+		default=(1,1,1)
 	)
 	specularColor: bpy.props.FloatVectorProperty(
 		name="Specular",
@@ -74,7 +75,8 @@ class ShaderProperties(bpy.types.PropertyGroup):
 			("nearestNeighbourMipNN","Nearest Neighbour, Mip Nearest Neighbour","Mipmap","",2),
 			("linearMipNN","Linear, Mip Nearest Neighbour","Mipmap Bilinear","",3),
 			("linearMipL","Linear, Mip Linear","Mipmap Trilinear","",4)
-		]
+		],
+		default=1
 	)
 	uvMode: bpy.props.EnumProperty(
 		name="UV Mode",
