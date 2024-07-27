@@ -67,7 +67,7 @@ class Chunk():
 
 	def getFirstChildOfType(self, type) -> Chunk:
 		for chunk in self.children:
-			if isinstance(chunk,type):
+			if isinstance(chunk, type):
 				return chunk
 
 		return None
@@ -76,7 +76,7 @@ class Chunk():
 		children = []
 
 		for chunk in self.children:
-			if isinstance(chunk,type):
+			if isinstance(chunk, type):
 				children.append(chunk)
 
 		return children
