@@ -64,3 +64,19 @@ class Chunk():
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		pass
+
+	def getFirstChildOfType(self, type) -> Chunk:
+		for chunk in self.children:
+			if isinstance(chunk, type):
+				return chunk
+
+		return None
+
+	def getChildrenOfType(self, type) -> list[Chunk]:
+		children = []
+
+		for chunk in self.children:
+			if isinstance(chunk, type):
+				children.append(chunk)
+
+		return children
