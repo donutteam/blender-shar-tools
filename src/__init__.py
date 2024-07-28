@@ -29,12 +29,14 @@ sys.path.append(os.path.dirname(__file__))
 
 import bpy
 
+import classes.operators.AddCollisionOperator
 import classes.operators.ImportPure3DFileOperator
 import classes.operators.ExportPure3DFileOperator
 
 import classes.properties.FenceProperties
 import classes.properties.ShaderProperties
 import classes.properties.PathProperties
+import classes.properties.CollisionProperties
 
 #
 # Initialisation
@@ -43,12 +45,14 @@ import classes.properties.PathProperties
 def register():
 	print("Registered The Simpsons Hit & Run Tools.")
 
+	classes.operators.AddCollisionOperator.register()
 	classes.operators.ImportPure3DFileOperator.register()
 	classes.operators.ExportPure3DFileOperator.register()
 
 	classes.properties.FenceProperties.register()
 	classes.properties.PathProperties.register()
 	classes.properties.ShaderProperties.register()
+	classes.properties.CollisionProperties.register()
 
 def unregister():
 	print("Unregistered The Simpsons Hit & Run Tools.")
@@ -56,6 +60,10 @@ def unregister():
 	classes.operators.ImportPure3DFileOperator.unregister()
 	classes.operators.ExportPure3DFileOperator.unregister()
 
+	classes.operators.AddCollisionOperator.unregister()
+	classes.operators.ImportPure3DFileOperator.unregister()
+
 	classes.properties.FenceProperties.unregister()
 	classes.properties.PathProperties.unregister()
 	classes.properties.ShaderProperties.unregister()
+	classes.properties.CollisionProperties.unregister()
