@@ -3,6 +3,7 @@
 #
 
 import bpy
+import bmesh
 
 from classes.chunks.CollisionObjectChunk import CollisionObjectChunk
 from classes.chunks.CollisionVolumeChunk import CollisionVolumeChunk
@@ -22,24 +23,25 @@ def createCollision(collisionObject: CollisionObjectChunk) -> list[bpy.types.Obj
 	return createFromVolume(collisionObject,collisionObject.getFirstChildOfType(CollisionVolumeChunk))
 
 def createNewCollisionBox():
-	bpy.ops.mesh.primitive_cube_add(
-		size=2
-	)
+	mesh = bpy.data.meshes.new("Collision Cylinder")
+	obj = bpy.data.objects.new("Collision Cylinder", mesh)
 
-	obj = bpy.context.active_object
+	bm = bmesh.new()
+	bmesh.ops.create_cube(bm, size=2)
+	bm.to_mesh(mesh)
+	bm.free()
 
-	bpy.context.view_layer.objects.active = None
 	obj.collisionProperties.collisionType = "Box"
 	return obj
 
 def createNewCollisionCylinder(radius: float, length: float, flatEnd: bool):
-	bpy.ops.mesh.primitive_uv_sphere_add(
-		radius=1,
-	)
+	mesh = bpy.data.meshes.new("Collision Cylinder")
+	obj = bpy.data.objects.new("Collision Cylinder", mesh)
 
-	obj = bpy.context.active_object
-
-	bpy.context.view_layer.objects.active = None
+	bm = bmesh.new()
+	bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+	bm.to_mesh(mesh)
+	bm.free()
 
 	combinedstring = ""
 	for i in obj.data.vertices:
@@ -56,13 +58,13 @@ def createNewCollisionCylinder(radius: float, length: float, flatEnd: bool):
 	return obj
 
 def createNewCollisionSphere(radius: float):
-	bpy.ops.mesh.primitive_uv_sphere_add(
-		radius=1,
-	)
+	mesh = bpy.data.meshes.new("Collision Sphere")
+	obj = bpy.data.objects.new("Collision Sphere", mesh)
 
-	obj = bpy.context.active_object
-
-	bpy.context.view_layer.objects.active = None
+	bm = bmesh.new()
+	bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+	bm.to_mesh(mesh)
+	bm.free()
 
 	combinedstring = ""
 	for i in obj.data.vertices:
