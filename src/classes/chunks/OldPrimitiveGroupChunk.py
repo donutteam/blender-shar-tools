@@ -97,7 +97,7 @@ class OldPrimitiveGroupChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.OLD_PRIMITIVE_GROUP, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		version: int = 0, 
 		shaderName: str = "", 
 		primitiveType: str = "", 

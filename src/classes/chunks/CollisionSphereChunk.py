@@ -27,7 +27,7 @@ class CollisionSphereChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.COLLISION_SPHERE, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		radius: float = 0
 	) -> None:
 		super().__init__(identifier,children)

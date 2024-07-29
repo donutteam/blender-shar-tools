@@ -28,12 +28,12 @@ class ImageDataChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.IMAGE_DATA, 
-		children: list[Chunk] = [], 
-		imageData: bytes = bytes()
+		children: list[Chunk] = None, 
+		imageData: bytes = None
 	) -> None:
 		super().__init__(chunkIdentifiers.IMAGE_DATA,children)
 	
-		self.imageData = imageData
+		self.imageData = bytes() if imageData is None else imageData
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt32(len(self.imageData))

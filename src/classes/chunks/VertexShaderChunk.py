@@ -27,7 +27,7 @@ class VertexShaderChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.VERTEX_SHADER, 
-		children: list[Chunk] = [],
+		children: list[Chunk] = None,
 		vertexShaderName: str = ""
 	) -> None:
 		super().__init__(identifier, children)

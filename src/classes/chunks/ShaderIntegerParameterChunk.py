@@ -28,7 +28,7 @@ class ShaderIntegerParameterChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.SHADER_INTEGER_PARAMETER, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		parameter: str = "", 
 		value: int = 0
 	) -> None:

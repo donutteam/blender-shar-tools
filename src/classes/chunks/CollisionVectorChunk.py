@@ -29,12 +29,12 @@ class CollisionVectorChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.COLLISION_VECTOR, 
-		children : list[Chunk] = [], 
-		vector: mathutils.Vector = mathutils.Vector()
+		children : list[Chunk] = None, 
+		vector: mathutils.Vector = None
 	) -> None:
 		super().__init__(identifier,children)
 	
-		self.vector = vector
+		self.vector = mathutils.Vector() if vector is None else vector
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DVector3(self.vector)

@@ -30,13 +30,13 @@ class BoundingSphereChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.BOUNDING_SPHERE, 
-		children: list[Chunk] = [],
-		center: mathutils.Vector = mathutils.Vector(),
+		children: list[Chunk] = None,
+		center: mathutils.Vector = None,
 		radius: float = 0
 	) -> None:
 		super().__init__(identifier, children)
 	
-		self.center = center
+		self.center = mathutils.Vector() if center is None else center
 		self.radius = radius
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:

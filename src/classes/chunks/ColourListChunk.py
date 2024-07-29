@@ -34,12 +34,12 @@ class ColourListChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.COLOUR_LIST, 
-		children: list[Chunk] = [], 
-		colours: list[Colour] = []
+		children: list[Chunk] = None, 
+		colours: list[Colour] = None
 	) -> None:
 		super().__init__(identifier, children)
 	
-		self.colours = colours
+		self.colours = [] if colours is None else colours
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt32(len(self.colours))

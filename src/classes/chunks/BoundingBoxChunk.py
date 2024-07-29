@@ -30,14 +30,14 @@ class BoundingBoxChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.BOUNDING_BOX, 
-		children: list[Chunk] = [],
-		low: mathutils.Vector = mathutils.Vector(),
-		high: mathutils.Vector = mathutils.Vector(),
+		children: list[Chunk] = None,
+		low: mathutils.Vector = None,
+		high: mathutils.Vector = None,
 	) -> None:
 		super().__init__(identifier, children)
 	
-		self.low = low
-		self.high = high
+		self.low = mathutils.Vector() if low is None else low
+		self.high = mathutils.Vector() if high is None else high
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DVector3(self.low)

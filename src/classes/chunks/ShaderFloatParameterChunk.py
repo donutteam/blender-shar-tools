@@ -28,7 +28,7 @@ class ShaderFloatParameterChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.SHADER_FLOAT_PARAMETER, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		parameter: str = "", 
 		value: float = 0
 	) -> None:
