@@ -212,7 +212,7 @@ class ExportedPure3DFile():
 							normal=calculatedNormal
 						)
 					]))
-			elif collectionBasename == "Static Entities" or True:
+			elif collectionBasename == "Static Entities":
 				for obj in childCollection.all_objects:
 					mesh = obj.data
 					for mat in mesh.materials:
