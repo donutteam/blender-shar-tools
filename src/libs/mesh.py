@@ -111,6 +111,10 @@ def meshToChunk(mesh: bpy.types.Mesh) -> classes.chunks.MeshChunk.MeshChunk:
 
 	bmesh.ops.triangulate(bm, faces=bm.faces[:])
 
+	bm.verts.ensure_lookup_table()
+	bm.edges.ensure_lookup_table()
+	bm.faces.ensure_lookup_table()
+
 	meshChildren = []
 	meshName = utils.get_basename(mesh.name)
 
@@ -182,7 +186,7 @@ def meshToChunk(mesh: bpy.types.Mesh) -> classes.chunks.MeshChunk.MeshChunk:
 		for i in [0,2,1]:
 			loop = face.loops[i]
 			positionList.positions.append(loop.vert.co.xzy)
-			uvList.uvs.append(loop[uv_layer].uv)
+			uvList.uvs.append(loop[uv_layer].uv.xy)
 
 			oldPrimitiveGroup.numberOfVertices += 1
 
