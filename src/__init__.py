@@ -61,7 +61,6 @@ def unregister():
 	classes.operators.ExportPure3DFileOperator.unregister()
 
 	classes.operators.AddCollisionOperator.unregister()
-	classes.operators.ImportPure3DFileOperator.unregister()
 
 	classes.properties.FenceProperties.unregister()
 	classes.properties.PathProperties.unregister()
