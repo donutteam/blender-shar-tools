@@ -3,6 +3,7 @@
 #
 
 import bpy
+import bmesh
 
 import utils
 
@@ -105,10 +106,29 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Mesh:
 	return mesh
 
 def meshToChunk(mesh: bpy.types.Mesh) -> classes.chunks.MeshChunk.MeshChunk:
+	bm = bmesh.new()
+	bm.from_mesh(mesh)
+
+	bmesh.ops.triangulate(bm, faces=bm.faces[:])
+
 	meshChildren = []
 	meshName = utils.get_basename(mesh.name)
 
 	oldPrimitiveGroups: list[classes.chunks.OldPrimitiveGroupChunk.OldPrimitiveGroupChunk] = []
+
+	if len(mesh.materials) == 0:
+		oldPrimitiveGroup = classes.chunks.OldPrimitiveGroupChunk.OldPrimitiveGroupChunk(
+			children=[
+				#classes.chunks.VertexShaderChunk.VertexShaderChunk(), # seems to only be used on Xbox
+				classes.chunks.PositionListChunk.PositionListChunk(),
+				classes.chunks.UVListChunk.UVListChunk(),
+				classes.chunks.ColourListChunk.ColourListChunk(),
+				classes.chunks.IndexListChunk.IndexListChunk(),
+			],
+			primitiveType=classes.chunks.OldPrimitiveGroupChunk.OldPrimitiveGroupChunk.primitiveTypes["TRIANGLE_LIST"]
+		)
+		oldPrimitiveGroups.append(oldPrimitiveGroup)
+		meshChildren.append(oldPrimitiveGroup)
 
 	for mat in mesh.materials:
 		oldPrimitiveGroup = classes.chunks.OldPrimitiveGroupChunk.OldPrimitiveGroupChunk(
@@ -150,55 +170,27 @@ def meshToChunk(mesh: bpy.types.Mesh) -> classes.chunks.MeshChunk.MeshChunk:
 		if distance > radius:
 			radius = distance
 
-	for poly in mesh.polygons:
-		oldPrimitiveGroup = oldPrimitiveGroups[poly.material_index]
-		positionList: classes.chunks.PositionListChunk.PositionListChunk = oldPrimitiveGroup.getFirstChildOfType(classes.chunks.PositionListChunk.PositionListChunk)
+	uv_layer = bm.loops.layers.uv.active
+
+	for face in bm.faces:
+		oldPrimitiveGroup = oldPrimitiveGroups[face.material_index]
 		indexList: classes.chunks.IndexListChunk.IndexListChunk = oldPrimitiveGroup.getFirstChildOfType(classes.chunks.IndexListChunk.IndexListChunk)
-		uvList: classes.chunks.UVListChunk.UVListChunk = oldPrimitiveGroup.getFirstChildOfType(classes.chunks.UVListChunk.UVListChunk)
 		colourList: classes.chunks.ColourListChunk.ColourListChunk = oldPrimitiveGroup.getFirstChildOfType(classes.chunks.ColourListChunk.ColourListChunk)
+		positionList: classes.chunks.PositionListChunk.PositionListChunk = oldPrimitiveGroup.getFirstChildOfType(classes.chunks.PositionListChunk.PositionListChunk)
+		uvList: classes.chunks.UVListChunk.UVListChunk = oldPrimitiveGroup.getFirstChildOfType(classes.chunks.UVListChunk.UVListChunk)
 		
-		vertexIndices = {}
-
-		for loop_index in poly.loop_indices:
-			loop = mesh.loops[loop_index]
-			vertex = mesh.vertices[loop.vertex_index]
-			index = len(positionList.positions)
-			
-			positionList.positions.append(vertex.co.xzy)
-			uvList.uvs.append(mesh.uv_layers[0].data[loop_index].uv)
-
-			vertexIndices[loop.vertex_index] = index
+		for i in [0,2,1]:
+			loop = face.loops[i]
+			positionList.positions.append(loop.vert.co.xzy)
+			uvList.uvs.append(loop[uv_layer].uv)
 
 			oldPrimitiveGroup.numberOfVertices += 1
 
-		if poly.loop_total == 3:
-			indexList.indices.append(vertexIndices[poly.vertices[0]])
-			indexList.indices.append(vertexIndices[poly.vertices[2]])
-			indexList.indices.append(vertexIndices[poly.vertices[1]])
+			indexList.indices.append(len(positionList.positions) - 1)
 
 			colourList.colours.append(Colour(255,255,255,255))
-			colourList.colours.append(Colour(255,255,255,255))
-			colourList.colours.append(Colour(255,255,255,255))
 
-			oldPrimitiveGroup.numberOfIndices += 3
-		else:
-			indexList.indices.append(vertexIndices[poly.vertices[0]])
-			indexList.indices.append(vertexIndices[poly.vertices[2]])
-			indexList.indices.append(vertexIndices[poly.vertices[1]])
-
-			colourList.colours.append(Colour(255,255,255,255))
-			colourList.colours.append(Colour(255,255,255,255))
-			colourList.colours.append(Colour(255,255,255,255))
-
-			indexList.indices.append(vertexIndices[poly.vertices[2]])
-			indexList.indices.append(vertexIndices[poly.vertices[0]])
-			indexList.indices.append(vertexIndices[poly.vertices[3]])
-
-			colourList.colours.append(Colour(255,255,255,255))
-			colourList.colours.append(Colour(255,255,255,255))
-			colourList.colours.append(Colour(255,255,255,255))
-
-			oldPrimitiveGroup.numberOfIndices += 6
+			oldPrimitiveGroup.numberOfIndices += 1
 		
 	meshChildren.append(classes.chunks.BoundingBoxChunk.BoundingBoxChunk(low=boundingBoxMin.xzy,high=boundingBoxMax.xzy))
 	meshChildren.append(classes.chunks.BoundingSphereChunk.BoundingSphereChunk(center=center.xzy,radius=distance))
