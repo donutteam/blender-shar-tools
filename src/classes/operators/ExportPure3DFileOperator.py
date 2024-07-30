@@ -13,7 +13,7 @@ import mathutils
 
 import utils
 
-import re
+import math
 
 from classes.chunks.RootChunk import RootChunk
 from classes.chunks.FenceChunk import FenceChunk
@@ -34,6 +34,7 @@ from classes.chunks.StaticEntityChunk import StaticEntityChunk
 from classes.properties.ShaderProperties import ShaderProperties
 
 from classes.File import File
+from classes.Colour import Colour
 
 import libs.fence as FenceLib
 import libs.image as ImageLib
@@ -171,7 +172,29 @@ class ExportedPure3DFile():
 
 			self.exportTexture(imageTexture.image)
 
-			params.append(ShaderTextureParameterChunk(parameter="TEX",value=imageTexture.image.name))
+			params.append(ShaderTextureParameterChunk(parameter="TEX", value=imageTexture.image.name))
+
+		params.append(ShaderColourParameterChunk(parameter="DIFF", colour=Colour.fromFloatVector(shaderProperties.diffuseColor)))
+		params.append(ShaderColourParameterChunk(parameter="SPEC", colour=Colour.fromFloatVector(shaderProperties.specularColor)))
+		params.append(ShaderColourParameterChunk(parameter="AMBI", colour=Colour.fromFloatVector(shaderProperties.ambientColor)))
+		if mat.use_nodes and mat.node_tree != None and "Principled BSDF" in mat.node_tree.nodes:
+			bsdf = mat.node_tree.nodes["Principled BSDF"]
+			params.append(ShaderColourParameterChunk(parameter="EMIS", colour=Colour.fromFloatVector(bsdf.inputs[26].default_value)))
+
+		params.append(ShaderIntegerParameterChunk(parameter="2SID", value=shaderProperties.twoSided))
+		params.append(ShaderIntegerParameterChunk(parameter="LIT", value=shaderProperties.lighting))
+		params.append(ShaderIntegerParameterChunk(parameter="ATST", value=shaderProperties.alphaTest))
+		params.append(ShaderIntegerParameterChunk(parameter="BLMD", value=("none","alpha","additive","subtractive").index(shaderProperties.blendMode)))
+		params.append(ShaderIntegerParameterChunk(parameter="FIMD", value=("nearestNeighbour","linear","nearestNeighbourMipNN","linearMipNN","linearMipL").index(shaderProperties.filterMode)))
+		params.append(ShaderIntegerParameterChunk(parameter="UVMD", value=("tile","clamp").index(shaderProperties.uvMode)))
+		params.append(ShaderIntegerParameterChunk(parameter="SHMD", value=("flat","gouraud").index(shaderProperties.shadeMode)))
+		params.append(ShaderIntegerParameterChunk(parameter="ACMP", value=("none","always","less","lessEqual","greater","greaterEqual","equal","notEqual").index(shaderProperties.alphaCompare)))
+		params.append(ShaderIntegerParameterChunk(parameter="MMIN", value=int(math.log(int(shaderProperties.mipmapMin),2)-3)))
+		params.append(ShaderIntegerParameterChunk(parameter="MMAX", value=int(math.log(int(shaderProperties.mipmapMax),2)-3)))
+
+		params.append(ShaderFloatParameterChunk(parameter="SHIN", value=shaderProperties.shininess))
+		params.append(ShaderFloatParameterChunk(parameter="ACTH", value=shaderProperties.alphaCompareThreshold))
+
 
 		self.shaderChunks.append(ShaderChunk(
 			children = params,
