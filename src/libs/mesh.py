@@ -32,6 +32,7 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Mesh:
 	total_positions = []
 	total_indices = []
 	total_uvs = []
+	total_colours = []
 
 	indexoffset = 0
 	separators = [0]
@@ -42,11 +43,11 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Mesh:
 				mesh.materials.append(bpy.data.materials[childChunk.shaderName])
 
 			for childChildChunkIndex, childChildChunk in enumerate(childChunk.children):
-				
+
 				if isinstance(childChildChunk,classes.chunks.PositionListChunk.PositionListChunk):
 					for position in childChildChunk.positions:
 						total_positions.append((position.x,position.z,position.y))
-				
+
 				elif isinstance(childChildChunk,classes.chunks.IndexListChunk.IndexListChunk):
 					if childChunk.primitiveType == childChunk.primitiveTypes["TRIANGLE_LIST"]:
 						for i in range(0,len(childChildChunk.indices),3):
@@ -76,10 +77,14 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Mesh:
 							raise NotImplementedError("Primitive type LINE_STRIP not implemented")
 						else:
 							raise NotImplementedError("Primitive type "+str(childChunk.primitiveType)+" not implemented")
-				
+
 				elif isinstance(childChildChunk,classes.chunks.UVListChunk.UVListChunk):
 					for uv in childChildChunk.uvs:
 						total_uvs.append((uv.x,uv.y))
+
+				elif isinstance(childChildChunk,classes.chunks.ColourListChunk.ColourListChunk):
+					for colour in childChildChunk.colours:
+						total_colours.append(colour)
 
 		indexoffset += len(total_positions)
 		separators.append(len(total_indices))
@@ -88,6 +93,9 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Mesh:
 	mesh.update()
 	
 	uvLayer = mesh.uv_layers.new()
+	vertexColor = None
+	if len(total_colours) > 0:
+		vertexColor = mesh.color_attributes.new("Vertex Color", "FLOAT_COLOR", "POINT")
 
 	for i,poly in enumerate(mesh.polygons):
 		for k,j in enumerate(separators):
@@ -99,6 +107,8 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Mesh:
 			vertex_index = loop.vertex_index
 			uv = total_uvs[vertex_index]
 			uvLayer.data[loop_index].uv = uv
+			if vertexColor != None:
+				vertexColor.data[vertex_index].color = tuple(total_colours[vertex_index])
 	
 	
 	mesh.update()

@@ -26,3 +26,9 @@ class Colour:
 		self.blue : int = blue
 
 		self.alpha : int = alpha
+	
+	def __iter__(self):
+		yield self.red / 255
+		yield self.green / 255
+		yield self.blue / 255
+		yield self.alpha / 255
