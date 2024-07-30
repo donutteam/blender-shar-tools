@@ -176,6 +176,9 @@ def meshToChunk(mesh: bpy.types.Mesh) -> classes.chunks.MeshChunk.MeshChunk:
 
 	uv_layer = bm.loops.layers.uv.active
 
+	color_layer_verts = bm.verts.layers.color.active or bm.verts.layers.float_color.active
+	color_layer_loops = bm.loops.layers.color.active or bm.loops.layers.float_color.active
+
 	for face in bm.faces:
 		oldPrimitiveGroup = oldPrimitiveGroups[face.material_index]
 		indexList: classes.chunks.IndexListChunk.IndexListChunk = oldPrimitiveGroup.getFirstChildOfType(classes.chunks.IndexListChunk.IndexListChunk)
@@ -192,7 +195,24 @@ def meshToChunk(mesh: bpy.types.Mesh) -> classes.chunks.MeshChunk.MeshChunk:
 
 			indexList.indices.append(len(positionList.positions) - 1)
 
-			colourList.colours.append(Colour(255,255,255,255))
+			if color_layer_verts != None:
+				color = loop.vert[color_layer_verts]
+				colourList.colours.append(Colour(
+					round(color.x * 255),
+					round(color.y * 255),
+					round(color.z * 255),
+					round(color.w * 255)
+				))
+			elif color_layer_loops != None:
+				color = loop[color_layer_loops]
+				colourList.colours.append(Colour(
+					round(color.x * 255),
+					round(color.y * 255),
+					round(color.z * 255),
+					round(color.w * 255)
+				))
+			else:
+				colourList.colours.append(Colour(255,255,255,255))
 
 			oldPrimitiveGroup.numberOfIndices += 1
 		
