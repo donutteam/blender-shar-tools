@@ -30,6 +30,7 @@ from classes.chunks.ShaderFloatParameterChunk import ShaderFloatParameterChunk
 from classes.chunks.ShaderIntegerParameterChunk import ShaderIntegerParameterChunk
 from classes.chunks.ShaderTextureParameterChunk import ShaderTextureParameterChunk
 from classes.chunks.StaticEntityChunk import StaticEntityChunk
+from classes.chunks.StaticPhysChunk import StaticPhysChunk
 
 from classes.properties.ShaderProperties import ShaderProperties
 
@@ -41,6 +42,7 @@ import libs.image as ImageLib
 import libs.mesh as MeshLib
 import libs.message as MessageLib
 import libs.path as PathLib
+import libs.collision as CollisionLib
 
 #
 # Class
@@ -249,6 +251,24 @@ class ExportedPure3DFile():
 							chunk
 						]
 					))
+			elif collectionBasename == "Collisions":
+				collisionGroups = {}
+				for obj in childCollection.all_objects:
+					baseName = utils.get_basename(obj.name)
+					if baseName not in collisionGroups:
+						collisionGroups[baseName] = []
+					collisionGroups[baseName].append(obj)
+				
+				for groupName, group in collisionGroups.items():
+					collisionObject = CollisionLib.collisionsToCollisionObject(groupName, group)
+					self.chunks.append(
+						StaticPhysChunk(
+							name = groupName,
+							children = [
+								collisionObject
+							]
+						)
+					)
 
 
 		chunks = []

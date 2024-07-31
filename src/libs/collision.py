@@ -147,3 +147,69 @@ def createFromVolume(collisionObject: CollisionObjectChunk, collisionVolume: Col
 			print("Unknown collision type " + hex(child.identifier))
 	
 	return objects
+
+def collisionsToCollisionObject(name: str, collisions: list[bpy.types.Object]):
+	volume = CollisionVolumeChunk(
+		ownerIndex = -1
+	)
+	
+	for collision in collisions:
+		if collision.collisionProperties == None:
+			continue
+		
+		properties = collision.collisionProperties
+		if properties.collisionType == "Box":
+			col = CollisionOrientedBoundingBoxChunk()
+			col.halfExtents = collision.scale
+			col.children.append(CollisionVectorChunk(vector = collision.location.xzy))
+			rotation = collision.rotation_euler.to_matrix()
+			rotation = mathutils.Matrix.Rotation(math.radians(180),3,"Y") @ rotation
+			rotation = mathutils.Matrix.Rotation(math.radians(-90),3,"X") @ rotation
+			col.children.append(CollisionVectorChunk(vector = mathutils.Vector((
+				rotation[0][0],
+				rotation[1][0],
+				rotation[2][0],
+			))))
+			col.children.append(CollisionVectorChunk(vector = mathutils.Vector((
+				rotation[0][1],
+				rotation[1][1],
+				rotation[2][1],
+			))))
+			col.children.append(CollisionVectorChunk(vector = mathutils.Vector((
+				rotation[0][2],
+				rotation[1][2],
+				rotation[2][2],
+			))))
+			volume.children.append(col)
+		elif properties.collisionType == "Cylinder":
+			col = CollisionCylinderChunk()
+			col.cylinderRadius = properties.radius
+			col.length = properties.length
+			col.flatEnd = int(properties.flatEnd)
+			col.children.append(CollisionVectorChunk(vector = collision.location.xzy))
+			rotation = collision.rotation_euler.to_matrix()
+			rotation = mathutils.Matrix.Rotation(math.radians(180),3,"Y") @ rotation
+			rotation = mathutils.Matrix.Rotation(math.radians(-90),3,"X") @ rotation
+
+			direction = rotation.normalized().transposed()
+			directionVector = mathutils.Vector((0, 0, 1)) @ direction
+
+			col.children.append(CollisionVectorChunk(vector = directionVector))
+
+			volume.children.append(col)
+		elif properties.collisionType == "Sphere":
+			col = CollisionSphereChunk()
+			col.radius = properties.radius
+			col.children.append(CollisionVectorChunk(vector = collision.location.xzy))
+			volume.children.append(col)
+
+		
+
+	return CollisionObjectChunk(
+		children = [
+			volume
+		],
+		name = name,
+		version = 1,
+		materialName = "NoData",
+	)
