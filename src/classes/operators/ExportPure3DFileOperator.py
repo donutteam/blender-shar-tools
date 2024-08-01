@@ -208,6 +208,10 @@ class ExportedPure3DFile():
 		
 
 	def export(self):
+		fileCollectionProperties = self.collection.fileCollectionProperties
+		for stickyImage in fileCollectionProperties.sharStickyImages:
+			self.exportTexture(stickyImage.image)
+
 		for childCollection in self.collection.children:
 			collectionBasename = utils.get_basename(childCollection.name)
 	

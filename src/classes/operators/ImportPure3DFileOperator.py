@@ -176,6 +176,8 @@ class ImportedPure3DFile():
 
 		self.numberOfUnsupportedChunksSkipped : int = 0
 
+		self.stickyImages = []
+
 	def importChunks(self) -> None:
 		#
 		# Print
@@ -225,8 +227,13 @@ class ImportedPure3DFile():
 			return
 
 		fileCollection = bpy.data.collections.new(self.fileName)
+		fileCollectionProperties = fileCollection.fileCollectionProperties
 
 		bpy.context.scene.collection.children.link(fileCollection)
+
+		for stickyImage in self.stickyImages:
+			sharStickyImage = fileCollectionProperties.sharStickyImages.add()
+			sharStickyImage.image = bpy.data.images[stickyImage]
 		
 		if self.numberOfFenceChunksImported > 0:
 			fileCollection.children.link(self.fenceCollection)
@@ -292,6 +299,9 @@ class ImportedPure3DFile():
 					if childChunk.value not in bpy.data.images:
 						print("Image",childChunk.value,"not found to apply on a material")
 						continue
+
+					if childChunk.value in self.stickyImages:
+						self.stickyImages.remove(childChunk.value)
 
 					image = bpy.data.images[childChunk.value]
 
@@ -366,17 +376,18 @@ class ImportedPure3DFile():
 
 				self.numberOfStaticEntityChunksImported += 1
 
-	def importTextureChunk(self, chunk : TextureChunk) -> None:
+	def importTextureChunk(self, chunk : TextureChunk) -> bpy.types.Image | None:
 		for i in bpy.data.images:
 			if i.name == chunk.name:
 				return
 
+		self.stickyImages.append(chunk.name)
+
 		# TODO: Pretty sure this is currently fucked if the P3D has mipmaps for whatever reason
 		for childChunk in chunk.children:
 			if isinstance(childChunk, ImageChunk):
-				ImageLib.createImage(childChunk, chunk)
-
-		self.numberOfTextureChunksImported += 1
+				self.numberOfTextureChunksImported += 1
+				return ImageLib.createImage(childChunk, chunk)
 	
 	def importStaticPhysChunk(self, chunk: StaticPhysChunk):
 		for childChunk in chunk.children:
