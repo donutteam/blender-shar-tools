@@ -144,6 +144,36 @@ class ImportPure3DFileOperator(bpy.types.Operator, bpy_extras.io_utils.ImportHel
 
 		print("\n".join(messageLines))
 
+class RawImportPure3DFileOperator(bpy.types.Operator):
+	bl_idname = "operators.raw_import_pure3d_file"
+	bl_label = "Import Pure3D File(s)..."
+
+	filepath: bpy.props.StringProperty(subtype='FILE_PATH', options={'SKIP_SAVE'})
+
+	def draw(self, context):
+		pass
+
+	def execute(self, context):
+		print("Importing " + self.filepath)
+		#
+		# Read Pure3D File
+		#
+
+		with open(self.filepath, "rb") as file:
+			fileContents = file.read()
+
+		rootChunk = File.fromBytes(fileContents)
+
+		#
+		# Import Pure3D File
+		#
+
+		importedPure3DFile = ImportedPure3DFile(self, self.filepath, rootChunk.children)
+
+		importedPure3DFile.importChunks()
+
+		return {"FINISHED"}
+
 class ImportedPure3DFile():
 	def __init__(self, importPure3DFileOperator : ImportPure3DFileOperator, filePath : str, chunks : list[Chunk]):
 		self.importPure3DFileOperator = importPure3DFileOperator
@@ -191,27 +221,27 @@ class ImportedPure3DFile():
 
 		for chunkIndex, chunk in enumerate(self.chunks):
 			if isinstance(chunk, FenceChunk):
-				if self.importPure3DFileOperator.option_import_fences:
+				if getattr(self.importPure3DFileOperator, "option_import_fences", True):
 					self.importFenceChunk(chunkIndex, chunk)
 
 			elif isinstance(chunk, PathChunk):
-				if self.importPure3DFileOperator.option_import_paths:
+				if getattr(self.importPure3DFileOperator, "option_import_paths", True):
 					self.importPathChunk(chunkIndex, chunk)
 
 			elif isinstance(chunk, ShaderChunk):
-				if self.importPure3DFileOperator.option_import_shaders:
+				if getattr(self.importPure3DFileOperator, "option_import_shaders", True):
 					self.importShaderChunk(chunk)
 
 			elif isinstance(chunk, StaticEntityChunk):
-				if self.importPure3DFileOperator.option_import_static_entities:
+				if getattr(self.importPure3DFileOperator, "option_import_static_entities", True):
 					self.importStaticEntityChunk(chunk)
 
 			elif isinstance(chunk, TextureChunk):
-				if self.importPure3DFileOperator.option_import_textures:
+				if getattr(self.importPure3DFileOperator, "option_import_textures", True):
 					self.importTextureChunk(chunk)
 			
 			elif isinstance(chunk, StaticPhysChunk):
-				if self.importPure3DFileOperator.option_import_collisions:
+				if getattr(self.importPure3DFileOperator, "option_import_collisions", True):
 					self.importStaticPhysChunk(chunk)
 
 			else:
@@ -230,6 +260,26 @@ class ImportedPure3DFile():
 		fileCollectionProperties = fileCollection.fileCollectionProperties
 
 		bpy.context.scene.collection.children.link(fileCollection)
+		bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection.children[fileCollection.name]
+		bpy.ops.collection.exporter_add(name="PURE3D_FH_importexport")
+		exporterFilePath = self.filePath
+
+		# Prevent accidentally overriding game files
+		currentTraversal = os.path.dirname(self.filePath)
+		while True:
+			parentDirectory = os.path.dirname(currentTraversal)
+			directoryName = os.path.basename(currentTraversal)
+			if directoryName == "art":
+				if os.path.exists(os.path.join(parentDirectory, "Simpsons.exe")):
+					print("Converting exporter path " + self.filePath + " to " + self.fileName + " because it can lead game files to be accidentally overriden.")
+					exporterFilePath = self.fileName
+					break
+			elif directoryName == parentDirectory:
+				break
+			currentTraversal = parentDirectory
+
+
+		fileCollection.exporters["Pure3D"].export_properties.filepath = exporterFilePath
 
 		for stickyImage in self.stickyImages:
 			sharStickyImage = fileCollectionProperties.sharStickyImages.add()
@@ -402,10 +452,12 @@ def menu_item(self, context):
 
 def register():
 	bpy.utils.register_class(ImportPure3DFileOperator)
+	bpy.utils.register_class(RawImportPure3DFileOperator)
 	
 	bpy.types.TOPBAR_MT_file_import.append(menu_item)
 
 def unregister():
 	bpy.utils.unregister_class(ImportPure3DFileOperator)
+	bpy.utils.unregister_class(RawImportPure3DFileOperator)
 
 	bpy.types.TOPBAR_MT_file_import.remove(menu_item)

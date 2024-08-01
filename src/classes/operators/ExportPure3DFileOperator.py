@@ -100,6 +100,24 @@ class ExportPure3DFileOperator(bpy.types.Operator, bpy_extras.io_utils.ExportHel
 
 		return {"FINISHED"}
 
+class RawExportPure3DFileOperator(bpy.types.Operator):
+	bl_idname = "operators.raw_export_pure3d_file"
+	bl_label = "Export Pure3D File"
+
+	filepath: bpy.props.StringProperty(subtype="FILE_PATH", name="File Path")
+
+	def draw(self, context):
+		pass # DO NOT REMOVE else duplicate filepath fields will be shown
+
+	def execute(self, context):
+		print("Exporting to " + self.filepath + " from collection " + context.collection.name)
+		
+		exportedPure3DFile = ExportedPure3DFile(self, self.filepath, context.collection)
+
+		exportedPure3DFile.export()
+
+		return {"FINISHED"}
+
 class ExportedPure3DFile():
 	def __init__(self, exportPure3DFileOperator: ExportPure3DFileOperator, filePath: str, collection: bpy.types.Collection):
 		self.exportPure3DFileOperator = exportPure3DFileOperator
@@ -288,10 +306,12 @@ def menu_item(self, context):
 
 def register():
 	bpy.utils.register_class(ExportPure3DFileOperator)
+	bpy.utils.register_class(RawExportPure3DFileOperator)
 	
 	bpy.types.TOPBAR_MT_file_export.append(menu_item)
 
 def unregister():
 	bpy.utils.unregister_class(ExportPure3DFileOperator)
+	bpy.utils.unregister_class(RawExportPure3DFileOperator)
 
 	bpy.types.TOPBAR_MT_file_export.remove(menu_item)

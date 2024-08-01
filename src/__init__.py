@@ -33,6 +33,8 @@ import classes.operators.AddCollisionOperator
 import classes.operators.ImportPure3DFileOperator
 import classes.operators.ExportPure3DFileOperator
 
+import classes.Pure3DFileHandler
+
 import classes.properties.FenceProperties
 import classes.properties.ShaderProperties
 import classes.properties.PathProperties
@@ -46,9 +48,11 @@ import classes.properties.FileCollectionProperties
 def register():
 	print("Registered The Simpsons Hit & Run Tools.")
 
-	classes.operators.AddCollisionOperator.register()
 	classes.operators.ImportPure3DFileOperator.register()
 	classes.operators.ExportPure3DFileOperator.register()
+	classes.Pure3DFileHandler.register()
+
+	classes.operators.AddCollisionOperator.register()
 
 	classes.properties.FenceProperties.register()
 	classes.properties.PathProperties.register()
@@ -61,6 +65,7 @@ def unregister():
 
 	classes.operators.ImportPure3DFileOperator.unregister()
 	classes.operators.ExportPure3DFileOperator.unregister()
+	classes.Pure3DFileHandler.unregister()
 
 	classes.operators.AddCollisionOperator.unregister()
 
