@@ -274,7 +274,7 @@ class ImportedPure3DFile():
 					print("Converting exporter path " + self.filePath + " to " + self.fileName + " because it can lead game files to be accidentally overriden.")
 					exporterFilePath = self.fileName
 					break
-			elif directoryName == parentDirectory:
+			elif currentTraversal == parentDirectory:
 				break
 			currentTraversal = parentDirectory
 
