@@ -309,7 +309,7 @@ class ExportedPure3DFile():
 						if shaderProperties.blendMode == "alpha" or shaderProperties.alphaTest:
 							hasAlpha = 1
 
-					chunk = MeshLib.meshToChunk(mesh)
+					chunk = MeshLib.meshToChunk(mesh, obj)
 					self.chunks.append(StaticEntityChunk(
 						version = 0,
 						hasAlpha = hasAlpha,

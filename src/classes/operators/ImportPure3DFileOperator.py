@@ -24,6 +24,7 @@ from classes.chunks.ShaderIntegerParameterChunk import ShaderIntegerParameterChu
 from classes.chunks.ShaderTextureParameterChunk import ShaderTextureParameterChunk
 from classes.chunks.StaticEntityChunk import StaticEntityChunk
 from classes.chunks.StaticPhysChunk import StaticPhysChunk
+from classes.chunks.RenderStatusChunk import RenderStatusChunk
 from classes.chunks.CollisionObjectChunk import CollisionObjectChunk
 
 from classes.File import File
@@ -418,9 +419,11 @@ class ImportedPure3DFile():
 		#	So this code should make that assumption, I think, and maybe error otherwise (< 1 or > 1)
 		for childChunk in chunk.children:
 			if isinstance(childChunk, MeshChunk):
+				renderStatusChunk = childChunk.getFirstChildOfType(RenderStatusChunk)
 				mesh = MeshLib.createMesh(childChunk)
 
 				meshObject = bpy.data.objects.new(chunk.name, mesh)
+				meshObject.visible_shadow = bool(renderStatusChunk.castShadow)
 
 				self.staticEntityCollection.objects.link(meshObject)
 

@@ -17,6 +17,7 @@ import classes.chunks.ColourListChunk
 import classes.chunks.VertexShaderChunk
 import classes.chunks.BoundingBoxChunk
 import classes.chunks.BoundingSphereChunk
+import classes.chunks.RenderStatusChunk
 
 from classes.Colour import Colour
 
@@ -115,7 +116,7 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Mesh:
 
 	return mesh
 
-def meshToChunk(mesh: bpy.types.Mesh) -> classes.chunks.MeshChunk.MeshChunk:
+def meshToChunk(mesh: bpy.types.Mesh, obj: bpy.types.Object) -> classes.chunks.MeshChunk.MeshChunk:
 	bm = bmesh.new()
 	bm.from_mesh(mesh)
 
@@ -228,6 +229,12 @@ def meshToChunk(mesh: bpy.types.Mesh) -> classes.chunks.MeshChunk.MeshChunk:
 		
 	meshChildren.append(classes.chunks.BoundingBoxChunk.BoundingBoxChunk(low=boundingBoxMin.xzy,high=boundingBoxMax.xzy))
 	meshChildren.append(classes.chunks.BoundingSphereChunk.BoundingSphereChunk(center=center.xzy,radius=distance))
+
+	castShadow = 0
+	if obj != None:
+		castShadow = int(obj.visible_shadow)
+
+	meshChildren.append(classes.chunks.RenderStatusChunk.RenderStatusChunk(castShadow=castShadow))
 
 	return classes.chunks.MeshChunk.MeshChunk(
 		children=meshChildren,
