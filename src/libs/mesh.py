@@ -228,7 +228,7 @@ def meshToChunk(mesh: bpy.types.Mesh, obj: bpy.types.Object) -> classes.chunks.M
 			oldPrimitiveGroup.numberOfIndices += 1
 		
 	meshChildren.append(classes.chunks.BoundingBoxChunk.BoundingBoxChunk(low=boundingBoxMin.xzy,high=boundingBoxMax.xzy))
-	meshChildren.append(classes.chunks.BoundingSphereChunk.BoundingSphereChunk(center=center.xzy,radius=distance))
+	meshChildren.append(classes.chunks.BoundingSphereChunk.BoundingSphereChunk(center=center.xzy,radius=radius))
 
 	castShadow = 0
 	if obj != None:
