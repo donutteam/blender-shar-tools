@@ -225,6 +225,20 @@ class ExportedPure3DFile():
 		params.append(ShaderFloatParameterChunk(parameter="ACTH", value=shaderProperties.alphaCompareThreshold))
 
 
+		# Hardcoded values, probably need to make them dynamic if they actually change
+		params.append(ShaderFloatParameterChunk(parameter="CBVV", value=0))
+		params.append(ShaderFloatParameterChunk(parameter="MSHP", value=0.5))
+
+		params.append(ShaderIntegerParameterChunk(parameter="CBVA", value=1))
+		params.append(ShaderIntegerParameterChunk(parameter="CBVB", value=2))
+		params.append(ShaderIntegerParameterChunk(parameter="PLMD", value=0))
+		params.append(ShaderIntegerParameterChunk(parameter="CBVM", value=0))
+		params.append(ShaderIntegerParameterChunk(parameter="MCBV", value=0))
+		params.append(ShaderIntegerParameterChunk(parameter="MMEX", value=0))
+	
+		params.append(ShaderColourParameterChunk(parameter="CBVC", colour=Colour(255,255,255,255)))
+
+
 		self.shaderChunks.append(ShaderChunk(
 			children = params,
 			name = mat.name,
@@ -287,12 +301,17 @@ class ExportedPure3DFile():
 			elif collectionBasename == "Static Entities":
 				for obj in childCollection.all_objects:
 					mesh = obj.data
+					hasAlpha = 0
 					for mat in mesh.materials:
 						self.exportShader(mat)
+						shaderProperties: ShaderProperties = mat.shaderProperties
+						if shaderProperties.blendMode == "alpha" or shaderProperties.alphaTest:
+							hasAlpha = 1
+
 					chunk = MeshLib.meshToChunk(mesh)
 					self.chunks.append(StaticEntityChunk(
 						version = 0,
-						hasAlpha = 0,
+						hasAlpha = hasAlpha,
 						name = obj.name,
 						children = [
 							chunk
