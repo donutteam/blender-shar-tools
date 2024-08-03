@@ -11,6 +11,8 @@ from classes.chunks.CollisionOrientedBoundingBoxChunk import CollisionOrientedBo
 from classes.chunks.CollisionVectorChunk import CollisionVectorChunk
 from classes.chunks.CollisionCylinderChunk import CollisionCylinderChunk
 from classes.chunks.CollisionSphereChunk import CollisionSphereChunk
+from classes.chunks.CollisionObjectAttributeChunk import CollisionObjectAttributeChunk
+from classes.chunks.CollisionAxisAlignedBoundingBoxChunk import CollisionAxisAlignedBoundingBoxChunk
 
 import mathutils
 import math
@@ -150,8 +152,10 @@ def createFromVolume(collisionObject: CollisionObjectChunk, collisionVolume: Col
 
 def collisionsToCollisionObject(name: str, collisions: list[bpy.types.Object]):
 	volume = CollisionVolumeChunk(
-		ownerIndex = -1
+		ownerIndex = 0,
 	)
+
+	volume.children.append(CollisionAxisAlignedBoundingBoxChunk())
 	
 	for collision in collisions:
 		if collision.collisionProperties == None:
@@ -180,7 +184,7 @@ def collisionsToCollisionObject(name: str, collisions: list[bpy.types.Object]):
 				rotation[1][2],
 				rotation[2][2],
 			))))
-			volume.children.append(col)
+			volume.children.append(CollisionVolumeChunk(children=[col],ownerIndex=-1))
 		elif properties.collisionType == "Cylinder":
 			col = CollisionCylinderChunk()
 			col.cylinderRadius = properties.radius
@@ -196,18 +200,19 @@ def collisionsToCollisionObject(name: str, collisions: list[bpy.types.Object]):
 
 			col.children.append(CollisionVectorChunk(vector = directionVector))
 
-			volume.children.append(col)
+			volume.children.append(CollisionVolumeChunk(children=[col],ownerIndex=-1))
 		elif properties.collisionType == "Sphere":
 			col = CollisionSphereChunk()
 			col.radius = properties.radius
 			col.children.append(CollisionVectorChunk(vector = collision.location.xzy))
-			volume.children.append(col)
+			volume.children.append(CollisionVolumeChunk(children=[col],ownerIndex=-1))
 
 		
 
 	return CollisionObjectChunk(
 		children = [
-			volume
+			volume,
+			CollisionObjectAttributeChunk()
 		],
 		name = name,
 		version = 1,

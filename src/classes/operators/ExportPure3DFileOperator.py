@@ -31,6 +31,7 @@ from classes.chunks.ShaderIntegerParameterChunk import ShaderIntegerParameterChu
 from classes.chunks.ShaderTextureParameterChunk import ShaderTextureParameterChunk
 from classes.chunks.StaticEntityChunk import StaticEntityChunk
 from classes.chunks.StaticPhysChunk import StaticPhysChunk
+from classes.chunks.CollisionEffectChunk import CollisionEffectChunk
 
 from classes.properties.ShaderProperties import ShaderProperties
 
@@ -331,7 +332,12 @@ class ExportedPure3DFile():
 						StaticPhysChunk(
 							name = groupName,
 							children = [
-								collisionObject
+								collisionObject,
+								CollisionEffectChunk( # Placeholder values
+									classType = 7,
+									phyPropID = 0,
+									soundResourceDataName = "nosound"
+								)
 							]
 						)
 					)

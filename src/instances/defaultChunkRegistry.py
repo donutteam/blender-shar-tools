@@ -34,6 +34,9 @@ from classes.chunks.CollisionOrientedBoundingBoxChunk import CollisionOrientedBo
 from classes.chunks.CollisionVectorChunk import CollisionVectorChunk
 from classes.chunks.CollisionCylinderChunk import CollisionCylinderChunk
 from classes.chunks.CollisionSphereChunk import CollisionSphereChunk
+from classes.chunks.CollisionObjectAttributeChunk import CollisionObjectAttributeChunk
+from classes.chunks.CollisionEffectChunk import CollisionEffectChunk
+from classes.chunks.CollisionAxisAlignedBoundingBoxChunk import CollisionAxisAlignedBoundingBoxChunk
 
 from classes.ChunkRegistry import ChunkRegistry
 
@@ -102,3 +105,9 @@ defaultChunkRegistry.register(chunkIdentifiers.COLLISION_CYLINDER, CollisionCyli
 defaultChunkRegistry.register(chunkIdentifiers.COLLISION_SPHERE, CollisionSphereChunk)
 
 defaultChunkRegistry.register(chunkIdentifiers.COLLISION_VECTOR, CollisionVectorChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.COLLISION_OBJECT_ATTRIBUTE, CollisionObjectAttributeChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.COLLISION_EFFECT, CollisionEffectChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.COLLISION_AXIS_ALIGNED_BOUNDING_BOX, CollisionAxisAlignedBoundingBoxChunk)
