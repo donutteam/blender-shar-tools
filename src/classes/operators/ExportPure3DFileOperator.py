@@ -138,6 +138,15 @@ class ExportedPure3DFile():
 	def exportTexture(self, image: bpy.types.Image):
 		if image.name in self.imagesAlreadyExported:
 			return
+		for collection in bpy.data.collections:
+			if collection == self.collection:
+				continue
+			fileCollectionProperties = collection.fileCollectionProperties
+			for stickyImage in fileCollectionProperties.sharStickyImages:
+				if stickyImage.image.name == image.name:
+					print("Avoiding exporting sticky image " + stickyImage.image.name + " from " + collection.name + " in " + self.collection.name)
+					return
+			
 		self.imagesAlreadyExported.append(image.name)
 
 		width, height = image.size
