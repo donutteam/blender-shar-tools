@@ -259,6 +259,22 @@ class ExportedPure3DFile():
 							normal=calculatedNormal
 						)
 					]))
+			elif collectionBasename == "Paths":
+				for path in childCollection.all_objects:
+					if not path.isPath:
+						continue
+
+					pathCurve = path.data
+					pathCurveSpline = pathCurve.splines[0]
+
+					points = []
+
+					for point in pathCurveSpline.points:
+						points.append(point.co.xzy)
+					
+					self.chunks.append(PathChunk(
+						points = points
+					))
 			elif collectionBasename == "Static Entities":
 				for obj in childCollection.all_objects:
 					mesh = obj.data
