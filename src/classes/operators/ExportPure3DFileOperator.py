@@ -156,6 +156,7 @@ class ExportedPure3DFile():
 
 		temppath = tempfile.mktemp(prefix="tempbstimage")
 		scaledImage = image.copy()
+		scaledImage.pixels = image.pixels[:]
 		scaledImage.update()
 		scaledImage.scale(width, height)
 		scaledImage.update()
