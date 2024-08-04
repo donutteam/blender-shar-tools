@@ -87,7 +87,7 @@ class ShaderProperties(bpy.types.PropertyGroup):
 	)
 	lighting: bpy.props.BoolProperty(
 		name="Lighting",
-		default=True
+		default=False
 	)
 	alphaTest: bpy.props.BoolProperty(
 		name="Alpha Test",
