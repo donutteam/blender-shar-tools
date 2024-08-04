@@ -348,6 +348,7 @@ class ImportedPure3DFile():
 			if isinstance(childChunk, ShaderTextureParameterChunk):
 				if childChunk.parameter == "TEX":
 					if childChunk.value not in bpy.data.images:
+						material.shaderProperties.rawTextureName = childChunk.value
 						print("Image",childChunk.value,"not found to apply on a material")
 						continue
 

@@ -164,6 +164,10 @@ class ShaderProperties(bpy.types.PropertyGroup):
 		default=7,
 		description="Maximum dimension of the mipmapped texture"
 	)
+	rawTextureName: bpy.props.StringProperty(
+		name="Raw Texture Name",
+		description="Texture name to be used when no image is set"
+	)
 
 class ShaderPropertiesPanel(bpy.types.Panel):
 	bl_label = "SHAR Shader Properties"
@@ -194,11 +198,12 @@ class ShaderPropertiesPanel(bpy.types.Panel):
 		if mat.use_nodes and mat.node_tree != None and "Principled BSDF" in mat.node_tree.nodes and "Image Texture" in mat.node_tree.nodes:
 			layout.label(text="Change texture above")
 		else:
-			layout.label(text="Add image texture above")
-		layout.label(text="Change emission above (use strength=1)")
+			layout.label(text="Add image texture above or:")
+			layout.prop(mat.shaderProperties,"rawTextureName")
 		layout.prop(mat.shaderProperties,"diffuseColor")
 		layout.prop(mat.shaderProperties,"specularColor")
 		layout.prop(mat.shaderProperties,"ambientColor")
+		layout.label(text="Change emission above")
 		layout.prop(mat.shaderProperties,"blendMode")
 		layout.prop(mat.shaderProperties,"filterMode")
 		layout.prop(mat.shaderProperties,"uvMode")

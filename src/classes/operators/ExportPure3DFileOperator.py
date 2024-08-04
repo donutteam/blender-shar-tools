@@ -211,6 +211,9 @@ class ExportedPure3DFile():
 			self.exportTexture(imageTexture.image)
 
 			params.append(ShaderTextureParameterChunk(parameter="TEX", value=imageTexture.image.name))
+		else:
+			if shaderProperties.rawTextureName != "":
+				params.append(ShaderTextureParameterChunk(parameter="TEX", value=shaderProperties.rawTextureName))
 
 		params.append(ShaderColourParameterChunk(parameter="DIFF", colour=Colour.fromFloatVector(shaderProperties.diffuseColor)))
 		params.append(ShaderColourParameterChunk(parameter="SPEC", colour=Colour.fromFloatVector(shaderProperties.specularColor)))
