@@ -161,6 +161,7 @@ class ExportedPure3DFile():
 		scaledImage.scale(width, height)
 		scaledImage.update()
 		scaledImage.save(filepath=temppath)
+		bpy.data.images.remove(scaledImage)
 
 		with open(temppath,"rb") as f:
 			data = f.read()
@@ -307,7 +308,7 @@ class ExportedPure3DFile():
 						points = points
 					))
 			elif collectionBasename == "Static Entities":
-				for obj in childCollection.all_objects:
+				for obj in childCollection.objects:
 					mesh = obj.data
 					hasAlpha = 0
 					for mat in mesh.materials:
