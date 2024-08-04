@@ -151,9 +151,15 @@ class ExportedPure3DFile():
 		self.imagesAlreadyExported.append(image.name)
 
 		width, height = image.size
+		width = pow(2, round(math.log(width, 2)))
+		height = pow(2, round(math.log(height, 2)))
 
 		temppath = tempfile.mktemp(prefix="tempbstimage")
-		image.save(filepath=temppath)
+		scaledImage = image.copy()
+		scaledImage.update()
+		scaledImage.scale(width, height)
+		scaledImage.update()
+		scaledImage.save(filepath=temppath)
 
 		with open(temppath,"rb") as f:
 			data = f.read()
