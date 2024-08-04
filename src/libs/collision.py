@@ -25,8 +25,8 @@ def createCollision(collisionObject: CollisionObjectChunk) -> list[bpy.types.Obj
 	return createFromVolume(collisionObject,collisionObject.getFirstChildOfType(CollisionVolumeChunk))
 
 def createNewCollisionBox():
-	mesh = bpy.data.meshes.new("Collision Cylinder")
-	obj = bpy.data.objects.new("Collision Cylinder", mesh)
+	mesh = bpy.data.meshes.new("Collision Box")
+	obj = bpy.data.objects.new("Collision Box", mesh)
 
 	bm = bmesh.new()
 	bmesh.ops.create_cube(bm, size=2)
