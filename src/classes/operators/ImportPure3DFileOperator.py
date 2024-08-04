@@ -339,6 +339,8 @@ class ImportedPure3DFile():
 		
 		bsdf = material.node_tree.nodes["Principled BSDF"]
 
+		bsdf.inputs[2].default_value = 1 # Roughness
+
 		if chunk.hasTranslucency:
 			material.blend_method = "HASHED"
 
@@ -359,8 +361,17 @@ class ImportedPure3DFile():
 
 					texture_image = material.node_tree.nodes.new("ShaderNodeTexImage")
 					texture_image.image = image
+
+					multiply_node: bpy.types.ShaderNodeMixRGB = material.node_tree.nodes.new("ShaderNodeMixRGB")
+					multiply_node.blend_type = "MULTIPLY"
+					multiply_node.inputs["Fac"].default_value = 1
+
+					color_node = material.node_tree.nodes.new("ShaderNodeVertexColor")
+
+					material.node_tree.links.new(multiply_node.inputs["Color1"], texture_image.outputs["Color"])
+					material.node_tree.links.new(multiply_node.inputs["Color2"], color_node.outputs["Color"])
 					
-					material.node_tree.links.new(bsdf.inputs["Base Color"],texture_image.outputs["Color"])
+					material.node_tree.links.new(bsdf.inputs["Base Color"],multiply_node.outputs["Color"])
 					material.node_tree.links.new(bsdf.inputs["Alpha"],texture_image.outputs["Alpha"]) # Always connect alpha nodes, transparency only visible when blend method is set to "Alpha Hashed"
 			
 			elif isinstance(childChunk, ShaderColourParameterChunk):
