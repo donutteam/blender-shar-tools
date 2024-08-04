@@ -375,7 +375,7 @@ class ImportedPure3DFile():
 					material.shaderProperties.ambientColor = color_rgb # Ambient
 				elif childChunk.parameter == "EMIS":
 					bsdf.inputs[26].default_value = color_argb # Emission Color
-					bsdf.inputs[27].default_value = 1 # Emission Strength
+					bsdf.inputs[27].default_value = 0 # Emission Strength
 				else:
 					pass
 			
