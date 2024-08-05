@@ -166,6 +166,8 @@ class ExportedPure3DFile():
 		with open(temppath,"rb") as f:
 			data = f.read()
 
+		os.remove(temppath)
+
 		self.textureChunks.append(TextureChunk(
 			children = [
 				ImageChunk(
