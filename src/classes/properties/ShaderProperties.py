@@ -166,7 +166,8 @@ class ShaderProperties(bpy.types.PropertyGroup):
 	)
 	rawTextureName: bpy.props.StringProperty(
 		name="Raw Texture Name",
-		description="Texture name to be used when no image is set"
+		description="Texture name to be used when no image is set",
+		default=""
 	)
 
 class ShaderPropertiesPanel(bpy.types.Panel):

@@ -349,18 +349,19 @@ class ImportedPure3DFile():
 		for childChunkIndex, childChunk in enumerate(chunk.children):
 			if isinstance(childChunk, ShaderTextureParameterChunk):
 				if childChunk.parameter == "TEX":
+					image = None
 					if childChunk.value not in bpy.data.images:
 						material.shaderProperties.rawTextureName = childChunk.value
 						print("Image",childChunk.value,"not found to apply on a material")
-						continue
+					else:
+						image = bpy.data.images[childChunk.value]
 
 					if childChunk.value in self.stickyImages:
 						self.stickyImages.remove(childChunk.value)
 
-					image = bpy.data.images[childChunk.value]
-
 					texture_image = material.node_tree.nodes.new("ShaderNodeTexImage")
-					texture_image.image = image
+					if image != None:
+						texture_image.image = image
 
 					multiply_node: bpy.types.ShaderNodeMixRGB = material.node_tree.nodes.new("ShaderNodeMixRGB")
 					multiply_node.blend_type = "MULTIPLY"
@@ -372,7 +373,8 @@ class ImportedPure3DFile():
 					material.node_tree.links.new(multiply_node.inputs["Color2"], color_node.outputs["Color"])
 					
 					material.node_tree.links.new(bsdf.inputs["Base Color"],multiply_node.outputs["Color"])
-					material.node_tree.links.new(bsdf.inputs["Alpha"],texture_image.outputs["Alpha"]) # Always connect alpha nodes, transparency only visible when blend method is set to "Alpha Hashed"
+					if image != None:
+						material.node_tree.links.new(bsdf.inputs["Alpha"],texture_image.outputs["Alpha"]) # Always connect alpha nodes, transparency only visible when blend method is set to "Alpha Hashed"
 			
 			elif isinstance(childChunk, ShaderColourParameterChunk):
 				# hacky way to do it
@@ -452,7 +454,15 @@ class ImportedPure3DFile():
 		for childChunk in chunk.children:
 			if isinstance(childChunk, ImageChunk):
 				self.numberOfTextureChunksImported += 1
-				return ImageLib.createImage(childChunk, chunk)
+				image = ImageLib.createImage(childChunk, chunk)
+				for mat in bpy.data.materials:
+					if mat.shaderProperties != None:
+						if mat.shaderProperties.rawTextureName == chunk.name:
+							mat.shaderProperties.rawTextureName = ""
+							if "Image Texture" in mat.node_tree.nodes:
+								mat.node_tree.nodes["Image Texture"].image = image
+								mat.node_tree.links.new(mat.node_tree.nodes["Principled BSDF"].inputs["Alpha"],mat.node_tree.nodes["Image Texture"].outputs["Alpha"])
+				return image
 	
 	def importStaticPhysChunk(self, chunk: StaticPhysChunk):
 		for childChunk in chunk.children:
