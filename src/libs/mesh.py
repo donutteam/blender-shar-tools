@@ -95,9 +95,7 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Mesh:
 	mesh.update()
 	
 	uvLayer = mesh.uv_layers.new()
-	vertexColor = None
-	if len(total_colours) > 0:
-		vertexColor = mesh.color_attributes.new("Vertex Color", "FLOAT_COLOR", "POINT")
+	vertexColor = mesh.color_attributes.new("Vertex Color", "FLOAT_COLOR", "POINT")
 
 	for i,poly in enumerate(mesh.polygons):
 		for k,j in enumerate(separators):
@@ -109,8 +107,10 @@ def createMesh(chunk: classes.chunks.MeshChunk.MeshChunk) -> bpy.types.Mesh:
 			vertex_index = loop.vertex_index
 			uv = total_uvs[vertex_index]
 			uvLayer.data[loop_index].uv = uv
-			if vertexColor != None:
+			if vertex_index < len(total_colours):
 				vertexColor.data[vertex_index].color = tuple(total_colours[vertex_index])
+			else:
+				vertexColor.data[vertex_index].color = (1,1,1,1)
 	
 	
 	mesh.update()
