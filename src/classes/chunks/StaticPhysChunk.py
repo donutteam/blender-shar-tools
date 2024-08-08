@@ -28,7 +28,7 @@ class StaticPhysChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.STATIC_PHYS, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		name: str = "",
 		version: int = 0
 	) -> None:

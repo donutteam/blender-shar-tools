@@ -23,6 +23,10 @@ from classes.chunks.ShaderTextureParameterChunk import ShaderTextureParameterChu
 from classes.chunks.StaticEntityChunk import StaticEntityChunk
 from classes.chunks.TextureChunk import TextureChunk
 from classes.chunks.UVListChunk import UVListChunk
+from classes.chunks.ColourListChunk import ColourListChunk
+from classes.chunks.VertexShaderChunk import VertexShaderChunk
+from classes.chunks.BoundingBoxChunk import BoundingBoxChunk
+from classes.chunks.BoundingSphereChunk import BoundingSphereChunk
 from classes.chunks.StaticPhysChunk import StaticPhysChunk
 from classes.chunks.CollisionObjectChunk import CollisionObjectChunk
 from classes.chunks.CollisionVolumeChunk import CollisionVolumeChunk
@@ -30,6 +34,10 @@ from classes.chunks.CollisionOrientedBoundingBoxChunk import CollisionOrientedBo
 from classes.chunks.CollisionVectorChunk import CollisionVectorChunk
 from classes.chunks.CollisionCylinderChunk import CollisionCylinderChunk
 from classes.chunks.CollisionSphereChunk import CollisionSphereChunk
+from classes.chunks.CollisionObjectAttributeChunk import CollisionObjectAttributeChunk
+from classes.chunks.CollisionEffectChunk import CollisionEffectChunk
+from classes.chunks.CollisionAxisAlignedBoundingBoxChunk import CollisionAxisAlignedBoundingBoxChunk
+from classes.chunks.RenderStatusChunk import RenderStatusChunk
 
 from classes.ChunkRegistry import ChunkRegistry
 
@@ -77,6 +85,14 @@ defaultChunkRegistry.register(chunkIdentifiers.TEXTURE, TextureChunk)
 
 defaultChunkRegistry.register(chunkIdentifiers.UV_LIST, UVListChunk)
 
+defaultChunkRegistry.register(chunkIdentifiers.COLOUR_LIST, ColourListChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.VERTEX_SHADER, VertexShaderChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.BOUNDING_BOX, BoundingBoxChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.BOUNDING_SPHERE, BoundingSphereChunk)
+
 defaultChunkRegistry.register(chunkIdentifiers.STATIC_PHYS, StaticPhysChunk)
 
 defaultChunkRegistry.register(chunkIdentifiers.COLLISION_OBJECT, CollisionObjectChunk)
@@ -90,3 +106,11 @@ defaultChunkRegistry.register(chunkIdentifiers.COLLISION_CYLINDER, CollisionCyli
 defaultChunkRegistry.register(chunkIdentifiers.COLLISION_SPHERE, CollisionSphereChunk)
 
 defaultChunkRegistry.register(chunkIdentifiers.COLLISION_VECTOR, CollisionVectorChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.COLLISION_OBJECT_ATTRIBUTE, CollisionObjectAttributeChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.COLLISION_EFFECT, CollisionEffectChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.COLLISION_AXIS_ALIGNED_BOUNDING_BOX, CollisionAxisAlignedBoundingBoxChunk)
+
+defaultChunkRegistry.register(chunkIdentifiers.RENDER_STATUS, RenderStatusChunk)

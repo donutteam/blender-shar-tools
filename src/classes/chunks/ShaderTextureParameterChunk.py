@@ -28,7 +28,7 @@ class ShaderTextureParameterChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.SHADER_TEXTURE_PARAMETER, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		parameter: str = "", 
 		value: str = ""
 	) -> None:

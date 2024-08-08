@@ -29,14 +29,14 @@ class ShaderColourParameterChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.SHADER_COLOUR_PARAMETER, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		parameter: str = "", 
-		colour: Colour = Colour(0, 0, 0, 255)
+		colour: Colour = None
 	) -> None:
 		super().__init__(identifier,children)
 	
 		self.parameter = parameter
-		self.colour = colour
+		self.colour = Colour(0, 0, 0, 255) if colour is None else colour
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DFourCharacterCode(self.parameter)

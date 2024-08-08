@@ -15,28 +15,24 @@ import data.chunkIdentifiers as chunkIdentifiers
 # Class
 #
 
-class ShaderFloatParameterChunk(Chunk):
+class VertexShaderChunk(Chunk):
 	@staticmethod
 	def parseData(data : bytes, isLittleEndian : bool) -> list:
 		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
-		parameter = binaryReader.readPure3DFourCharacterCode()
-		value = binaryReader.readFloat()
-
-		return [ parameter, value ]
+		vertexShaderName = binaryReader.readPure3DString()
+		
+		return [ vertexShaderName ]
 
 	def __init__(
 		self, 
-		identifier: int = chunkIdentifiers.SHADER_FLOAT_PARAMETER, 
-		children : list[Chunk] = None, 
-		parameter: str = "", 
-		value: float = 0
+		identifier: int = chunkIdentifiers.VERTEX_SHADER, 
+		children: list[Chunk] = None,
+		vertexShaderName: str = ""
 	) -> None:
-		super().__init__(identifier,children)
+		super().__init__(identifier, children)
 	
-		self.parameter = parameter
-		self.value = value
-		
+		self.vertexShaderName = vertexShaderName
+
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
-		binaryWriter.writePure3DFourCharacterCode(self.parameter)
-		binaryWriter.writeFloat(self.value)
+		binaryWriter.writePure3DString(self.vertexShaderName)

@@ -20,12 +20,12 @@ class UnknownChunk(Chunk):
 	def __init__(
 		self, 
 		identifier : int, 
-		children : list[Chunk] = [], 
-		data : bytes = bytes()
+		children : list[Chunk] = None, 
+		data : bytes = None
 	) -> None:
 		super().__init__(identifier, children)
 
-		self.data : bytes = data
+		self.data : bytes = bytes() if data is None else data
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeBytes(self.data)

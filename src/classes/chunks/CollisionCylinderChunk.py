@@ -29,7 +29,7 @@ class CollisionCylinderChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.COLLISION_CYLINDER, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		cylinderRadius: float = 0,
 		length: int = 0,
 		flatEnd: int = 0

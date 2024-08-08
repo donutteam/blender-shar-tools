@@ -32,12 +32,12 @@ class HistoryChunk(Chunk):
 	def __init__(
 		self, 
 		identifier : int = chunkIdentifiers.HISTORY, 
-		children : list[Chunk] = [], 
-		lines : list[str] = []
+		children : list[Chunk] = None, 
+		lines : list[str] = None
 	) -> None:
 		super().__init__(chunkIdentifiers.HISTORY)
 
-		self.lines : list[str] = lines
+		self.lines : list[str] = [] if lines is None else lines
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt16(len(self.lines))

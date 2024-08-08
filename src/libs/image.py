@@ -38,4 +38,6 @@ def createImage(chunk: ImageChunk, textureChunk: TextureChunk | None = None):
 
             os.remove(filename)
 
+            img.update()
+
             return img

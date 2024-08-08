@@ -15,28 +15,26 @@ import data.chunkIdentifiers as chunkIdentifiers
 # Class
 #
 
-class ShaderFloatParameterChunk(Chunk):
+class CollisionAxisAlignedBoundingBoxChunk(Chunk):
 	@staticmethod
 	def parseData(data : bytes, isLittleEndian : bool) -> list:
 		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
-		parameter = binaryReader.readPure3DFourCharacterCode()
-		value = binaryReader.readFloat()
+		nothing = binaryReader.readUInt32()
 
-		return [ parameter, value ]
+		return [
+			nothing,
+		]
 
 	def __init__(
 		self, 
-		identifier: int = chunkIdentifiers.SHADER_FLOAT_PARAMETER, 
+		identifier: int = chunkIdentifiers.COLLISION_AXIS_ALIGNED_BOUNDING_BOX, 
 		children : list[Chunk] = None, 
-		parameter: str = "", 
-		value: float = 0
+		nothing: int = 0,
 	) -> None:
 		super().__init__(identifier,children)
 	
-		self.parameter = parameter
-		self.value = value
-		
+		self.nothing = nothing
+
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
-		binaryWriter.writePure3DFourCharacterCode(self.parameter)
-		binaryWriter.writeFloat(self.value)
+		binaryWriter.writeUInt32(self.nothing)

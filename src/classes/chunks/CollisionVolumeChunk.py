@@ -28,7 +28,7 @@ class CollisionVolumeChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.COLLISION_VOLUME, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		objectReferenceIndex: int = 0,
 		ownerIndex: int = 0
 	) -> None:

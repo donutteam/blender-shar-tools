@@ -118,3 +118,5 @@ def unregister():
 	bpy.utils.unregister_class(CollisionPropertiesPanel)
 
 	bpy.utils.unregister_class(CollisionProperties)
+
+	del bpy.types.Object.collisionProperties

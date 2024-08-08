@@ -30,7 +30,7 @@ class CollisionObjectChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.COLLISION_OBJECT, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		name: str = "",
 		version: int = 0,
 		materialName: str = "",

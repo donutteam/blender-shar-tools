@@ -28,7 +28,7 @@ class MeshChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.MESH, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		name: str = "", 
 		version: int = 0
 	) -> None:

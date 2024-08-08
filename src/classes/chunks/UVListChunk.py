@@ -35,14 +35,14 @@ class UVListChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.UV_LIST, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		channel: int = 0, 
-		uvs: list[mathutils.Vector] = []
+		uvs: list[mathutils.Vector] = None
 	) -> None:
 		super().__init__(identifier,children)
 	
 		self.channel = channel
-		self.uvs = uvs
+		self.uvs = [] if uvs is None else uvs
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt32(len(self.uvs))

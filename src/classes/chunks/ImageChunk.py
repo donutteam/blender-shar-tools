@@ -61,7 +61,7 @@ class ImageChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.IMAGE, 
-		children: list[Chunk] = [], 
+		children: list[Chunk] = None, 
 		name: str = "", 
 		version: int = 0, 
 		width: int = 0, 

@@ -43,6 +43,7 @@ class ShaderProperties(bpy.types.PropertyGroup):
 		min=0,
 		max=1,
 		subtype="COLOR",
+		default=(1,1,1)
 	)
 	specularColor: bpy.props.FloatVectorProperty(
 		name="Specular",
@@ -74,7 +75,8 @@ class ShaderProperties(bpy.types.PropertyGroup):
 			("nearestNeighbourMipNN","Nearest Neighbour, Mip Nearest Neighbour","Mipmap","",2),
 			("linearMipNN","Linear, Mip Nearest Neighbour","Mipmap Bilinear","",3),
 			("linearMipL","Linear, Mip Linear","Mipmap Trilinear","",4)
-		]
+		],
+		default=1
 	)
 	uvMode: bpy.props.EnumProperty(
 		name="UV Mode",
@@ -85,7 +87,7 @@ class ShaderProperties(bpy.types.PropertyGroup):
 	)
 	lighting: bpy.props.BoolProperty(
 		name="Lighting",
-		default=True
+		default=False
 	)
 	alphaTest: bpy.props.BoolProperty(
 		name="Alpha Test",
@@ -162,6 +164,11 @@ class ShaderProperties(bpy.types.PropertyGroup):
 		default=7,
 		description="Maximum dimension of the mipmapped texture"
 	)
+	rawTextureName: bpy.props.StringProperty(
+		name="Raw Texture Name",
+		description="Texture name to be used when no image is set",
+		default=""
+	)
 
 class ShaderPropertiesPanel(bpy.types.Panel):
 	bl_label = "SHAR Shader Properties"
@@ -189,14 +196,15 @@ class ShaderPropertiesPanel(bpy.types.Panel):
 		# Props
 		layout.prop(mat,"name")
 		layout.prop(mat.shaderProperties,"pddiShader")
-		if mat.use_nodes and mat.node_tree != None and "Principled BSDF" in mat.node_tree.nodes and "Image Texture" in mat.node_tree.nodes:
+		if mat.use_nodes and mat.node_tree != None and "Principled BSDF" in mat.node_tree.nodes and "Image Texture" in mat.node_tree.nodes and mat.node_tree.nodes["Image Texture"].image != None:
 			layout.label(text="Change texture above")
 		else:
-			layout.label(text="Add image texture above")
-		layout.label(text="Change emission above (use strength=1)")
+			layout.label(text="Add image texture above or:")
+			layout.prop(mat.shaderProperties,"rawTextureName")
 		layout.prop(mat.shaderProperties,"diffuseColor")
 		layout.prop(mat.shaderProperties,"specularColor")
 		layout.prop(mat.shaderProperties,"ambientColor")
+		layout.label(text="Change emission above")
 		layout.prop(mat.shaderProperties,"blendMode")
 		layout.prop(mat.shaderProperties,"filterMode")
 		layout.prop(mat.shaderProperties,"uvMode")
@@ -222,4 +230,6 @@ def register():
 	bpy.utils.register_class(ShaderPropertiesPanel)
 
 def unregister():
+	bpy.utils.unregister_class(ShaderProperties)
+
 	bpy.utils.unregister_class(ShaderPropertiesPanel)

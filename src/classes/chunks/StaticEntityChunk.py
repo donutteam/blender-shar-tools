@@ -29,7 +29,7 @@ class StaticEntityChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.STATIC_ENTITY, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		name: str = "", 
 		version: int = 0, 
 		hasAlpha: int = 0

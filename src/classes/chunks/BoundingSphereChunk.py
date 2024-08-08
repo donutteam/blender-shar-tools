@@ -11,28 +11,35 @@ from classes.Pure3DBinaryWriter import Pure3DBinaryWriter
 
 import data.chunkIdentifiers as chunkIdentifiers
 
+import mathutils
+
 #
 # Class
 #
 
-class CollisionSphereChunk(Chunk):
+class BoundingSphereChunk(Chunk):
 	@staticmethod
 	def parseData(data : bytes, isLittleEndian : bool) -> list:
 		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
+		center = binaryReader.readPure3DVector3()
 		radius = binaryReader.readFloat()
-
-		return [ radius ]
+		
+		return [ center, radius ]
 
 	def __init__(
 		self, 
-		identifier: int = chunkIdentifiers.COLLISION_SPHERE, 
-		children : list[Chunk] = None, 
+		identifier: int = chunkIdentifiers.BOUNDING_SPHERE, 
+		children: list[Chunk] = None,
+		center: mathutils.Vector = None,
 		radius: float = 0
 	) -> None:
-		super().__init__(identifier,children)
+		super().__init__(identifier, children)
 	
+		self.center = mathutils.Vector() if center is None else center
 		self.radius = radius
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
+		binaryWriter.writePure3DVector3(self.center)
+
 		binaryWriter.writeFloat(self.radius)

@@ -31,11 +31,15 @@ import bpy
 
 import classes.operators.AddCollisionOperator
 import classes.operators.ImportPure3DFileOperator
+import classes.operators.ExportPure3DFileOperator
+
+import classes.Pure3DFileHandler
 
 import classes.properties.FenceProperties
 import classes.properties.ShaderProperties
 import classes.properties.PathProperties
 import classes.properties.CollisionProperties
+import classes.properties.FileCollectionProperties
 
 #
 # Initialisation
@@ -44,21 +48,29 @@ import classes.properties.CollisionProperties
 def register():
 	print("Registered The Simpsons Hit & Run Tools.")
 
-	classes.operators.AddCollisionOperator.register()
 	classes.operators.ImportPure3DFileOperator.register()
+	classes.operators.ExportPure3DFileOperator.register()
+	classes.Pure3DFileHandler.register()
+
+	classes.operators.AddCollisionOperator.register()
 
 	classes.properties.FenceProperties.register()
 	classes.properties.PathProperties.register()
 	classes.properties.ShaderProperties.register()
 	classes.properties.CollisionProperties.register()
+	classes.properties.FileCollectionProperties.register()
 
 def unregister():
 	print("Unregistered The Simpsons Hit & Run Tools.")
 
-	classes.operators.AddCollisionOperator.unregister()
 	classes.operators.ImportPure3DFileOperator.unregister()
+	classes.operators.ExportPure3DFileOperator.unregister()
+	classes.Pure3DFileHandler.unregister()
+
+	classes.operators.AddCollisionOperator.unregister()
 
 	classes.properties.FenceProperties.unregister()
 	classes.properties.PathProperties.unregister()
 	classes.properties.ShaderProperties.unregister()
 	classes.properties.CollisionProperties.unregister()
+	classes.properties.FileCollectionProperties.unregister()

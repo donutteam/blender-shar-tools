@@ -70,15 +70,19 @@ class File:
 
 		binaryWriter.writeUInt32(12)
 
-		chunksSize = 0
+		chunkSizePosition = binaryWriter.getPosition()
+		binaryWriter.writeUInt32(0) # Placeholder for chunk size
 
-		for chunk in chunks:
-			chunksSize += chunk.getEntireSize()
-
-		binaryWriter.writeUInt32(12 + chunksSize)
+		lastPositionWritingChunks = binaryWriter.getPosition()
 
 		for chunk in chunks:
 			chunk.write(binaryWriter)
+		
+		chunksSize = binaryWriter.getPosition() - lastPositionWritingChunks
+
+		binaryWriter.seek(chunkSizePosition)
+		binaryWriter.writeUInt32(12 + chunksSize)
+		binaryWriter.seek(lastPositionWritingChunks + chunksSize)
 
 		return binaryWriter.getBytes()
 
