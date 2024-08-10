@@ -207,7 +207,7 @@ class ExportedPure3DFile():
 
 		params = []
 
-		if mat.use_nodes and mat.node_tree != None and "Principled BSDF" in mat.node_tree.nodes and "Image Texture" in mat.node_tree.nodes:
+		if mat.use_nodes and mat.node_tree != None and "Principled BSDF" in mat.node_tree.nodes and "Image Texture" in mat.node_tree.nodes and mat.node_tree.nodes["Image Texture"].image != None:
 			imageTexture = mat.node_tree.nodes["Image Texture"]
 
 			self.exportTexture(imageTexture.image)
