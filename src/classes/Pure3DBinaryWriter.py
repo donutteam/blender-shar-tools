@@ -100,7 +100,7 @@ class Pure3DBinaryWriter(BinaryWriter):
 			#	because Radical was stupid when they were making The Simpsons Hit & Run
 			valueToWrite = value.ljust(4 * math.ceil(len(value) / 4), "\0")
 
-		self.writeByte(len(value))
+		self.writeByte(len(valueToWrite))
 
 		self.writeString(valueToWrite)
 

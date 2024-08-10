@@ -35,12 +35,15 @@ class BaseCollisionOperator(bpy.types.Operator):
 	)
 
 	def execute(self,context,obj):
-		bpy.context.view_layer.objects.active = obj
 		if self.group in bpy.data.objects:
 			for collection in obj.users_collection:
 				collection.objects.unlink(obj)
 			for collection in bpy.data.objects[self.group].users_collection:
 				collection.objects.link(obj)
+		else:
+			bpy.context.collection.objects.link(obj)
+		bpy.context.view_layer.objects.active = obj
+		obj.select_set(True)
 		if self.group == "":
 			obj.name = "Unnamed collision"
 		else:

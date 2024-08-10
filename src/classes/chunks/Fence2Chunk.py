@@ -31,16 +31,16 @@ class Fence2Chunk(Chunk):
 	def __init__(
 		self, 
 		identifier : int = chunkIdentifiers.FENCE_2, 
-		children : list[Chunk] = [], 
-		start : mathutils.Vector = mathutils.Vector((0, 0, 0)), 
-		end : mathutils.Vector = mathutils.Vector((0, 0, 0)), 
-		normal : mathutils.Vector = mathutils.Vector((0, 0, 0))
+		children : list[Chunk] = None, 
+		start : mathutils.Vector = None, 
+		end : mathutils.Vector = None, 
+		normal : mathutils.Vector = None
 	) -> None:
 		super().__init__(chunkIdentifiers.FENCE_2, children)
 
-		self.start : mathutils.Vector = start
-		self.end : mathutils.Vector = end
-		self.normal : mathutils.Vector = normal
+		self.start : mathutils.Vector = mathutils.Vector((0, 0, 0)) if start is None else start
+		self.end : mathutils.Vector = mathutils.Vector((0, 0, 0)) if end is None else end
+		self.normal : mathutils.Vector = mathutils.Vector((0, 0, 0)) if normal is None else normal
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writePure3DVector3(self.start)

@@ -9,32 +9,40 @@ from classes.chunks.Chunk import Chunk
 from classes.Pure3DBinaryReader import Pure3DBinaryReader
 from classes.Pure3DBinaryWriter import Pure3DBinaryWriter
 
+from classes.Colour import Colour
+
 import data.chunkIdentifiers as chunkIdentifiers
 
 #
 # Class
 #
 
-class ImageDataChunk(Chunk):
+class ColourListChunk(Chunk):
 	@staticmethod
 	def parseData(data : bytes, isLittleEndian : bool) -> list:
 		binaryReader = Pure3DBinaryReader(data, isLittleEndian)
 
-		imageDataLength = binaryReader.readUInt32()
-		imageData = binaryReader.readBytes(imageDataLength)
-
-		return [ imageData ]
+		numberOfColours = binaryReader.readUInt32()
+		
+		colours = []
+		
+		for i in range(numberOfColours):
+			colours.append(binaryReader.readPure3DColour())
+		
+		return [ colours ]
 
 	def __init__(
 		self, 
-		identifier: int = chunkIdentifiers.IMAGE_DATA, 
+		identifier: int = chunkIdentifiers.COLOUR_LIST, 
 		children: list[Chunk] = None, 
-		imageData: bytes = None
+		colours: list[Colour] = None
 	) -> None:
-		super().__init__(chunkIdentifiers.IMAGE_DATA,children)
+		super().__init__(identifier, children)
 	
-		self.imageData = bytes() if imageData is None else imageData
+		self.colours = [] if colours is None else colours
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
-		binaryWriter.writeUInt32(len(self.imageData))
-		binaryWriter.writeBytes(self.imageData)
+		binaryWriter.writeUInt32(len(self.colours))
+
+		for colour in self.colours:
+			binaryWriter.writePure3DColour(colour)

@@ -34,12 +34,12 @@ class PathChunk(Chunk):
 	def __init__(
 		self, 
 		identifier : int = chunkIdentifiers.PATH, 
-		children : list[Chunk] = [], 
-		points : list[mathutils.Vector] = []
+		children : list[Chunk] = None, 
+		points : list[mathutils.Vector] = None
 	) -> None:
 		super().__init__(chunkIdentifiers.PATH, children)
 
-		self.points = points
+		self.points = [] if points is None else points
 		
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt32(len(self.points))

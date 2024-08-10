@@ -32,12 +32,12 @@ class IndexListChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.INDEX_LIST, 
-		children: list[Chunk] = [], 
-		indices: list[int] = []
+		children: list[Chunk] = None, 
+		indices: list[int] = None
 	) -> None:
 		super().__init__(chunkIdentifiers.INDEX_LIST, children)
 	
-		self.indices = indices
+		self.indices = [] if indices is None else indices
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:
 		binaryWriter.writeUInt32(len(self.indices))

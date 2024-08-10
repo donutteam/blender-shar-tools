@@ -29,7 +29,7 @@ class BinaryWriter:
 		self._byteOrderSymbol = "<" if self.isLittleEndian else ">"
 
 	def getBytes(self) -> bytes:
-		return bytes(self._byteArray[:])
+		return bytes(self._byteArray[:self._length])
 
 	def getPosition(self) -> int:
 		return self._position
@@ -38,7 +38,7 @@ class BinaryWriter:
 		return self._length
 
 	def seek(self, pos : int) -> None:
-		if (pos < 0 or pos >= self._length):
+		if (pos < 0 or pos > self._length):
 			raise IndexError("Position out of bounds")
 
 		self._position = pos
@@ -57,78 +57,56 @@ class BinaryWriter:
 		self._length = max(self._length, self._position)
 
 	def writeSByte(self, value : int) -> None:
-		self._checkSize(data.dataSizes.SBYTE)
-
 		valueBytes = value.to_bytes(data.dataSizes.SBYTE, byteorder = self._byteOrderString, signed = True)
 
 		self.writeBytes(valueBytes)
 
 	def writeInt16(self, value : int) -> None:
-		self._checkSize(data.dataSizes.INT16)
-
 		valueBytes = value.to_bytes(data.dataSizes.INT16, byteorder = self._byteOrderString, signed = True)
 
 		self.writeBytes(valueBytes)
 
 	def writeInt32(self, value : int) -> None:
-		self._checkSize(data.dataSizes.INT32)
-
 		valueBytes = value.to_bytes(data.dataSizes.INT32, byteorder = self._byteOrderString, signed = True)
 
 		self.writeBytes(valueBytes)
 
 	def writeInt64(self, value : int) -> None:
-		self._checkSize(data.dataSizes.INT64)
-
 		valueBytes = value.to_bytes(data.dataSizes.INT64, byteorder = self._byteOrderString, signed = True)
 
 		self.writeBytes(valueBytes)
 
 	def writeByte(self, value : int) -> None:
-		self._checkSize(data.dataSizes.BYTE)
-
 		valueBytes = value.to_bytes(data.dataSizes.BYTE, byteorder = self._byteOrderString, signed = False)
 
 		self.writeBytes(valueBytes)
 
 	def writeUInt8(self, value : int) -> None:
-		self._checkSize(data.dataSizes.UINT8)
-
 		valueBytes = value.to_bytes(data.dataSizes.UINT8, byteorder = self._byteOrderString, signed = False)
 
 		self.writeBytes(valueBytes)
 
 	def writeUInt16(self, value : int) -> None:
-		self._checkSize(data.dataSizes.UINT16)
-
 		valueBytes = value.to_bytes(data.dataSizes.UINT16, byteorder = self._byteOrderString, signed = False)
 
 		self.writeBytes(valueBytes)
 
 	def writeUInt32(self, value : int) -> None:
-		self._checkSize(data.dataSizes.UINT32)
-
 		valueBytes = value.to_bytes(data.dataSizes.UINT32, byteorder = self._byteOrderString, signed = False)
 
 		self.writeBytes(valueBytes)
 
 	def writeUInt64(self, value : int) -> None:
-		self._checkSize(data.dataSizes.UINT64)
-
 		valueBytes = value.to_bytes(data.dataSizes.UINT64, byteorder = self._byteOrderString, signed = False)
 
 		self.writeBytes(valueBytes)
 
 	def writeFloat(self, value : float) -> None:
-		self._checkSize(data.dataSizes.FLOAT32)
-
 		valueBytes = struct.pack(self._byteOrderSymbol + "f", value)
 
 		self.writeBytes(valueBytes)
 
 	def writeDouble(self, value : float) -> None:
-		self._checkSize(data.dataSizes.FLOAT64)
-
 		valueBytes = struct.pack(self._byteOrderSymbol + "d", value)
 
 		self.writeBytes(valueBytes)

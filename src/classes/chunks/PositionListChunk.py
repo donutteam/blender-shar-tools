@@ -34,12 +34,12 @@ class PositionListChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.POSITION_LIST, 
-		children : list[Chunk] = [], 
-		positions: list[mathutils.Vector] = []
+		children : list[Chunk] = None, 
+		positions: list[mathutils.Vector] = None
 	) -> None:
 		super().__init__(identifier,children)
 	
-		self.positions = positions
+		self.positions = [] if positions is None else positions
 		
 
 	def writeData(self, binaryWriter : Pure3DBinaryWriter) -> None:

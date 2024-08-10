@@ -32,7 +32,7 @@ class ShaderChunk(Chunk):
 	def __init__(
 		self, 
 		identifier: int = chunkIdentifiers.SHADER, 
-		children : list[Chunk] = [], 
+		children : list[Chunk] = None, 
 		name: str = "", 
 		version: int = 0, 
 		pddiShaderName: str = "", 

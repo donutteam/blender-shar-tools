@@ -3,6 +3,7 @@
 #
 
 import bpy
+import bmesh
 
 from classes.chunks.CollisionObjectChunk import CollisionObjectChunk
 from classes.chunks.CollisionVolumeChunk import CollisionVolumeChunk
@@ -10,6 +11,8 @@ from classes.chunks.CollisionOrientedBoundingBoxChunk import CollisionOrientedBo
 from classes.chunks.CollisionVectorChunk import CollisionVectorChunk
 from classes.chunks.CollisionCylinderChunk import CollisionCylinderChunk
 from classes.chunks.CollisionSphereChunk import CollisionSphereChunk
+from classes.chunks.CollisionObjectAttributeChunk import CollisionObjectAttributeChunk
+from classes.chunks.CollisionAxisAlignedBoundingBoxChunk import CollisionAxisAlignedBoundingBoxChunk
 
 import mathutils
 import math
@@ -22,24 +25,25 @@ def createCollision(collisionObject: CollisionObjectChunk) -> list[bpy.types.Obj
 	return createFromVolume(collisionObject,collisionObject.getFirstChildOfType(CollisionVolumeChunk))
 
 def createNewCollisionBox():
-	bpy.ops.mesh.primitive_cube_add(
-		size=2
-	)
+	mesh = bpy.data.meshes.new("Collision Box")
+	obj = bpy.data.objects.new("Collision Box", mesh)
 
-	obj = bpy.context.active_object
+	bm = bmesh.new()
+	bmesh.ops.create_cube(bm, size=2)
+	bm.to_mesh(mesh)
+	bm.free()
 
-	bpy.context.view_layer.objects.active = None
 	obj.collisionProperties.collisionType = "Box"
 	return obj
 
 def createNewCollisionCylinder(radius: float, length: float, flatEnd: bool):
-	bpy.ops.mesh.primitive_uv_sphere_add(
-		radius=1,
-	)
+	mesh = bpy.data.meshes.new("Collision Cylinder")
+	obj = bpy.data.objects.new("Collision Cylinder", mesh)
 
-	obj = bpy.context.active_object
-
-	bpy.context.view_layer.objects.active = None
+	bm = bmesh.new()
+	bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+	bm.to_mesh(mesh)
+	bm.free()
 
 	combinedstring = ""
 	for i in obj.data.vertices:
@@ -56,13 +60,13 @@ def createNewCollisionCylinder(radius: float, length: float, flatEnd: bool):
 	return obj
 
 def createNewCollisionSphere(radius: float):
-	bpy.ops.mesh.primitive_uv_sphere_add(
-		radius=1,
-	)
+	mesh = bpy.data.meshes.new("Collision Sphere")
+	obj = bpy.data.objects.new("Collision Sphere", mesh)
 
-	obj = bpy.context.active_object
-
-	bpy.context.view_layer.objects.active = None
+	bm = bmesh.new()
+	bmesh.ops.create_uvsphere(bm, u_segments=32, v_segments=16, radius=1)
+	bm.to_mesh(mesh)
+	bm.free()
 
 	combinedstring = ""
 	for i in obj.data.vertices:
@@ -145,3 +149,72 @@ def createFromVolume(collisionObject: CollisionObjectChunk, collisionVolume: Col
 			print("Unknown collision type " + hex(child.identifier))
 	
 	return objects
+
+def collisionsToCollisionObject(name: str, collisions: list[bpy.types.Object]):
+	volume = CollisionVolumeChunk(
+		ownerIndex = 0,
+	)
+
+	volume.children.append(CollisionAxisAlignedBoundingBoxChunk())
+	
+	for collision in collisions:
+		if collision.collisionProperties == None:
+			continue
+		
+		properties = collision.collisionProperties
+		if properties.collisionType == "Box":
+			col = CollisionOrientedBoundingBoxChunk()
+			col.halfExtents = collision.scale
+			col.children.append(CollisionVectorChunk(vector = collision.location.xzy))
+			rotation = collision.rotation_euler.to_matrix()
+			rotation = mathutils.Matrix.Rotation(math.radians(180),3,"Y") @ rotation
+			rotation = mathutils.Matrix.Rotation(math.radians(-90),3,"X") @ rotation
+			col.children.append(CollisionVectorChunk(vector = mathutils.Vector((
+				rotation[0][0],
+				rotation[1][0],
+				rotation[2][0],
+			))))
+			col.children.append(CollisionVectorChunk(vector = mathutils.Vector((
+				rotation[0][1],
+				rotation[1][1],
+				rotation[2][1],
+			))))
+			col.children.append(CollisionVectorChunk(vector = mathutils.Vector((
+				rotation[0][2],
+				rotation[1][2],
+				rotation[2][2],
+			))))
+			volume.children.append(CollisionVolumeChunk(children=[col],ownerIndex=-1))
+		elif properties.collisionType == "Cylinder":
+			col = CollisionCylinderChunk()
+			col.cylinderRadius = properties.radius
+			col.length = properties.length
+			col.flatEnd = int(properties.flatEnd)
+			col.children.append(CollisionVectorChunk(vector = collision.location.xzy))
+			rotation = collision.rotation_euler.to_matrix()
+			rotation = mathutils.Matrix.Rotation(math.radians(180),3,"Y") @ rotation
+			rotation = mathutils.Matrix.Rotation(math.radians(-90),3,"X") @ rotation
+
+			direction = rotation.normalized().transposed()
+			directionVector = mathutils.Vector((0, 0, 1)) @ direction
+
+			col.children.append(CollisionVectorChunk(vector = directionVector))
+
+			volume.children.append(CollisionVolumeChunk(children=[col],ownerIndex=-1))
+		elif properties.collisionType == "Sphere":
+			col = CollisionSphereChunk()
+			col.radius = properties.radius
+			col.children.append(CollisionVectorChunk(vector = collision.location.xzy))
+			volume.children.append(CollisionVolumeChunk(children=[col],ownerIndex=-1))
+
+		
+
+	return CollisionObjectChunk(
+		children = [
+			volume,
+			CollisionObjectAttributeChunk()
+		],
+		name = name,
+		version = 1,
+		materialName = "NoData",
+	)
